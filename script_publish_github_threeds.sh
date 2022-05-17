@@ -10,22 +10,22 @@ echo ''
 
 predicateVar() {
   if [[ -z "$2" ]]; then
-    echo "Задайте значние для переменной $1" 1>&2
+    echo "Set a value for a variable $1" 1>&2
     exit 1
 fi
 }
 
-# Адрес репозитория, куда должна производиться публикация.
+# The address of the repository where the publication should be made.
 #PUBLISH_TARGET_REPO_3DS="git@github.com:Runet-Business-Systems/android-3ds2-sdk.git"
 
-# Ветка репозитория публикации (куда будут публиковаться изменения)
+# Publish repository branch (where changes will be published)
 #PUBLISH_TARGET_BRANCH="master"
 
-# Данный об авторе коммита, нуждя для репозитория публикации.
+# Given about the author of the commit, needing for the publish repository.
 #PUBLISH_COMMIT_USER_NAME="Your Name"
 #PUBLISH_COMMIT_USER_EMAIL="you@example.com"
 
-# Сообщение коммита репозитория публикации.
+# The publish repository commit message.
 # PUBLISH_COMMIT_MESSAGE="New code version"
 
 predicateVar "PUBLISH_TARGET_REPO_3DS" $PUBLISH_TARGET_REPO_3DS
@@ -45,12 +45,12 @@ PUBLISH_COMMIT_MESSAGE         : $PUBLISH_COMMIT_MESSAGE"
 
 stageEcho "$info"
 
-stageEcho 'Подготовка директории'
+stageEcho 'Directory preparation'
 
 rm -rf payrdr-android-sdk || true
 rm -rf android-3ds2-sdk || true
 
-stageEcho 'Получаем новую версию с репозитория разработки GitLab'
+stageEcho 'Getting a new version from the GitLab development repository'
 
 mkdir payrdr-android-sdk
 rsync -av --delete-after \
@@ -59,7 +59,7 @@ rsync -av --delete-after \
   --exclude '.gitlab-ci.yml' \
   ./* ./payrdr-android-sdk
 
-stageEcho 'Получаем текущую версию репозитория публикации GitHub'
+stageEcho 'Get the current version of the GitHub publishing repository'
 
 git clone $PUBLISH_TARGET_REPO_3DS
 cd android-3ds2-sdk
@@ -68,11 +68,11 @@ git checkout $PUBLISH_TARGET_BRANCH
 git pull
 cd ../
 
-stageEcho 'Переносим изменения'
+stageEcho 'Transferring Changes'
 
 rsync -av --delete-after --exclude '.git' payrdr-android-sdk/sdk_threeds/ android-3ds2-sdk/
 
-stageEcho 'Фиксируем изменения в репозитории публикации'
+stageEcho 'Committing changes to the publishing repository'
 
 cd android-3ds2-sdk
 git config user.name "$PUBLISH_COMMIT_USER_NAME"
@@ -81,4 +81,4 @@ git add .
 git commit -m "$PUBLISH_COMMIT_MESSAGE"
 git push --set-upstream origin $PUBLISH_TARGET_BRANCH
 
-stageEcho 'Перенос завершен'
+stageEcho 'Transfer completed'

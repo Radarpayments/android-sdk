@@ -17,7 +17,7 @@ jobs:
       - name: Checkout remote lib
         uses: actions/checkout@master
         with:
-          repository: Runet-Business-Systems/android-3ds2-sdk
+          repository: Radarpayments/android-3ds2-sdk
           path: ./sdk_threeds
           token: ${{ secrets.SECRET_FOR_3DS2_SDK }}
 
@@ -57,7 +57,7 @@ jobs:
       - name: Checkout remote lib
         uses: actions/checkout@master
         with:
-          repository: Runet-Business-Systems/android-3ds2-sdk
+          repository: Radarpayments/android-3ds2-sdk
           path: ./sdk_threeds
           token: ${{ secrets.SECRET_FOR_3DS2_SDK }}
 
@@ -79,7 +79,7 @@ jobs:
           arch: x86_64
           disable-animations: true
           profile: Nexus 6
-          script: ./gradlew :sdk_payment:jacocoAndroidTestReport -PtestSize="large"
+          script: ./gradlew :sdk_payment:connectedAndroidTest
 
       - name: Upload spoon result (Artifact)
         if: always()
@@ -100,7 +100,7 @@ jobs:
       - name: Checkout remote lib
         uses: actions/checkout@master
         with:
-          repository: Runet-Business-Systems/android-3ds2-sdk
+          repository: Radarpayments/android-3ds2-sdk
           path: ./sdk_threeds
           token: ${{ secrets.SECRET_FOR_3DS2_SDK }}
 
@@ -121,7 +121,7 @@ jobs:
           target: default
           arch: x86_64
           profile: Nexus 6
-          script: ./gradlew jacocoAndroidTestReport -PtestSize="small"
+          script: ./gradlew test
 
       - name: Upload spoon result (Artifact)
         if: always()
