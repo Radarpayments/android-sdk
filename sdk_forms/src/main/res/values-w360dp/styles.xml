@@ -1,0 +1,22 @@
+<resources>
+
+    <style name="PAYRDREditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:textColor">@color/payrdr_color_text</item>
+        <item name="errorTextColor">@color/payrdr_color_error_text</item>
+    </style>
+
+    <style name="PAYRDRTextViewStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:textColor">@color/payrdr_color_text</item>
+    </style>
+
+    <style name="PAYRDRCheckBoxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:textColor">@color/payrdr_color_text</item>
+    </style>
+
+    <style name="PAYRDRCardNumberTextAppearance" parent="TextAppearance.AppCompat.Large">
+        <item name="fontFamily">monospace</item>
+    </style>
+</resources>

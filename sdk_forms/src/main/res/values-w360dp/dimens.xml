@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="payrdr_card_padding">16dp</dimen>
+    <dimen name="payrdr_form_card_margin">12dp</dimen>
+    <dimen name="payrdr_form_padding">16dp</dimen>
+    <dimen name="payrdr_form_tds_padding">16dp</dimen>
+    <dimen name="payrdr_card_selected_code_margin_right">22dp</dimen>
+    <dimen name="payrdr_card_selected_code_margin_bottom">68dp</dimen>
+    <dimen name="payrdr_form_card_icons_height">48dp</dimen>
+</resources>

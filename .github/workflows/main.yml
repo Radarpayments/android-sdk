@@ -1,0 +1,226 @@
+name: CI_IfTagOnly
+
+on:
+  push:
+    branches: [ master ]
+    tags:
+      - '*'
+
+jobs:
+  allBuild:
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@master
+
+      - name: Checkout remote lib
+        uses: actions/checkout@master
+        with:
+          repository: Runet-Business-Systems/android-3ds2-sdk
+          path: ./sdk_threeds
+          token: ${{ secrets.SECRET_FOR_3DS2_SDK }}
+
+      - name: Setup java 8
+        uses: actions/setup-java@v1
+        with: {java-version: 1.8}
+
+      - name: Script for coping .arr files
+        run: ./copy_sdk_lib_to_samples.sh
+
+      - name: Build all modules and apps
+        run: ./gradlew -Pci --console=plain build -x test
+
+      - name: Artifacts release
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: build_files
+          path: |
+            sdk_core/build/outputs/aar/sdk_core-release.aar
+            sdk_forms/build/outputs/aar/sdk_forms-release.aar
+            sdk_payment/build/outputs/aar/sdk_payment-release.aar
+            sdk_threeds/build/outputs/aar/sdk_threeds-release.aar
+            app_java_ui/build/outputs/apk/debug/*.apk
+            app_kotlin_ui/build/outputs/apk/debug/*.apk
+            app_kotlin_core/build/outputs/apk/debug/*.apk
+          retention-days: 1
+
+  testEndToEnd:
+    needs: allBuild
+    runs-on: macos-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@master
+
+      - name: Checkout remote lib
+        uses: actions/checkout@master
+        with:
+          repository: Runet-Business-Systems/android-3ds2-sdk
+          path: ./sdk_threeds
+          token: ${{ secrets.SECRET_FOR_3DS2_SDK }}
+
+      - name: Setup java 8
+        uses: actions/setup-java@v1
+        with: {java-version: 1.8}
+
+      - name: Script for coping .arr files
+        run: ./copy_sdk_lib_to_samples.sh
+
+      - name: Build all modules and apps
+        run: ./gradlew -Pci --console=plain build -x test
+
+      - name: End-To-End tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 27
+          target: default
+          arch: x86_64
+          disable-animations: true
+          profile: Nexus 6
+          script: ./gradlew :sdk_payment:jacocoAndroidTestReport -PtestSize="large"
+
+      - name: Upload spoon result (Artifact)
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: sdk_payment_spoon_e2e
+          path: sdk_payment/build/spoon-output
+          retention-days: 1
+
+  testAll:
+    needs: allBuild
+    runs-on: macos-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@master
+
+      - name: Checkout remote lib
+        uses: actions/checkout@master
+        with:
+          repository: Runet-Business-Systems/android-3ds2-sdk
+          path: ./sdk_threeds
+          token: ${{ secrets.SECRET_FOR_3DS2_SDK }}
+
+      - name: Setup java 8
+        uses: actions/setup-java@v1
+        with: {java-version: 1.8}
+
+      - name: Script for coping .arr files
+        run: ./copy_sdk_lib_to_samples.sh
+
+      - name: Build all modules and apps
+        run: ./gradlew -Pci --console=plain build -x test
+
+      - name: All tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: default
+          arch: x86_64
+          profile: Nexus 6
+          script: ./gradlew jacocoAndroidTestReport -PtestSize="small"
+
+      - name: Upload spoon result (Artifact)
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: sdk_all_test_spoon
+          path: |
+            sdk_payment/build/spoon-output
+            sdk_forms/build/spoon-output
+            sdk_core/build/spoon-output
+          retention-days: 1
+
+  release:
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    needs: [ testEndToEnd, testAll ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ github.ref }}
+          tag_name: ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build_files
+
+      - name: Upload sd_core arr artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./sdk_core/build/outputs/aar/sdk_core-release.aar
+          asset_name: sdk_core-release.aar
+          asset_content_type: application/octet-stream
+
+      - name: Upload sdk_forms arr artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./sdk_forms/build/outputs/aar/sdk_forms-release.aar
+          asset_name: sdk_forms-release.aar
+          asset_content_type: application/octet-stream
+
+      - name: Upload sdk_payment arr artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./sdk_payment/build/outputs/aar/sdk_payment-release.aar
+          asset_name: sdk_payment-release.aar
+          asset_content_type: application/octet-stream
+
+      - name: Upload sdk_threeds arr artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./sdk_threeds/build/outputs/aar/sdk_threeds-release.aar
+          asset_name: sdk_threeds-release.aar
+          asset_content_type: application/octet-stream
+
+      - name: Upload app_java_ui-debug apk artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./app_java_ui/build/outputs/apk/debug/app_java_ui-debug.apk
+          asset_name: app_java_ui-debug.apk
+          asset_content_type: application/octet-stream
+
+      - name: Upload app_kotlin_core-debug apk artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./app_kotlin_core/build/outputs/apk/debug/app_kotlin_core-debug.apk
+          asset_name: app_kotlin_core-debug.apk
+          asset_content_type: application/octet-stream
+
+      - name: Upload app_kotlin_ui-debug apk artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./app_kotlin_ui/build/outputs/apk/debug/app_kotlin_ui-debug.apk
+          asset_name: app_kotlin_ui-debug.apk
+          asset_content_type: application/octet-stream

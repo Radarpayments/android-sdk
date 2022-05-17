@@ -1,0 +1,78 @@
+<resources>
+
+    <style name="PAYRDRDefaultTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/payrdr_color_primary</item>
+        <item name="colorPrimaryDark">@color/payrdr_color_primaryDark</item>
+        <item name="colorAccent">@color/payrdr_color_accent</item>
+        <item name="android:alertDialogTheme">@style/PAYRDRAlertDialogTheme</item>
+        <item name="android:windowBackground">@color/payrdr_color_main_background</item>
+        <item name="android:statusBarColor">@color/payrdr_color_main_background</item>
+        <item name="android:buttonStyle">@style/PAYRDRBrandButtonStyle</item>
+        <item name="android:editTextStyle">@style/PAYRDREditTextStyle</item>
+        <item name="android:textViewStyle">@style/PAYRDRTextViewStyle</item>
+        <item name="android:listDivider">@drawable/list_divider_default</item>
+        <item name="android:textColorHint">@color/payrdr_color_hint_text</item>
+        <item name="android:checkboxStyle">@style/PAYRDRCheckBoxStyle</item>
+    </style>
+
+    <style name="PAYRDRTransparentTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:inAnimation">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="PAYRDRAlertDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:background">@color/payrdr_color_main_background</item>
+        <item name="android:textColor">@color/payrdr_color_text</item>
+        <item name="android:colorAccent">@color/payrdr_color_text</item>
+        <item name="android:textColorPrimary">@color/payrdr_color_text</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/PAYRDRNegativeButtonStyle</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/PAYRDRPositiveButtonStyle</item>
+    </style>
+
+    <style name="PAYRDRNegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/payrdr_color_accent</item>
+    </style>
+
+    <style name="PAYRDRPositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/payrdr_color_accent</item>
+    </style>
+
+    <style name="PAYRDRBrandButtonStyle" parent="Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">@color/payrdr_color_primary</item>
+        <item name="android:textColor">@color/payrdr_color_button_text</item>
+    </style>
+
+    <style name="PAYRDRTextAppearanceError" parent="TextAppearance.Design.Error">
+        <item name="android:textColor">@color/payrdr_color_error_text</item>
+    </style>
+
+    <style name="PAYRDREditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+        <item name="android:textColor">@color/payrdr_color_text</item>
+    </style>
+
+    <style name="PAYRDRCheckBoxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+        <item name="android:textColor">@color/payrdr_color_text</item>
+    </style>
+
+    <style name="PAYRDRTextViewStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+        <item name="android:textColor">@color/payrdr_color_text</item>
+    </style>
+
+    <style name="PAYRDRCardNumberTextAppearance" parent="TextAppearance.AppCompat.Medium" />
+
+    <style name="PAYRDRTextInputLayoutAppearance" parent="Widget.Design.TextInputLayout">
+        <item name="errorTextAppearance">@style/PAYRDRTextAppearanceError</item>
+    </style>
+
+    <style name="PAYRDRWindowAnimationFadeInOut">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
+</resources>
