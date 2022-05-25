@@ -576,7 +576,7 @@ class PaymentActivityTest : CoreUITest<TestActivity>(TestActivity::class.java, t
         }
         val mdOrder: String? = regOrderWithBindingCard()
         SDKPayment.checkout(activityTestRule.activity, mdOrder!!)
-        sleep(6_000)
+        sleep(3_000)
         takeScreen()
         onView(withId(R.id.doneButton)).perform(click())
         onView(withId(R.id.cardNumberInput)).perform(
@@ -623,7 +623,7 @@ class PaymentActivityTest : CoreUITest<TestActivity>(TestActivity::class.java, t
         }
         val mdOrder: String? = regOrderWithBindingCard("mobile-sdk-api", "956")
         SDKPayment.checkout(activityTestRule.activity, mdOrder!!)
-        sleep(6_000)
+        sleep(4_000)
         takeScreen()
         onView(withId(R.id.doneButton)).perform(click())
         onView(withId(R.id.cardNumberInput)).perform(
@@ -645,7 +645,7 @@ class PaymentActivityTest : CoreUITest<TestActivity>(TestActivity::class.java, t
         }
         onView(withId(R.id.doneButton)).perform(click())
         val mdOrderBinding: String? = regOrderWithBindingCard("mobile-sdk-api", "956")
-        sleep(6_000)
+        sleep(4_000)
         SDKPayment.checkout(activityTestRule.activity, mdOrderBinding!!)
         sleep(6_000)
         onView(withText("•• 5599")).perform(click())
