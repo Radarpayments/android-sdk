@@ -17,7 +17,7 @@ import java.util.UUID
  * @param order identifier of the paid order.
  */
 @Suppress("TooManyFunctions")
-class PaymentConfigBuilder(private val order: String) {
+class PaymentConfigBuilder(private val order: String = "") {
     private var buttonText: String? = null
     private var cards: Set<Card> = emptySet()
     private var cardSaveOptions: CardSaveOptions = CardSaveOptions.HIDE

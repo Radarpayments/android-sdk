@@ -9,6 +9,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.just
 import io.mockk.runs
 import io.mockk.verify
+import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.form.nfc.NFCProvider
 import org.junit.Before
 import org.junit.Test
@@ -29,6 +30,7 @@ class NFCProviderTest {
     }
 
     @Test
+    @Description("should call connect")
     fun `should call connect`() {
         every { isoDep.connect() } just runs
 
@@ -38,6 +40,7 @@ class NFCProviderTest {
     }
 
     @Test(expected = CommunicationException::class)
+    @Description("should wrap internal exception")
     fun `should wrap internal exception`() {
         val array = byteArrayOf()
         every { isoDep.transceive(array) } throws IOException()
@@ -48,6 +51,7 @@ class NFCProviderTest {
     }
 
     @Test
+    @Description("should call historical bytes")
     fun `should call historical bytes`() {
         every { isoDep.historicalBytes } returns byteArrayOf()
 

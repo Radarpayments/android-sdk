@@ -4,9 +4,7 @@ plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("android.extensions")
-//    id("com.jaredsburrows.spoon")
-//    id("jacoco")
-//    id("plugins.jacoco-report")
+    id("io.qameta.allure")
 }
 
 android {
@@ -24,6 +22,8 @@ android {
         versionCode = BuildVersionsAndroid.versionCode
         versionName = SDKBuildVersions.sdkFormsVersion
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        testInstrumentationRunner("io.qameta.allure.android.runners.AllureAndroidJUnitRunner")
 
         buildConfigField(
             "String",
@@ -69,36 +69,27 @@ android {
         }
     }
 }
-//
-//spoon {
-//    val isTagBuild = System.getenv().containsKey("CI_COMMIT_TAG")
-//
-//    title = "RBS Payment UI SDK"
-//    grantAll = true
-//    debug = true
-//    clearAppDataBeforeEachTest = true
-//    noAnimations = true
-//    codeCoverage = true
-//    shard = !isTagBuild
-//
-//    if (project.hasProperty("testSize")) {
-//        testSize = project.property("testSize") as String
-//    }
-//}
-//
-//jacoco {
-//    toolVersion = "0.8.4"
-//}
-//
-//tasks.withType<Test> {
-//    extensions.configure(JacocoTaskExtension::class) {
-//        isIncludeNoLocationClasses = true
-//        excludes = listOf("jdk.internal.*")
-//    }
-//}
+
+allure {
+    autoconfigure = true
+    version = "2.7.0" // Latest Allure Version
+
+    useJUnit5 {
+        version = "2.7.0" // Latest Allure Version
+    }
+}
 
 dependencies {
     implementation(project(":sdk_core"))
+
+    //for test
+    implementation(Libs.jaxb_api)
+    testImplementation(TestLibs.allure_kotlin_model)
+    testImplementation(TestLibs.allure_kotlin_commons)
+    testImplementation(TestLibs.allure_kotlin_junit4)
+    androidTestImplementation(TestLibs.kaspresso)
+    androidTestImplementation(TestLibs.kaspresso_allure_support)
+    androidTestImplementation(TestLibs.allure_kotlin_android)
 
     implementation(Libs.kotlin_stdlib)
     implementation(Libs.kotlinx_coroutines_core)
@@ -125,7 +116,6 @@ dependencies {
     androidTestImplementation(TestLibs.androidx_test_rules)
     androidTestImplementation(TestLibs.androidx_test_espresso_core)
     androidTestImplementation(TestLibs.io_mockk_android)
-    //androidTestImplementation(TestLibs.com_squareup_spoon)
     androidTestImplementation(TestLibs.com_squareup_mockwebserver)
 }
 

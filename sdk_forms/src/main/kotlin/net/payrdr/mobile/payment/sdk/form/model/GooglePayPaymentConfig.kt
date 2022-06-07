@@ -19,7 +19,7 @@ import java.util.Locale
  * @param testEnvironment flag for making a payment in a test environment.
  */
 data class GooglePayPaymentConfig internal constructor(
-    val order: String,
+    val order: String = "",
     val uuid: String,
     val theme: Theme,
     val locale: Locale,

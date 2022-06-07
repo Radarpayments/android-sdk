@@ -2,20 +2,26 @@ package net.payrdr.mobile.payment.sdk.core.utils
 
 import android.Manifest
 import androidx.test.filters.SmallTest
-import androidx.test.rule.GrantPermissionRule.grant
+import androidx.test.rule.GrantPermissionRule
+import io.qameta.allure.android.runners.AllureAndroidJUnit4
+import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.core.model.ExpiryDate
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
+import org.junit.runner.RunWith
 
 @SmallTest
+@RunWith(AllureAndroidJUnit4::class)
 class StringExtensionsKtInstrumentalTest {
 
     @get:Rule
-    val permissionRule: TestRule = grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    val runtimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    )
 
     @Test
+    @Description("parseColorShouldConvertShortHexNumber")
     fun parseColorShouldConvertShortHexNumber() {
         assertEquals(-1, "#fff".parseColor())
         assertEquals(-5592406, "#aaa".parseColor())
@@ -23,6 +29,7 @@ class StringExtensionsKtInstrumentalTest {
     }
 
     @Test
+    @Description("parseColorShouldConvertLongHexNumber")
     fun parseColorShouldConvertLongHexNumber() {
         assertEquals(-1, "#ffffff".parseColor())
         assertEquals(-5592406, "#aaaaaa".parseColor())
@@ -30,6 +37,7 @@ class StringExtensionsKtInstrumentalTest {
     }
 
     @Test
+    @Description("toExpDateShouldReturnCorrectValue")
     fun toExpDateShouldReturnCorrectValue() {
         assertEquals(ExpiryDate(2000, 1), "01/00".toExpDate())
         assertEquals(ExpiryDate(2001, 1), "01/01".toExpDate())
@@ -48,16 +56,19 @@ class StringExtensionsKtInstrumentalTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
+    @Description("toExpDateShouldThrowExceptionForEmptyString")
     fun toExpDateShouldThrowExceptionForEmptyString() {
         "".toExpDate()
     }
 
     @Test(expected = IllegalArgumentException::class)
+    @Description("toExpDateShouldThrowExceptionForNotDigitsSymbols")
     fun toExpDateShouldThrowExceptionForNotDigitsSymbols() {
         "abcd".toExpDate()
     }
 
     @Test(expected = IllegalArgumentException::class)
+    @Description("toExpDateShouldThrowExceptionForLongString")
     fun toExpDateShouldThrowExceptionForLongString() {
         "01/2004".toExpDate()
     }

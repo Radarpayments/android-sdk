@@ -206,11 +206,11 @@ class PaymentActivity : AppCompatActivity() {
         paymentScope
     )
 
-    private fun paymentNewCard(cryptogram: String, paymentInfo: PaymentInfoNewCard) {
+    private fun paymentNewCard(seToken: String, paymentInfo: PaymentInfoNewCard) {
         paymentScope.launch(errorHandler) {
             paymentManager.processFormData(
                 cryptogramApiData = CryptogramApiData(
-                    cryptogram = cryptogram,
+                    seToken = seToken,
                     mdOrder = paymentInfo.order,
                     holder = paymentInfo.holder.ifBlank { DEFAULT_VALUE_CARDHOLDER },
                     saveCard = paymentInfo.saveCard
@@ -220,11 +220,11 @@ class PaymentActivity : AppCompatActivity() {
         }
     }
 
-    private fun paymentBindingCard(cryptogram: String, paymentInfo: PaymentInfoBindCard) {
+    private fun paymentBindingCard(seToken: String, paymentInfo: PaymentInfoBindCard) {
         paymentScope.launch(errorHandler) {
             paymentManager.processFormData(
                 cryptogramApiData = CryptogramApiData(
-                    cryptogram = cryptogram,
+                    seToken = seToken,
                     mdOrder = paymentInfo.order,
                     holder = DEFAULT_VALUE_CARDHOLDER
                 ),
@@ -272,14 +272,14 @@ class PaymentActivity : AppCompatActivity() {
                             deleteBindingCards(result.deletedCardsList)
                             val info = result.info
                             if (info is PaymentInfoNewCard) {
-                                paymentNewCard(result.cryptogram, info)
+                                paymentNewCard(result.seToken, info)
                             } else if (info is PaymentInfoBindCard) {
-                                paymentBindingCard(result.cryptogram, info)
+                                paymentBindingCard(result.seToken, info)
                             } else if (info is PaymentInfoGooglePay) {
-                                gPayPayment(result.cryptogram, info)
-                                Log.d("PAYRDRSDK", "GPay Crypto: ${result.cryptogram}")
+                                gPayPayment(result.seToken, info)
+                                Log.d("PAYRDRSDK", "GPay seToken: ${result.seToken}")
                             }
-                            LogDebug.logIfDebug("Cryptogram created: $result")
+                            LogDebug.logIfDebug("seToken created: $result")
                         }
                         result.status.isCanceled() -> {
                             LogDebug.logIfDebug("Cryptogram canceled")

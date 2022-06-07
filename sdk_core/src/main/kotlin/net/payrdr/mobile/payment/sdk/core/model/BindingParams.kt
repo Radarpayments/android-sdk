@@ -10,7 +10,7 @@ package net.payrdr.mobile.payment.sdk.core.model
  */
 
 data class BindingParams(
-    val mdOrder: String,
+    val mdOrder: String = "",
     val bindingID: String,
     val cvc: String?,
     val pubKey: String

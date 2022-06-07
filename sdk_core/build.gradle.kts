@@ -1,11 +1,7 @@
-import BuildVersionsAndroid.versionCode
-
 plugins {
     id("com.android.library")
     kotlin("android")
-//    id("com.jaredsburrows.spoon")
-//    id("jacoco")
-//    id("plugins.jacoco-report")
+    id("io.qameta.allure")
 }
 
 android {
@@ -23,7 +19,7 @@ android {
         versionCode = BuildVersionsAndroid.versionCode
         versionName = SDKBuildVersions.sdkCoreVersion
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
+        testInstrumentationRunner("io.qameta.allure.android.runners.AllureAndroidJUnitRunner")
         buildConfigField(
             "String",
             "SDK_CORE_VERSION_NUMBER",
@@ -72,36 +68,28 @@ android {
         }
     }
 }
-//
-//spoon {
-//    val isTagBuild = System.getenv().containsKey("CI_COMMIT_TAG")
-//
-//    title = "RBS Payment Core SDK"
-//    grantAll = true
-//    debug = true
-//    clearAppDataBeforeEachTest = true
-//    noAnimations = true
-//    codeCoverage = true
-//    shard = !isTagBuild
-//
-//    if (project.hasProperty("testSize")) {
-//        testSize = project.property("testSize") as String
-//    }
-//}
 
-//jacoco {
-//    toolVersion = "0.8.4"
-//}
-//
-//tasks.withType<Test> {
-//    extensions.configure(JacocoTaskExtension::class) {
-//        isIncludeNoLocationClasses = true
-//        excludes = listOf("jdk.internal.*")
-//    }
-//}
+allure {
+    autoconfigure = true
+    version = "2.7.0" // Latest Allure Version
+    useJUnit5 {
+        version = "2.7.0" // Latest Allure Version
+    }
+}
 
 dependencies {
+
+    //for test
+    implementation(Libs.jaxb_api)
+    testImplementation(TestLibs.allure_kotlin_commons)
+    testImplementation(TestLibs.allure_kotlin_model)
+    testImplementation(TestLibs.allure_kotlin_junit4)
+    androidTestImplementation(TestLibs.kaspresso)
+    androidTestImplementation(TestLibs.kaspresso_allure_support)
+    androidTestImplementation(TestLibs.allure_kotlin_android)
+
     implementation(Libs.kotlin_stdlib)
+    implementation(Libs.appcompat)
 
     testImplementation(TestLibs.junit)
     testImplementation(TestLibs.io_kotest_runner_junit)

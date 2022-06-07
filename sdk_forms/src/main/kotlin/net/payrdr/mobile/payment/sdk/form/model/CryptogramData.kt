@@ -9,13 +9,13 @@ import net.payrdr.mobile.payment.sdk.form.model.Card.Companion.writeCards
  * The result of the formation of a cryptogram.
  *
  * @param status state.
- * @param cryptogram generated cryptogram.
+ * @param seToken generated cryptogram.
  * @param info payment method information.
  * @param deletedCardsList list of deleted cards.
  */
 data class CryptogramData(
     val status: PaymentDataStatus,
-    val cryptogram: String,
+    val seToken: String,
     val info: PaymentInfo? = null,
     val deletedCardsList: Set<Card> = emptySet()
 ) : Parcelable {
@@ -31,7 +31,7 @@ data class CryptogramData(
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeInt(status.ordinal)
-        writeString(cryptogram)
+        writeString(seToken)
         writeParcelable(info, 0)
         writeCards(deletedCardsList, flags)
     }

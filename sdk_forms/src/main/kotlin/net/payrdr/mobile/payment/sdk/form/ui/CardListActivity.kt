@@ -75,7 +75,7 @@ class CardListActivity : BaseActivity() {
             android.R.id.home -> finishWithResult(
                 cryptogram = CryptogramData(
                     status = PaymentDataStatus.CANCELED,
-                    cryptogram = "",
+                    seToken = "",
                     deletedCardsList = config.cardsToDelete
                 )
             )

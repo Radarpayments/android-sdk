@@ -10,6 +10,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
+import io.qameta.allure.kotlin.Description
 import kotlinx.coroutines.test.runBlockingTest
 import net.payrdr.mobile.payment.sdk.core.model.Key
 import net.payrdr.mobile.payment.sdk.form.component.KeyProvider
@@ -32,6 +33,7 @@ class CachedKeyProviderTest {
     }
 
     @Test
+    @Description("provideKey should request key")
     fun `provideKey should request key`() = runBlockingTest {
         val expectedKey = Key(
             value = "key_value",
@@ -50,6 +52,7 @@ class CachedKeyProviderTest {
     }
 
     @Test
+    @Description("provideKey should return key from cache")
     fun `provideKey should return key from cache`() = runBlockingTest {
         val cachedKey = Key(
             value = "key_value",
@@ -75,6 +78,7 @@ class CachedKeyProviderTest {
     }
 
     @Test
+    @Description("provideKey should not use key from cache and request new one")
     fun `provideKey should not use key from cache and request new one`() = runBlockingTest {
         val cachedKey = Key(
             value = "key_value",
@@ -106,6 +110,7 @@ class CachedKeyProviderTest {
     }
 
     @Test
+    @Description("provideKey should save key with min of expired values - key expired")
     fun `provideKey should save key with min of expired values - key expired`() =
         runBlockingTest {
             val providedKey = Key(
@@ -141,6 +146,7 @@ class CachedKeyProviderTest {
         }
 
     @Test
+    @Description("provideKey should save key with min of expired values - max expired")
     fun `provideKey should save key with min of expired values - max expired`() =
         runBlockingTest {
             val providedKey = Key(

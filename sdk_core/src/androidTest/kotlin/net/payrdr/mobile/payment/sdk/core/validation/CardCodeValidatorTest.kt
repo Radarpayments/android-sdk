@@ -3,6 +3,7 @@ package net.payrdr.mobile.payment.sdk.core.validation
 import android.Manifest
 import androidx.test.filters.SmallTest
 import androidx.test.rule.GrantPermissionRule.grant
+import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.core.R
 import net.payrdr.mobile.payment.sdk.core.test.getString
 import net.payrdr.mobile.payment.sdk.core.test.targetContext
@@ -28,6 +29,7 @@ class CardCodeValidatorTest {
     }
 
     @Test
+    @Description("shouldAcceptCorrectCode")
     fun shouldAcceptCorrectCode() {
         val result = cardCodeValidator.validate("123")
 
@@ -37,6 +39,7 @@ class CardCodeValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptEmptyString")
     fun shouldNotAcceptEmptyString() {
         val result = cardCodeValidator.validate("")
 
@@ -46,6 +49,7 @@ class CardCodeValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptLessThanMinLength")
     fun shouldNotAcceptLessThanMinLength() {
         val result = cardCodeValidator.validate("12")
 
@@ -55,6 +59,7 @@ class CardCodeValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptMoreThanMaxLength")
     fun shouldNotAcceptMoreThanMaxLength() {
         val result = cardCodeValidator.validate("1234")
 
@@ -64,6 +69,7 @@ class CardCodeValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptWithLetterSymbols")
     fun shouldNotAcceptWithLetterSymbols() {
         val result = cardCodeValidator.validate("1AAA")
 

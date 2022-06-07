@@ -10,7 +10,7 @@ import android.os.Parcelable
  * @param bindingId ID of the associated card used for payment.
  */
 data class PaymentInfoBindCard(
-    val order: String,
+    val order: String = "",
     val bindingId: String
 ) : PaymentInfo {
 

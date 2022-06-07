@@ -12,7 +12,7 @@ package net.payrdr.mobile.payment.sdk.core.model
  * */
 
 data class CardParams(
-    val mdOrder: String,
+    val mdOrder: String = "",
     val pan: String,
     val cvc: String,
     val expiryMMYY: String,

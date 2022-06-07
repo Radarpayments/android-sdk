@@ -2,6 +2,8 @@ package net.payrdr.mobile.payment.sdk.ui.widget
 
 import android.content.Context
 import androidx.test.filters.SmallTest
+import io.qameta.allure.android.allureScreenshot
+import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.form.ui.widget.BankCardView
 import net.payrdr.mobile.payment.sdk.test.core.CoreUIViewTest
 import net.payrdr.mobile.payment.sdk.test.junit.ConfigurationLocales
@@ -42,8 +44,9 @@ class BankCardViewDisplayVariantsTest : CoreUIViewTest<BankCardView>() {
     @Suppress("LongMethod", "ComplexMethod")
     @ConfigurationLocales(["en"])
     @Test
+    @Description("shouldCardDisplayVariantsLocalBank")
     fun shouldCardDisplayVariantsLocalBank() {
-        takeScreen("Empty")
+        allureScreenshot(name = "Empty", quality = 1)
         val url = server.enqueueFile("bank-invert.svg")
         activityTestRule.runOnUiThread {
             testedView.apply {
@@ -56,14 +59,16 @@ class BankCardViewDisplayVariantsTest : CoreUIViewTest<BankCardView>() {
                 setPaymentSystem("visa", true)
             }
         }
-        takeScreen("Bank")
+
+        allureScreenshot(name = "Bank", quality = 1)
     }
 
     @Suppress("LongMethod", "ComplexMethod")
     @ConfigurationLocales(["en"])
     @Test
+    @Description("shouldCardDisplayVariantsLocalTinkoff")
     fun shouldCardDisplayVariantsLocalTinkoff() {
-        takeScreen("Empty")
+        allureScreenshot(name = "Empty", quality = 1)
         val url = server.enqueueFile("tinkoff-invert.svg")
         activityTestRule.runOnUiThread {
             testedView.apply {
@@ -76,14 +81,15 @@ class BankCardViewDisplayVariantsTest : CoreUIViewTest<BankCardView>() {
                 setPaymentSystem("mastercard", true)
             }
         }
-        takeScreen("Tinkoff Bank")
+        allureScreenshot(name = "Tinkoff Bank", quality = 1)
     }
 
     @Suppress("LongMethod", "ComplexMethod")
     @ConfigurationLocales(["en"])
     @Test
+    @Description("shouldCardDisplayVariantsLocalGazprom")
     fun shouldCardDisplayVariantsLocalGazprom() {
-        takeScreen("Empty")
+        allureScreenshot(name = "Empty", quality = 1)
         val url = server.enqueueFile("gazprom-invert.svg")
         activityTestRule.runOnUiThread {
             testedView.apply {
@@ -96,14 +102,15 @@ class BankCardViewDisplayVariantsTest : CoreUIViewTest<BankCardView>() {
                 setPaymentSystem("mastercard", true)
             }
         }
-        takeScreen("Gazprom Bank")
+        allureScreenshot(name = "Gazprom Bank", quality = 1)
     }
 
     @Suppress("LongMethod", "ComplexMethod")
     @ConfigurationLocales(["en"])
     @Test
+    @Description("shouldCardDisplayVariantsLocalQiwi")
     fun shouldCardDisplayVariantsLocalQiwi() {
-        takeScreen("Empty")
+        allureScreenshot(name = "Empty", quality = 1)
         val url = server.enqueueFile("qiwi-invert.svg")
         activityTestRule.runOnUiThread {
             testedView.apply {
@@ -116,6 +123,6 @@ class BankCardViewDisplayVariantsTest : CoreUIViewTest<BankCardView>() {
                 setPaymentSystem("mastercard", true)
             }
         }
-        takeScreen("Qiwi Bank")
+        allureScreenshot(name = "Qiwi Bank", quality = 1)
     }
 }

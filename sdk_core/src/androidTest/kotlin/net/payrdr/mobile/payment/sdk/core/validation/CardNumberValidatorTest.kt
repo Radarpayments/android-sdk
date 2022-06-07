@@ -3,6 +3,7 @@ package net.payrdr.mobile.payment.sdk.core.validation
 import android.Manifest
 import androidx.test.filters.SmallTest
 import androidx.test.rule.GrantPermissionRule.grant
+import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.core.R
 import net.payrdr.mobile.payment.sdk.core.test.getString
 import net.payrdr.mobile.payment.sdk.core.test.targetContext
@@ -29,6 +30,7 @@ class CardNumberValidatorTest {
     }
 
     @Test
+    @Description("shouldAcceptCorrectNumber")
     fun shouldAcceptCorrectNumber() {
         val resultFirst = cardNumberValidator.validate("4556733604106746")
         assertTrue(resultFirst.isValid)
@@ -42,6 +44,7 @@ class CardNumberValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptLessThanMinLength")
     fun shouldNotAcceptLessThanMinLength() {
         cardNumberValidator.validate("455673360410674").let {
             assertFalse(it.isValid)
@@ -51,6 +54,7 @@ class CardNumberValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptEmptyLine")
     fun shouldNotAcceptEmptyLine() {
         cardNumberValidator.validate("").let {
             assertFalse(it.isValid)
@@ -60,6 +64,7 @@ class CardNumberValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptMoreThanMaxLength")
     fun shouldNotAcceptMoreThanMaxLength() {
         cardNumberValidator.validate("45399859847410559971").let {
             assertFalse(it.isValid)
@@ -69,6 +74,7 @@ class CardNumberValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptNotDigits")
     fun shouldNotAcceptNotDigits() {
         cardNumberValidator.validate("IncorrectCardNum").let {
             assertFalse(it.isValid)
@@ -78,6 +84,7 @@ class CardNumberValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptIfLunhFailed")
     fun shouldNotAcceptIfLunhFailed() {
         cardNumberValidator.validate("4532047793306966344").let {
             assertFalse(it.isValid)

@@ -77,3 +77,6 @@ saurik
 zhiliaoapp
 othersapp
 vkyvbG0
+qameta
+uiautomator
+jaxb

@@ -9,6 +9,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.just
 import io.mockk.runs
 import io.mockk.verify
+import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.form.nfc.NFCReadDelegate
 import org.junit.Before
 import org.junit.Test
@@ -31,6 +32,7 @@ class NFCReadDelegateTest {
     }
 
     @Test
+    @Description("should call pause")
     fun `should call pause`() {
         every { nfcAdapter.disableForegroundDispatch(activity) } just runs
 
@@ -40,6 +42,7 @@ class NFCReadDelegateTest {
     }
 
     @Test
+    @Description("should call is enabled")
     fun `should call is enabled`() {
         every { nfcAdapter.isEnabled } returns true
 

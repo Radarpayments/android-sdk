@@ -1,15 +1,20 @@
 package net.payrdr.mobile.payment.sdk.form
 
 import android.content.Context
+import io.qameta.allure.android.runners.AllureAndroidJUnit4
+import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.form.component.impl.CachedKeyProvider
 import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteCardInfoProvider
 import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
 import net.payrdr.mobile.payment.sdk.test.core.targetContext
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(AllureAndroidJUnit4::class)
 class SDKConfigBuilderTest {
 
     @Test
+    @Description("succeedBuildWithKeyProviderUrl")
     fun succeedBuildWithKeyProviderUrl() {
         SDKConfigBuilder()
             .keyProviderUrl("https://ecommerce.radarpayments.com/payment/se/keys.do")
@@ -17,6 +22,7 @@ class SDKConfigBuilderTest {
     }
 
     @Test
+    @Description("succeedBuildWithCustomKeyProvider")
     fun succeedBuildWithCustomKeyProvider() {
         SDKConfigBuilder()
             .keyProvider(
@@ -29,6 +35,7 @@ class SDKConfigBuilderTest {
     }
 
     @Test
+    @Description("succeedBuildWithCustomCardInfoProvider")
     fun succeedBuildWithCustomCardInfoProvider() {
         SDKConfigBuilder()
             .keyProviderUrl("https://ecommerce.radarpayments.com/payment/se/keys.do")
@@ -41,12 +48,14 @@ class SDKConfigBuilderTest {
     }
 
     @Test(expected = SDKException::class)
+    @Description("buildWithoutKeyProviderShouldThrowException")
     fun buildWithoutKeyProviderShouldThrowException() {
         SDKConfigBuilder()
             .build()
     }
 
     @Test(expected = SDKException::class)
+    @Description("buildWithTwoDifferentKeyProviderShouldThrowException")
     fun buildWithTwoDifferentKeyProviderShouldThrowException() {
         SDKConfigBuilder()
             .keyProviderUrl("https://ecommerce.radarpayments.com/payment/se/keys.do")
@@ -55,6 +64,7 @@ class SDKConfigBuilderTest {
     }
 
     @Test(expected = SDKException::class)
+    @Description("buildWithTwoDifferentKeyProviderSwapOrderShouldThrowException")
     fun buildWithTwoDifferentKeyProviderSwapOrderShouldThrowException() {
         SDKConfigBuilder()
             .keyProvider(RemoteKeyProvider(url = "https://ecommerce.radarpayments.com/payment/se/keys.do"))

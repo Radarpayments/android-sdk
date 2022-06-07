@@ -11,7 +11,7 @@ import android.os.Parcelable
  * @param holder is the specified name of the card holder.
  */
 data class PaymentInfoNewCard(
-    val order: String,
+    val order: String = "",
     val saveCard: Boolean,
     val holder: String
 ) : PaymentInfo, Parcelable {

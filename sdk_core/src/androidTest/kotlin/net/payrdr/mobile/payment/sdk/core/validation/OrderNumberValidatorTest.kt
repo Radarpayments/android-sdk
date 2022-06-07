@@ -3,6 +3,7 @@ package net.payrdr.mobile.payment.sdk.core.validation
 import android.Manifest
 import androidx.test.filters.SmallTest
 import androidx.test.rule.GrantPermissionRule.grant
+import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.core.R
 import net.payrdr.mobile.payment.sdk.core.test.getString
 import net.payrdr.mobile.payment.sdk.core.test.targetContext
@@ -26,6 +27,7 @@ class OrderNumberValidatorTest {
     }
 
     @Test
+    @Description("shouldAcceptCorrectOrderNumber")
     fun shouldAcceptCorrectOrderNumber() {
         val result = orderNumberValidator.validate("39ce26e1-5fd0-4784-9e6c-25c9f2c2d09e")
 
@@ -35,6 +37,7 @@ class OrderNumberValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptEmptyOrderNumber")
     fun shouldNotAcceptEmptyOrderNumber() {
         val result = orderNumberValidator.validate("")
 
@@ -44,6 +47,7 @@ class OrderNumberValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptBlankOrderNumber")
     fun shouldNotAcceptBlankOrderNumber() {
         val result = orderNumberValidator.validate("    ")
 
@@ -53,6 +57,7 @@ class OrderNumberValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptWithSpaceOrderNumber")
     fun shouldNotAcceptWithSpaceOrderNumber() {
         val result = orderNumberValidator.validate("  39ce26e1 -5fd 0-4784-9e6c-25c9f2c2d09e")
 

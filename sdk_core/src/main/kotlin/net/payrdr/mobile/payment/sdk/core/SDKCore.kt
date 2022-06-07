@@ -90,6 +90,55 @@ class SDKCore(context: Context) {
     }
 
     /**
+     * Token generation method for a new card.
+     *
+     * @param params a new card information.
+     * @param timestamp the timestamp used in the generated token.
+     * @return generated token or error.
+     */
+    @JvmOverloads
+    fun generateInstanceWithCard(
+        params: CardParams,
+        timestamp: Long = System.currentTimeMillis()
+    ): TokenResult {
+
+        val validatorsMap = mapOf(
+            params.cardHolder to cardHolderValidator,
+            params.expiryMMYY to cardExpiryValidator,
+            params.pan to cardNumberValidator,
+            params.cvc to cardCodeValidator,
+            params.pubKey to pubKeyValidator
+        )
+
+        val fieldErrors = mapOf(
+            params.cardHolder to ParamField.CARDHOLDER,
+            params.expiryMMYY to ParamField.EXPIRY,
+            params.pan to ParamField.PAN,
+            params.cvc to ParamField.CVC,
+            params.pubKey to ParamField.PUB_KEY
+        )
+
+        for ((fieldValue, validator) in validatorsMap) {
+            if (fieldValue != null) {
+                validator.validate(fieldValue).takeIf { !it.isValid }?.let {
+                    return TokenResult.withErrors(
+                        mapOf(
+                            (fieldErrors[fieldValue] ?: error(ParamField.UNKNOWN)) to it.errorCode!!
+                        )
+                    )
+                }
+            }
+        }
+
+        val cardInfo = CardInfo(
+            identifier = CardPanIdentifier(value = params.pan),
+            cvv = params.cvc,
+            expDate = params.expiryMMYY.toExpDate()
+        )
+        return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp)
+    }
+
+    /**
      * Token generation method for a saved card.
      *
      * @param params information about the linked card.
@@ -134,9 +183,52 @@ class SDKCore(context: Context) {
         return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp)
     }
 
+    /**
+     * Token generation method for a saved card.
+     *
+     * @param params information about the linked card.
+     * @param timestamp the timestamp used in the generated token.
+     * @return generated token or error.
+     */
+    @JvmOverloads
+    fun generateInstanceWithBinding(
+        params: BindingParams,
+        timestamp: Long = System.currentTimeMillis()
+    ): TokenResult {
+        val validatorsMap = mapOf(
+            params.bindingID to cardBindingIdValidator,
+            params.cvc to cardCodeValidator,
+            params.pubKey to pubKeyValidator
+        )
+
+        val fieldErrors = mapOf(
+            params.bindingID to ParamField.BINDING_ID,
+            params.cvc to ParamField.CVC,
+            params.pubKey to ParamField.PUB_KEY
+        )
+
+        for ((fieldValue, validator) in validatorsMap) {
+            if (fieldValue != null) {
+                validator.validate(fieldValue).takeIf { !it.isValid }?.let {
+                    return TokenResult.withErrors(
+                        mapOf(
+                            (fieldErrors[fieldValue] ?: error(ParamField.UNKNOWN)) to it.errorCode!!
+                        )
+                    )
+                }
+            }
+        }
+
+        val cardInfo = CardInfo(
+            identifier = CardBindingIdIdentifier(value = params.bindingID),
+            cvv = params.cvc
+        )
+        return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp)
+    }
+
     @Suppress("TooGenericExceptionCaught")
     private fun prepareToken(
-        mdOrder: String,
+        mdOrder: String = "",
         cardInfo: CardInfo,
         pubKey: String,
         timestamp: Long,

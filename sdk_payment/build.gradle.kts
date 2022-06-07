@@ -1,10 +1,8 @@
 plugins {
     id("com.android.library")
+    id("io.qameta.allure")
     kotlin("android")
     kotlin("android.extensions")
-//    id("com.jaredsburrows.spoon")
-//    id("jacoco")
-//    id("plugins.jacoco-report")
 }
 
 android {
@@ -22,6 +20,7 @@ android {
         versionCode = BuildVersionsAndroid.versionCode
         versionName = SDKBuildVersions.sdkPaymentVersion
 
+        testInstrumentationRunner("io.qameta.allure.android.runners.AllureAndroidJUnitRunner")
         buildConfigField(
             "String",
             "SDK_PAYMENT_VERSION_NUMBER",
@@ -68,39 +67,30 @@ android {
         }
     }
 }
-//
-//spoon {
-//    val isTagBuild = System.getenv().containsKey("CI_COMMIT_TAG")
-//
-//    title = "RBS Payment SDK"
-//    grantAll = true
-//    debug = true
-//    clearAppDataBeforeEachTest = true
-//    noAnimations = true
-//    codeCoverage = true
-//    shard = !isTagBuild
-//
-//    if (project.hasProperty("testSize")) {
-//        testSize = project.property("testSize") as String
-//    }
-//}
-//
-//jacoco {
-//    toolVersion = "0.8.4"
-//}
-//
-//tasks.withType<Test> {
-//    extensions.configure(JacocoTaskExtension::class) {
-//        isIncludeNoLocationClasses = true
-//        excludes = listOf("jdk.internal.*")
-//    }
-//}
+
+allure {
+    autoconfigure = true
+    version = "2.7.0" // Latest Allure Version
+
+    useJUnit5 {
+        version = "2.7.0" // Latest Allure Version
+    }
+}
 
 dependencies {
     implementation(project(":sdk_forms"))
     implementation(project(":sdk_threeds"))
     implementation(project(":sdk_core"))
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+
+    //for test
+    implementation(Libs.jaxb_api)
+    testImplementation(TestLibs.allure_kotlin_model)
+    testImplementation(TestLibs.allure_kotlin_commons)
+    testImplementation(TestLibs.allure_kotlin_junit4)
+    androidTestImplementation(TestLibs.kaspresso)
+    androidTestImplementation(TestLibs.kaspresso_allure_support)
+    androidTestImplementation(TestLibs.allure_kotlin_android)
 
     implementation(Libs.kotlin_stdlib)
     implementation(Libs.kotlinx_coroutines_core)

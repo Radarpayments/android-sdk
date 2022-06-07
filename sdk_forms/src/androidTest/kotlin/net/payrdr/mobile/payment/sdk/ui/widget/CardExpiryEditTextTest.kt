@@ -9,6 +9,8 @@ import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.filters.SmallTest
+import io.qameta.allure.android.allureScreenshot
+import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.form.R
 import net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
 import net.payrdr.mobile.payment.sdk.form.ui.widget.CardExpiryEditText
@@ -37,94 +39,101 @@ class CardExpiryEditTextTest : CoreUIViewTest<CardExpiryEditText>() {
 
     @Test
     @ConfigurationSingle
+    @Description("shouldAllowInputOnlyCorrectMonthNumber")
     fun shouldAllowInputOnlyCorrectMonthNumber() {
         onView(exactView(testedView)).perform(typeText("1220"))
-        takeScreen()
+        allureScreenshot(name = "shouldAllowInputOnlyCorrectMonthNumber_1", quality = 1)
 
         onView(exactView(testedView)).check(matches(withText("12/20")))
     }
 
     @Test
     @ConfigurationSingle
+    @Description("shouldNotAllowInputMoreThenMaxLength")
     fun shouldNotAllowInputMoreThenMaxLength() {
         onView(exactView(testedView)).perform(typeText("12203"))
-        takeScreen()
+        allureScreenshot(name = "shouldNotAllowInputMoreThenMaxLength_1", quality = 1)
 
         onView(exactView(testedView)).check(matches(withText("12/20")))
     }
 
     @Test
     @ConfigurationSingle
+    @Description("shouldAllowInputOnlyCorrectYearNumber")
     fun shouldAllowInputOnlyCorrectYearNumber() {
         onView(exactView(testedView)).perform(typeText("9920"))
-        takeScreen()
+        allureScreenshot(name = "shouldAllowInputOnlyCorrectYearNumber_1", quality = 1)
 
         onView(exactView(testedView)).check(matches(withText("99/20")))
     }
 
     @Test
     @ConfigurationSingle
+    @Description("shouldAllowInputOnlyDigits")
     fun shouldAllowInputOnlyDigits() {
         onView(exactView(testedView)).perform(typeText("a1b1 2N0"))
-        takeScreen()
+        allureScreenshot(name = "shouldAllowInputOnlyDigits_1", quality = 1)
 
         onView(exactView(testedView)).check(matches(withText("11/20")))
     }
 
     @Test
     @ConfigurationSingle
+    @Description("shouldShowErrorForMaxYearLimit")
     fun shouldShowErrorForMaxYearLimit() {
         onView(exactView(testedView)).perform(typeText("0159"))
-        takeScreen()
+        allureScreenshot(name = "shouldShowErrorForMaxYearLimit_1", quality = 1)
     }
 
     @Test
     @ConfigurationSingle
+    @Description("shouldAppendDivider")
     fun shouldAppendDivider() {
         onView(exactView(testedView)).perform(typeText("0122"))
-        takeScreen()
+        allureScreenshot(name = "shouldAppendDivider_1", quality = 1)
 
         onView(exactView(testedView)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL))
-        takeScreen()
+        allureScreenshot(name = "shouldAppendDivider_2", quality = 1)
         onView(exactView(testedView)).check(matches(withText("01/2")))
 
         onView(exactView(testedView)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL))
-        takeScreen()
+        allureScreenshot(name = "shouldAppendDivider_3", quality = 1)
         onView(exactView(testedView)).check(matches(withText("01/")))
 
         onView(exactView(testedView)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL))
-        takeScreen()
+        allureScreenshot(name = "shouldAppendDivider_4", quality = 1)
         onView(exactView(testedView)).check(matches(withText("01")))
 
         onView(exactView(testedView)).perform(typeText("2"))
-        takeScreen()
+        allureScreenshot(name = "shouldAppendDivider_5", quality = 1)
         onView(exactView(testedView)).check(matches(withText("01/2")))
     }
 
     @Test
     @ConfigurationSingle
+    @Description("shouldWorkBackspace")
     fun shouldWorkBackspace() {
         onView(exactView(testedView)).perform(typeText("0122"))
-        takeScreen()
+        allureScreenshot(name = "shouldWorkBackspace_1", quality = 1)
 
         onView(exactView(testedView)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL))
-        takeScreen()
+        allureScreenshot(name = "shouldWorkBackspace_2", quality = 1)
         onView(exactView(testedView)).check(matches(withText("01/2")))
 
         onView(exactView(testedView)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL))
-        takeScreen()
+        allureScreenshot(name = "shouldWorkBackspace_3", quality = 1)
         onView(exactView(testedView)).check(matches(withText("01/")))
 
         onView(exactView(testedView)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL))
-        takeScreen()
+        allureScreenshot(name = "shouldWorkBackspace_4", quality = 1)
         onView(exactView(testedView)).check(matches(withText("01")))
 
         onView(exactView(testedView)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL))
-        takeScreen()
+        allureScreenshot(name = "shouldWorkBackspace_5", quality = 1)
         onView(exactView(testedView)).check(matches(withText("0")))
 
         onView(exactView(testedView)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL))
-        takeScreen()
+        allureScreenshot(name = "shouldWorkBackspace_6", quality = 1)
         onView(exactView(testedView)).check(matches(withText("")))
     }
 }

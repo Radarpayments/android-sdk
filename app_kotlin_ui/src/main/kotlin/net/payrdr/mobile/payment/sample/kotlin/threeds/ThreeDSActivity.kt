@@ -3,15 +3,10 @@ package net.payrdr.mobile.payment.sample.kotlin.threeds
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import net.payrdr.mobile.payment.sdk.threeds.impl.Factory
-import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeStatusReceiver
-import net.payrdr.mobile.payment.sdk.threeds.spec.CompletionEvent
-import net.payrdr.mobile.payment.sdk.threeds.spec.ProtocolErrorEvent
-import net.payrdr.mobile.payment.sdk.threeds.spec.RuntimeErrorEvent
-import net.payrdr.mobile.payment.sdk.threeds.spec.ThreeDS2Service
-import net.payrdr.mobile.payment.sdk.threeds.spec.Transaction
 import kotlinx.android.synthetic.main.activity_three_d_s.amount
 import kotlinx.android.synthetic.main.activity_three_d_s.baseUrl
+import kotlinx.android.synthetic.main.activity_three_d_s.directoryServerId
+import kotlinx.android.synthetic.main.activity_three_d_s.dsRootBase64
 import kotlinx.android.synthetic.main.activity_three_d_s.email
 import kotlinx.android.synthetic.main.activity_three_d_s.failUrl
 import kotlinx.android.synthetic.main.activity_three_d_s.password
@@ -19,8 +14,6 @@ import kotlinx.android.synthetic.main.activity_three_d_s.returnUrl
 import kotlinx.android.synthetic.main.activity_three_d_s.text
 import kotlinx.android.synthetic.main.activity_three_d_s.threeDSCheckout
 import kotlinx.android.synthetic.main.activity_three_d_s.userName
-import kotlinx.android.synthetic.main.activity_three_d_s.dsRootBase64
-import kotlinx.android.synthetic.main.activity_three_d_s.directoryServerId
 import net.payrdr.mobile.payment.sample.kotlin.R
 import net.payrdr.mobile.payment.sample.kotlin.helpers.launchGlobalScope
 import net.payrdr.mobile.payment.sample.kotlin.helpers.log
@@ -34,6 +27,13 @@ import net.payrdr.mobile.payment.sdk.form.SDKException
 import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.model.CryptogramData
 import net.payrdr.mobile.payment.sdk.form.model.PaymentInfoNewCard
+import net.payrdr.mobile.payment.sdk.threeds.impl.Factory
+import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeStatusReceiver
+import net.payrdr.mobile.payment.sdk.threeds.spec.CompletionEvent
+import net.payrdr.mobile.payment.sdk.threeds.spec.ProtocolErrorEvent
+import net.payrdr.mobile.payment.sdk.threeds.spec.RuntimeErrorEvent
+import net.payrdr.mobile.payment.sdk.threeds.spec.ThreeDS2Service
+import net.payrdr.mobile.payment.sdk.threeds.spec.Transaction
 
 class ThreeDSActivity : AppCompatActivity() {
 
@@ -119,7 +119,7 @@ class ThreeDSActivity : AppCompatActivity() {
                         val info = result.info
                         if (info is PaymentInfoNewCard) {
                             executeThreeDSChallengeFlow(
-                                seToken = result.cryptogram,
+                                seToken = result.seToken,
                                 mdOrder = info.order
                             )
                         }

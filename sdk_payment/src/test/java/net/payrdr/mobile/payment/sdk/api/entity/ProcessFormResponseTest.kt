@@ -1,6 +1,7 @@
 package net.payrdr.mobile.payment.sdk.api.entity
 
 import androidx.test.filters.SmallTest
+import io.qameta.allure.kotlin.Description
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -9,6 +10,7 @@ import org.junit.Test
 class ProcessFormResponseTest {
 
     @Test
+    @Description("shouldReturnProcessFormObject")
     fun shouldReturnProcessFormObject() {
         val str = """
             {

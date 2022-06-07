@@ -3,6 +3,8 @@ package net.payrdr.mobile.payment.sdk.component.impl
 import android.Manifest
 import androidx.test.filters.SmallTest
 import androidx.test.rule.GrantPermissionRule
+import io.qameta.allure.android.runners.AllureAndroidJUnit4
+import io.qameta.allure.kotlin.Description
 import kotlinx.coroutines.runBlocking
 import net.payrdr.mobile.payment.sdk.form.component.CardInfoProvider
 import net.payrdr.mobile.payment.sdk.form.component.CardInfoProviderException
@@ -15,8 +17,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
+import org.junit.runner.RunWith
 
 @SmallTest
+@RunWith(AllureAndroidJUnit4::class)
 class RemoteCardInfoProviderTest {
 
     @get:Rule
@@ -44,6 +48,7 @@ class RemoteCardInfoProviderTest {
     }
 
     @Test
+    @Description("shouldReturnCardInfo")
     fun shouldReturnCardInfo() = runBlocking {
         server.enqueue(
             MockResponse().setBody(
@@ -90,6 +95,7 @@ class RemoteCardInfoProviderTest {
     }
 
     @Test(expected = CardInfoProviderException::class)
+    @Description("shouldReturnCardInfoProviderExceptionForIncorrectResponseBody")
     fun shouldReturnCardInfoProviderExceptionForIncorrectResponseBody() = runBlocking {
         server.enqueue(
             MockResponse().setBody(
@@ -102,6 +108,7 @@ class RemoteCardInfoProviderTest {
     }
 
     @Test(expected = CardInfoProviderException::class)
+    @Description("shouldReturnCardInfoProviderExceptionForErrorCodeResponse")
     fun shouldReturnCardInfoProviderExceptionForErrorCodeResponse() = runBlocking {
         server.enqueue(
             MockResponse().setHttp2ErrorCode(500)

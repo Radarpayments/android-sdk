@@ -3,6 +3,8 @@ package net.payrdr.mobile.payment.sdk.gpay
 import android.Manifest
 import androidx.test.filters.SmallTest
 import androidx.test.rule.GrantPermissionRule
+import io.qameta.allure.android.runners.AllureAndroidJUnit4
+import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.form.gpay.AllowedPaymentMethods.Companion.allowedPaymentMethodsCreate
 import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayAuthMethod.CRYPTOGRAM_3DS
 import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayAuthMethod.PAN_ONLY
@@ -26,9 +28,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
+import org.junit.runner.RunWith
 import java.math.BigDecimal
 
 @SmallTest
+@RunWith(AllureAndroidJUnit4::class)
 class GooglePayPaymentDataRequestTest {
 
     @get:Rule
@@ -36,6 +40,7 @@ class GooglePayPaymentDataRequestTest {
         GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     @Test
+    @Description("shouldUseDefaultValues")
     @Suppress("MaxLineLength")
     fun shouldUseDefaultValues() {
         val configJson = paymentDataRequestCreate {

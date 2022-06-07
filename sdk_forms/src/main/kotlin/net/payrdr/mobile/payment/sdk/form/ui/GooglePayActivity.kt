@@ -89,11 +89,11 @@ class GooglePayActivity : BaseActivity() {
 
     private fun handlePaymentData(token: String) {
         workScope.launch(Dispatchers.Main) {
-            val cryptogram = cryptogramProcessor.create(token)
+            val seToken = cryptogramProcessor.create(token)
             finishWithResult(
                 CryptogramData(
                     status = PaymentDataStatus.SUCCEEDED,
-                    cryptogram = cryptogram,
+                    seToken = seToken,
                     info = PaymentInfoGooglePay(
                         order = config.order
                     )

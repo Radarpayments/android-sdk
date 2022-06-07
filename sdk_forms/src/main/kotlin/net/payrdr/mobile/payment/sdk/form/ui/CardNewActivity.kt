@@ -220,7 +220,7 @@ class CardNewActivity : BaseActivity() {
             android.R.id.home -> finishWithResult(
                 cryptogram = CryptogramData(
                     status = PaymentDataStatus.CANCELED,
-                    cryptogram = "",
+                    seToken = "",
                     deletedCardsList = config.cardsToDelete
                 )
             )
@@ -249,7 +249,7 @@ class CardNewActivity : BaseActivity() {
     private fun preparePaymentData() {
         workScope.launch(Dispatchers.Main) {
             try {
-                val cryptogram = cryptogramProcessor.create(
+                val seToken = cryptogramProcessor.create(
                     order = config.order,
                     uuid = config.uuid,
                     timestamp = config.timestamp,
@@ -264,7 +264,7 @@ class CardNewActivity : BaseActivity() {
                 finishWithResult(
                     CryptogramData(
                         status = PaymentDataStatus.SUCCEEDED,
-                        cryptogram = cryptogram,
+                        seToken = seToken,
                         info = PaymentInfoNewCard(
                             order = config.order,
                             saveCard = checkSaveCard.isChecked,

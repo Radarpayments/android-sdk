@@ -44,7 +44,6 @@ import kotlinx.android.synthetic.main.activity_main.localeRuButton
 import kotlinx.android.synthetic.main.activity_main.localeUkButton
 import kotlinx.android.synthetic.main.activity_main.merchantIdInput
 import kotlinx.android.synthetic.main.activity_main.sdkButton
-import org.json.JSONObject
 import net.payrdr.mobile.payment.sample.kotlin.helpers.copyToClipboard
 import net.payrdr.mobile.payment.sample.kotlin.helpers.log
 import net.payrdr.mobile.payment.sample.kotlin.payment.PaymentFormActivity
@@ -72,6 +71,7 @@ import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecificationParamete
 import net.payrdr.mobile.payment.sdk.form.gpay.TransactionInfo
 import net.payrdr.mobile.payment.sdk.form.model.CameraScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.Card
+import net.payrdr.mobile.payment.sdk.form.model.CardDeleteOptions
 import net.payrdr.mobile.payment.sdk.form.model.CardSaveOptions
 import net.payrdr.mobile.payment.sdk.form.model.CryptogramData
 import net.payrdr.mobile.payment.sdk.form.model.GooglePayPaymentConfig
@@ -87,7 +87,7 @@ import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.german
 import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.russian
 import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.spanish
 import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.ukrainian
-import net.payrdr.mobile.payment.sdk.form.model.CardDeleteOptions
+import org.json.JSONObject
 import java.math.BigDecimal
 import java.util.Locale
 
@@ -440,7 +440,7 @@ class MainActivity : AppCompatActivity() {
                             log("Saved card ${info.bindingId}")
                         } else if (info is PaymentInfoGooglePay) {
                             log("Google Pay ${info.order}")
-                            googlePayCryptogram.text = result.cryptogram
+                            googlePayCryptogram.text = result.seToken
                         }
                         log("$result")
                         log("Deleted cards ${result.deletedCardsList}")

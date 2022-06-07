@@ -3,6 +3,7 @@ package net.payrdr.mobile.payment.sdk.core.validation
 import android.Manifest
 import androidx.test.filters.SmallTest
 import androidx.test.rule.GrantPermissionRule.grant
+import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.core.R
 import net.payrdr.mobile.payment.sdk.core.test.getString
 import net.payrdr.mobile.payment.sdk.core.test.targetContext
@@ -30,6 +31,7 @@ class PubKeyValidatorTest {
     }
 
     @Test
+    @Description("shouldAcceptCorrectPubKey")
     fun shouldAcceptCorrectPubKey() {
         val result = pubKeyValidator.validate(testPubKey)
 
@@ -39,6 +41,7 @@ class PubKeyValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptEmptyPubKey")
     fun shouldNotAcceptEmptyPubKey() {
         val result = pubKeyValidator.validate("")
 
@@ -48,6 +51,7 @@ class PubKeyValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptBlankPubKey")
     fun shouldNotAcceptBlankPubKey() {
         val result = pubKeyValidator.validate("        ")
 

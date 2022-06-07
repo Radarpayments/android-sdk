@@ -17,7 +17,7 @@ interface CryptogramProcessor {
      * @return cryptogram for the transferred payment data.
      */
     suspend fun create(
-        order: String,
+        order: String = "",
         timestamp: Long,
         uuid: String,
         cardInfo: CardInfo

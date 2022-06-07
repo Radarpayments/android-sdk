@@ -3,6 +3,8 @@ package net.payrdr.mobile.payment.sdk.component.impl
 import android.Manifest
 import androidx.test.filters.SmallTest
 import androidx.test.rule.GrantPermissionRule
+import io.qameta.allure.android.runners.AllureAndroidJUnit4
+import io.qameta.allure.kotlin.Description
 import kotlinx.coroutines.runBlocking
 import net.payrdr.mobile.payment.sdk.form.component.KeyProvider
 import net.payrdr.mobile.payment.sdk.form.component.KeyProviderException
@@ -15,8 +17,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
+import org.junit.runner.RunWith
 
 @SmallTest
+@RunWith(AllureAndroidJUnit4::class)
 @Suppress("MaxLineLength")
 class RemoteKeyProviderTest {
 
@@ -39,6 +43,7 @@ class RemoteKeyProviderTest {
     }
 
     @Test
+    @Description("shouldReturnFirstActiveKey")
     fun shouldReturnFirstActiveKey() = runBlocking {
         server.enqueue(
             MockResponse().setBody(
@@ -73,6 +78,7 @@ class RemoteKeyProviderTest {
     }
 
     @Test(expected = KeyProviderException::class)
+    @Description("shouldReturnKeyProviderExceptionForIncorrectResponseBody")
     fun shouldReturnKeyProviderExceptionForIncorrectResponseBody() = runBlocking {
         server.enqueue(
             MockResponse().setBody(
@@ -85,6 +91,7 @@ class RemoteKeyProviderTest {
     }
 
     @Test(expected = KeyProviderException::class)
+    @Description("shouldReturnKeyProviderExceptionForErrorCodeResponse")
     fun shouldReturnKeyProviderExceptionForErrorCodeResponse() = runBlocking {
         server.enqueue(
             MockResponse().setHttp2ErrorCode(500)

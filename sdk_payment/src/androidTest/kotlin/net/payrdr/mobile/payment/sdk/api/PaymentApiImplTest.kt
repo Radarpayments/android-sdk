@@ -3,6 +3,8 @@ package net.payrdr.mobile.payment.sdk.api
 import android.Manifest
 import androidx.test.filters.SmallTest
 import androidx.test.rule.GrantPermissionRule
+import io.qameta.allure.android.runners.AllureAndroidJUnit4
+import io.qameta.allure.kotlin.Description
 import kotlinx.coroutines.runBlocking
 import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
 import net.payrdr.mobile.payment.sdk.payment.model.CryptogramApiData
@@ -14,9 +16,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
+import org.junit.runner.RunWith
 
 @SmallTest
 @Suppress("MaxLineLength")
+@RunWith(AllureAndroidJUnit4::class)
 class PaymentApiImplTest {
 
     @get:Rule
@@ -44,6 +48,7 @@ class PaymentApiImplTest {
     }
 
     @Test
+    @Description("shouldReturnSessionStatus")
     fun shouldReturnSessionStatus() = runBlocking {
         server.enqueue(
             MockResponse().setBody(
@@ -82,6 +87,7 @@ class PaymentApiImplTest {
     }
 
     @Test
+    @Description("shouldReturnProcessFormCardWithoutThreeDS")
     fun shouldReturnProcessFormCardWithoutThreeDS() = runBlocking {
         server.enqueue(
             MockResponse().setBody(
@@ -96,7 +102,7 @@ class PaymentApiImplTest {
             )
         )
         val cryptogramApiData = CryptogramApiData(
-            cryptogram = seToken,
+            seToken = seToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
             saveCard = false
@@ -109,6 +115,7 @@ class PaymentApiImplTest {
     }
 
     @Test
+    @Description("shouldReturnProcessFormCardWithThreeDS")
     fun shouldReturnProcessFormCardWithThreeDS() = runBlocking {
         server.enqueue(
             MockResponse().setBody(
@@ -126,7 +133,7 @@ class PaymentApiImplTest {
             )
         )
         val cryptogramApiData = CryptogramApiData(
-            cryptogram = seToken,
+            seToken = seToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
             saveCard = false
@@ -139,6 +146,7 @@ class PaymentApiImplTest {
     }
 
     @Test
+    @Description("shouldReturnBindingProcessForm")
     fun shouldReturnBindingProcessForm() = runBlocking {
         server.enqueue(
             MockResponse().setBody(
@@ -151,7 +159,7 @@ class PaymentApiImplTest {
             )
         )
         val cryptogramApiData = CryptogramApiData(
-            cryptogram = seToken,
+            seToken = seToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
             saveCard = true
@@ -162,6 +170,7 @@ class PaymentApiImplTest {
     }
 
     @Test
+    @Description("shouldReturnSuccessFinishedPaymentInfo")
     fun shouldReturnSuccessFinishedPaymentInfo() = runBlocking {
         server.enqueue(
             MockResponse().setBody(
@@ -180,6 +189,7 @@ class PaymentApiImplTest {
     }
 
     @Test
+    @Description("shouldReturnNotSuccessFinishedPaymentInfo")
     fun shouldReturnNotSuccessFinishedPaymentInfo() = runBlocking {
         server.enqueue(
             MockResponse().setBody(
@@ -198,6 +208,7 @@ class PaymentApiImplTest {
     }
 
     @Test(expected = SDKPaymentApiException::class)
+    @Description("shouldReturnSessionStatusException")
     fun shouldReturnSessionStatusException() {
         runBlocking {
             server.enqueue(
@@ -211,6 +222,7 @@ class PaymentApiImplTest {
     }
 
     @Test(expected = SDKPaymentApiException::class)
+    @Description("shouldReturnProcessFormException")
     fun shouldReturnProcessFormException() {
         runBlocking {
             server.enqueue(
@@ -219,7 +231,7 @@ class PaymentApiImplTest {
                 )
             )
             val cryptogramApiData = CryptogramApiData(
-                cryptogram = seToken,
+                seToken = seToken,
                 mdOrder = mdOrder,
                 holder = "CARDHOLDER",
                 saveCard = false
@@ -229,6 +241,7 @@ class PaymentApiImplTest {
     }
 
     @Test(expected = SDKPaymentApiException::class)
+    @Description("shouldReturnProcessBindingFormException")
     fun shouldReturnProcessBindingFormException() {
         runBlocking {
             server.enqueue(
@@ -237,7 +250,7 @@ class PaymentApiImplTest {
                 )
             )
             val cryptogramApiData = CryptogramApiData(
-                cryptogram = seToken,
+                seToken = seToken,
                 mdOrder = mdOrder,
                 holder = "CARDHOLDER",
                 saveCard = false
@@ -247,6 +260,7 @@ class PaymentApiImplTest {
     }
 
     @Test(expected = SDKPaymentApiException::class)
+    @Description("shouldReturnFinishPaymentInfoException")
     fun shouldReturnFinishPaymentInfoException() {
         runBlocking {
             server.enqueue(

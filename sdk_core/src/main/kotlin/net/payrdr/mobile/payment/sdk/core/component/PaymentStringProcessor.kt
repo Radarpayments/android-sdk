@@ -18,7 +18,7 @@ interface PaymentStringProcessor {
      * @return prepared line with payment information.
      */
     fun createPaymentString(
-        order: String,
+        order: String = "",
         timestamp: Long,
         uuid: String,
         cardInfo: CardInfo

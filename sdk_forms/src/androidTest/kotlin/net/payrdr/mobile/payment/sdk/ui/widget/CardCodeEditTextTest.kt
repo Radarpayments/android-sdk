@@ -10,6 +10,8 @@ import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.filters.SmallTest
+import io.qameta.allure.android.allureScreenshot
+import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.form.R
 import net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
 import net.payrdr.mobile.payment.sdk.form.ui.widget.CardCodeEditText
@@ -38,45 +40,50 @@ class CardCodeEditTextTest : CoreUIViewTest<CardCodeEditText>() {
 
     @Test
     @ConfigurationSingle
+    @Description("shouldNotAllowTypeLatin")
     fun shouldNotAllowTypeLatin() {
         onView(exactView(testedView)).perform(typeText("abcDe"))
-        takeScreen()
+        allureScreenshot(name = "shouldNotAllowTypeLatin_1", quality = 1)
 
         onView(exactView(testedView)).check(matches(withText("")))
     }
 
     @Test
     @ConfigurationSingle
+    @Description("shouldNotAllowTypeCyrillic")
     fun shouldNotAllowTypeCyrillic() {
         onView(exactView(testedView)).perform(replaceText("абГд"))
-        takeScreen()
+        allureScreenshot(name = "shouldNotAllowTypeCyrillic_1", quality = 1)
 
         onView(exactView(testedView)).check(matches(withText("")))
     }
 
     @Test
     @ConfigurationSingle
+    @Description("shouldNotAllowTypeMoreThenMaxLength")
     fun shouldNotAllowTypeMoreThenMaxLength() {
         onView(exactView(testedView)).perform(typeText("1225"))
-        takeScreen()
+        allureScreenshot(name = "shouldNotAllowTypeMoreThenMaxLength_1", quality = 1)
 
         onView(exactView(testedView)).check(matches(withText("122")))
     }
 
     @Test
     @ConfigurationSingle
+    @Description("shouldMaskInput")
     fun shouldMaskInput() {
         onView(exactView(testedView)).perform(typeText("012"))
-        takeScreen()
+        allureScreenshot(name = "shouldMaskInput_1", quality = 1)
 
         onView(exactView(testedView)).check(matches(withText("012")))
     }
 
     @Test
     @ConfigurationSingle
+    @Description("shouldWorkBackspace")
     fun shouldWorkBackspace() {
         onView(exactView(testedView)).perform(typeText("012"))
-        takeScreen()
+        allureScreenshot(name = "shouldWorkBackspace_1", quality = 1)
         onView(exactView(testedView))
             .perform(pressKey(KeyEvent.KEYCODE_DEL)).apply { takeScreen() }
             .perform(pressKey(KeyEvent.KEYCODE_DEL)).apply { takeScreen() }

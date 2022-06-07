@@ -16,7 +16,7 @@ fun Activity.setupDefaultResult() {
             Constants.INTENT_EXTRA_RESULT,
             CryptogramData(
                 status = PaymentDataStatus.CANCELED,
-                cryptogram = ""
+                seToken = ""
             )
         )
     }

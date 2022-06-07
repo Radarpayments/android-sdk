@@ -3,6 +3,7 @@ package net.payrdr.mobile.payment.sdk.core.validation
 import android.Manifest
 import androidx.test.filters.SmallTest
 import androidx.test.rule.GrantPermissionRule.grant
+import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.core.R
 import net.payrdr.mobile.payment.sdk.core.test.getString
 import net.payrdr.mobile.payment.sdk.core.test.targetContext
@@ -27,6 +28,7 @@ class CardExpiryValidatorTest {
     }
 
     @Test
+    @Description("shouldAcceptCorrectCode")
     fun shouldAcceptCorrectCode() {
         val result = cardExpiryValidator.validate("12/29")
 
@@ -36,6 +38,7 @@ class CardExpiryValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptLessThanMinLength")
     fun shouldNotAcceptLessThanMinLength() {
         val result = cardExpiryValidator.validate("12")
 
@@ -45,6 +48,7 @@ class CardExpiryValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptMoreThanMaxLength")
     fun shouldNotAcceptMoreThanMaxLength() {
         val result = cardExpiryValidator.validate("12/346")
 
@@ -54,6 +58,7 @@ class CardExpiryValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptMoreIncorrectFormat")
     fun shouldNotAcceptMoreIncorrectFormat() {
         val result = cardExpiryValidator.validate("12346")
 
@@ -63,6 +68,7 @@ class CardExpiryValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptEmptyValue")
     fun shouldNotAcceptEmptyValue() {
         val result = cardExpiryValidator.validate("")
 
@@ -72,6 +78,7 @@ class CardExpiryValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptIncorrectMonth")
     fun shouldNotAcceptIncorrectMonth() {
         val result = cardExpiryValidator.validate("13/25")
 
@@ -81,6 +88,7 @@ class CardExpiryValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptIncorrectLastYear")
     fun shouldNotAcceptIncorrectLastYear() {
         val result = cardExpiryValidator.validate("13/19")
 
@@ -90,6 +98,7 @@ class CardExpiryValidatorTest {
     }
 
     @Test
+    @Description("shouldNotAcceptIncorrectOverTenYears")
     fun shouldNotAcceptIncorrectOverTenYears() {
         val result = cardExpiryValidator.validate("13/31")
 

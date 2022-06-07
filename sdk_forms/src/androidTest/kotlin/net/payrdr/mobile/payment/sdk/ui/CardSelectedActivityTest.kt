@@ -1,21 +1,30 @@
 package net.payrdr.mobile.payment.sdk.ui
 
+import android.Manifest
 import android.content.Context
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.RootMatchers.withDecorView
-import androidx.test.espresso.matcher.ViewMatchers.hasFocus
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.ActivityTestRule
+import androidx.test.rule.GrantPermissionRule
+import androidx.test.uiautomator.UiDevice
+import com.kaspersky.components.alluresupport.addAllureSupport
+import com.kaspersky.components.alluresupport.files.attachViewHierarchyToAllureReport
+import com.kaspersky.kaspresso.interceptors.watcher.testcase.TestRunWatcherInterceptor
+import com.kaspersky.kaspresso.kaspresso.Kaspresso
+import com.kaspersky.kaspresso.params.ScreenshotParams
+import com.kaspersky.kaspresso.testcases.api.testcase.DocLocScreenshotTestCase
+import com.kaspersky.kaspresso.testcases.models.info.TestInfo
 import io.mockk.called
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import io.qameta.allure.android.allureScreenshot
+import io.qameta.allure.android.runners.AllureAndroidJUnit4
 import net.payrdr.mobile.payment.sdk.core.model.CardBindingIdIdentifier
 import net.payrdr.mobile.payment.sdk.core.model.CardInfo
 import net.payrdr.mobile.payment.sdk.form.R
@@ -27,19 +36,65 @@ import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
 import net.payrdr.mobile.payment.sdk.form.model.Card
 import net.payrdr.mobile.payment.sdk.form.ui.CardSelectedActivity
 import net.payrdr.mobile.payment.sdk.test.PaymentConfigTestProvider.defaultConfig
-import net.payrdr.mobile.payment.sdk.test.SleepEmulator.sleep
-import net.payrdr.mobile.payment.sdk.test.core.CoreUITest
 import net.payrdr.mobile.payment.sdk.test.core.targetContext
+import net.payrdr.mobile.payment.sdk.test.junit.ConfigurationRule
+import net.payrdr.mobile.payment.sdk.ui.screen.SelectedCardScreen
 import org.hamcrest.core.IsNot.not
 import org.junit.Before
 import org.junit.Ignore
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.RuleChain
+import org.junit.rules.TestName
+import org.junit.runner.RunWith
 
 @SmallTest
-class CardSelectedActivityTest :
-    CoreUITest<CardSelectedActivity>(CardSelectedActivity::class.java, true, false) {
+@RunWith(AllureAndroidJUnit4::class)
+class CardSelectedActivityTest : DocLocScreenshotTestCase(
+    kaspressoBuilder = Kaspresso.Builder.simple(
+        customize = {
+            screenshotParams = ScreenshotParams(quality = 1)
+            if (isAndroidRuntime) {
+                UiDevice
+                    .getInstance(instrumentation)
+                    .executeShellCommand(
+                        "appops set --uid " +
+                            "${InstrumentationRegistry.getInstrumentation().targetContext.packageName}" +
+                            " MANAGE_EXTERNAL_STORAGE allow"
+                    )
+            }
+        }
+    ).addAllureSupport().apply {
+        testRunWatcherInterceptors.apply {
+            add(object : TestRunWatcherInterceptor {
+                override fun onTestFinished(testInfo: TestInfo, success: Boolean) {
+                    viewHierarchyDumper.dumpAndApply("ViewHierarchy") { attachViewHierarchyToAllureReport() }
+                }
+            })
+        }
+    },
+    locales = "en",
+) {
 
     private val mockCryptogramProcessor: CryptogramProcessor = mockk()
+
+    @get:Rule
+    val runtimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+    )
+
+    @get:Rule
+    val activityTestRule = ActivityTestRule(CardSelectedActivity::class.java, true, false)
+
+    private val configurationRule = ConfigurationRule()
+
+    private val testName = TestName()
+
+    @get:Rule
+    val ruleChain: RuleChain = RuleChain.outerRule(configurationRule)
+        .around(activityTestRule)
+        .around(testName)
 
     @Before
     fun setUp() {
@@ -55,172 +110,318 @@ class CardSelectedActivityTest :
 
     @Test
     fun shouldRunWithCorrectLocale() {
-        val config = defaultConfig()
-        val launchIntent = CardSelectedActivity.prepareIntent(
-            InstrumentationRegistry.getInstrumentation().targetContext,
-            config,
-            Card( // mastercard
-                pan = "519198xxxxxx0377",
-                bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+        run {
+            val config = defaultConfig()
+            val launchIntent = CardSelectedActivity.prepareIntent(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                config,
+                Card( // mastercard
+                    pan = "519198xxxxxx0377",
+                    bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+                )
             )
-        )
-        activityTestRule.launchActivity(launchIntent)
-        sleep()
-        takeScreen()
+            activityTestRule.launchActivity(launchIntent)
+            step("shouldRunWithCorrectLocale") {
+                SelectedCardScreen {
+                    doneButton {
+                        isVisible()
+                        allureScreenshot(name = "shouldRunWithCorrectLocale_1", quality = 1)
+                    }
+                }
+            }
+        }
     }
 
     @Test
     fun shouldNotFocusedOnCVC() {
-        val config = defaultConfig()
-        val launchIntent = CardSelectedActivity.prepareIntent(
-            InstrumentationRegistry.getInstrumentation().targetContext,
-            config,
-            Card( // mastercard
-                pan = "519198xxxxxx0377",
-                bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+        run {
+            val config = defaultConfig()
+            val launchIntent = CardSelectedActivity.prepareIntent(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                config,
+                Card( // mastercard
+                    pan = "519198xxxxxx0377",
+                    bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+                )
             )
-        )
-        activityTestRule.launchActivity(launchIntent)
-        takeScreen()
-
-        onView(withId(R.id.cardCodeInput)).check(matches(not(hasFocus())))
+            activityTestRule.launchActivity(launchIntent)
+            step("shouldNotFocusedOnCVC") {
+                SelectedCardScreen {
+                    doneButton {
+                        isVisible()
+                        allureScreenshot(name = "shouldNotFocusedOnCVC_1", quality = 1)
+                    }
+                    cardCodeInput {
+                        isVisible()
+                        isNotFocused()
+                    }
+                }
+            }
+        }
     }
 
     @Test
     fun shouldRunWithConfiguredButtonText() {
-        val config = defaultConfig().copy(buttonText = "Configured Text")
-        val launchIntent = CardSelectedActivity.prepareIntent(
-            InstrumentationRegistry.getInstrumentation().targetContext,
-            config,
-            Card( // mastercard
-                pan = "519198xxxxxx0377",
-                bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+        run {
+            val config = defaultConfig().copy(buttonText = "Configured Text")
+            val launchIntent = CardSelectedActivity.prepareIntent(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                config,
+                Card( // mastercard
+                    pan = "519198xxxxxx0377",
+                    bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+                )
             )
-        )
-        activityTestRule.launchActivity(launchIntent)
-        sleep()
-        takeScreen()
-
-        onView(withId(R.id.doneButton)).check(matches(withText("Configured Text")))
+            activityTestRule.launchActivity(launchIntent)
+            step("shouldRunWithConfiguredButtonText") {
+                SelectedCardScreen {
+                    doneButton {
+                        isVisible()
+                        allureScreenshot(name = "shouldRunWithConfiguredButtonText_1", quality = 1)
+                        withText("Configured Text")
+                    }
+                }
+            }
+        }
     }
 
     @Test
+    @Ignore
     fun shouldRequireCVC() {
-        val config = defaultConfig().copy(bindingCVCRequired = true)
+        run {
+            val config = defaultConfig().copy(bindingCVCRequired = true)
 
-        val launchIntent = CardSelectedActivity.prepareIntent(
-            InstrumentationRegistry.getInstrumentation().targetContext,
-            config,
-            Card( // mastercard
-                pan = "492980xxxxxx7724",
-                bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+            val launchIntent = CardSelectedActivity.prepareIntent(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                config,
+                Card( // mastercard
+                    pan = "492980xxxxxx7724",
+                    bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+                )
             )
-        )
-        activityTestRule.launchActivity(launchIntent)
-        sleep()
-        takeScreen()
-
-        onView(withId(R.id.doneButton)).perform(click())
-        onView(withText(R.string.payrdr_card_incorrect_cvc)).inRoot(withDecorView(not(getActivity().window.decorView)))
-            .check(matches(isDisplayed()))
-
-        takeScreen()
-
-        coVerify {
-            mockCryptogramProcessor.create(any(), any(), any(), any()) wasNot called
+            activityTestRule.launchActivity(launchIntent)
+            step("shouldRequireCVC done button") {
+                SelectedCardScreen {
+                    doneButton {
+                        isVisible()
+                        allureScreenshot(name = "shouldRequireCVC_1", quality = 1)
+                        click()
+                    }
+                }
+            }
+            step("shouldRequireCVC cvc incorrect") {
+                SelectedCardScreen.doneButton {
+                    isVisible()
+                    click()
+                }
+                onView(withText(R.string.payrdr_card_incorrect_cvc))
+                    .inRoot(withDecorView(not(activityTestRule.activity.window.decorView)))
+                    .check(matches(isDisplayed()))
+            }
+            step("shouldRequireCVC verify") {
+                flakySafely {
+                    coVerify {
+                        mockCryptogramProcessor.create(any(), any(), any(), any()) wasNot called
+                    }
+                }
+            }
         }
     }
 
     @Test
     fun shouldProceedValidData() {
-        coEvery {
-            mockCryptogramProcessor.create(any(), any(), any(), any())
-        } returns ""
+        run {
+            step("shouldProceedValidData init verify") {
+                coEvery {
+                    mockCryptogramProcessor.create(any(), any(), any(), any())
+                } returns ""
+            }
+            val config = defaultConfig().copy(bindingCVCRequired = true)
 
-        val config = defaultConfig().copy(bindingCVCRequired = true)
-
-        val launchIntent = CardSelectedActivity.prepareIntent(
-            InstrumentationRegistry.getInstrumentation().targetContext,
-            config,
-            Card( // mastercard
-                pan = "492980xxxxxx7724",
-                bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
-            )
-        )
-        activityTestRule.launchActivity(launchIntent)
-        sleep()
-        takeScreen()
-        onView(withId(R.id.cardCodeInput)).perform(typeText("012"))
-        takeScreen()
-        onView(withId(R.id.doneButton)).perform(click())
-
-        coVerify {
-            mockCryptogramProcessor.create(
-                order = eq(config.order),
-                timestamp = eq(config.timestamp),
-                uuid = eq(config.uuid),
-                cardInfo = eq(
-                    CardInfo(
-                        identifier = CardBindingIdIdentifier(
-                            value = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
-                        ),
-                        cvv = "012"
-                    )
+            val launchIntent = CardSelectedActivity.prepareIntent(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                config,
+                Card( // mastercard
+                    pan = "492980xxxxxx7724",
+                    bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
                 )
             )
+            activityTestRule.launchActivity(launchIntent)
+            step("shouldProceedValidData") {
+                SelectedCardScreen {
+                    cardCodeInput {
+                        isVisible()
+                        allureScreenshot(name = "shouldProceedValidData_1", quality = 1)
+                        typeText("012")
+                    }
+                    closeSoftKeyboard()
+                    doneButton {
+                        isVisible()
+                        allureScreenshot(name = "shouldProceedValidData_1", quality = 1)
+                        click()
+                    }
+                }
+            }
+            step("shouldProceedValidData verify") {
+                flakySafely {
+                    coVerify {
+                        mockCryptogramProcessor.create(
+                            order = eq(config.order),
+                            timestamp = eq(config.timestamp),
+                            uuid = eq(config.uuid),
+                            cardInfo = eq(
+                                CardInfo(
+                                    identifier = CardBindingIdIdentifier(
+                                        value = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+                                    ),
+                                    cvv = "012"
+                                )
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun shouldProceedValidDataWithoutOrder() {
+        run {
+            step("shouldProceedValidData init verify") {
+                coEvery {
+                    mockCryptogramProcessor.create(
+                        timestamp = any(),
+                        uuid = any(),
+                        cardInfo = any()
+                    )
+                } returns ""
+            }
+            val config = defaultConfig().copy(
+                order = "",
+                bindingCVCRequired = true
+            )
+
+            val launchIntent = CardSelectedActivity.prepareIntent(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                config,
+                Card( // mastercard
+                    pan = "492980xxxxxx7724",
+                    bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+                )
+            )
+            activityTestRule.launchActivity(launchIntent)
+            step("shouldProceedValidData") {
+                SelectedCardScreen {
+                    cardCodeInput {
+                        isVisible()
+                        allureScreenshot(name = "shouldProceedValidData_1", quality = 1)
+                        typeText("012")
+                    }
+                    closeSoftKeyboard()
+                    doneButton {
+                        isVisible()
+                        allureScreenshot(name = "shouldProceedValidData_1", quality = 1)
+                        click()
+                    }
+                }
+            }
+            step("shouldProceedValidData verify") {
+                flakySafely {
+                    coVerify {
+                        mockCryptogramProcessor.create(
+                            timestamp = eq(config.timestamp),
+                            uuid = eq(config.uuid),
+                            cardInfo = eq(
+                                CardInfo(
+                                    identifier = CardBindingIdIdentifier(
+                                        value = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+                                    ),
+                                    cvv = "012"
+                                )
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 
     @Test
     @Ignore
     fun shouldHideCVCInput() {
-        val config = defaultConfig().copy(bindingCVCRequired = false)
+        run {
+            val config = defaultConfig().copy(bindingCVCRequired = false)
 
-        val launchIntent = CardSelectedActivity.prepareIntent(
-            InstrumentationRegistry.getInstrumentation().targetContext,
-            config,
-            Card( // mastercard
-                pan = "492980xxxxxx7724",
-                bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+            val launchIntent = CardSelectedActivity.prepareIntent(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                config,
+                Card( // mastercard
+                    pan = "492980xxxxxx7724",
+                    bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+                )
             )
-        )
-        activityTestRule.launchActivity(launchIntent)
-        sleep()
-
-        onView(withId(R.id.cardCodeInputLayout)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.cardCodeInput)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.doneButton)).perform(click())
-
-        takeScreen()
-        coVerify {
-            mockCryptogramProcessor.create(any(), any(), any(), any())
+            activityTestRule.launchActivity(launchIntent)
+            step("shouldHideCVCInput") {
+                SelectedCardScreen {
+                    cardCodeInputLayout {
+                        isNotDisplayed()
+                    }
+                    cardCodeInput {
+                        isNotDisplayed()
+                    }
+                    doneButton {
+                        isVisible()
+                        allureScreenshot(name = "shouldRunWithCorrectLocale_1", quality = 1)
+                        click()
+                    }
+                }
+            }
+            step("shouldHideCVCInput verify") {
+                flakySafely {
+                    coVerify {
+                        mockCryptogramProcessor.create(any(), any(), any(), any())
+                    }
+                }
+            }
         }
     }
 
     @Test
     fun shouldNotRequireCVC() {
-        coEvery {
-            mockCryptogramProcessor.create(any(), any(), any(), any())
-        } returns ""
+        run {
+            step("shouldNotRequireCVC init verify") {
+                coEvery {
+                    mockCryptogramProcessor.create(any(), any(), any(), any())
+                } returns ""
+            }
 
-        val config = defaultConfig().copy(bindingCVCRequired = false)
+            val config = defaultConfig().copy(bindingCVCRequired = false)
 
-        val launchIntent = CardSelectedActivity.prepareIntent(
-            InstrumentationRegistry.getInstrumentation().targetContext,
-            config,
-            Card( // mastercard
-                pan = "519198xxxxxx0377",
-                bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+            val launchIntent = CardSelectedActivity.prepareIntent(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                config,
+                Card( // mastercard
+                    pan = "519198xxxxxx0377",
+                    bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+                )
             )
-        )
-        activityTestRule.launchActivity(launchIntent)
-        sleep()
-        takeScreen()
-
-        onView(withId(R.id.doneButton)).perform(click())
-
-        coVerify {
-            mockCryptogramProcessor.create(any(), any(), any(), any())
+            activityTestRule.launchActivity(launchIntent)
+            step("shouldNotRequireCVC") {
+                SelectedCardScreen {
+                    doneButton {
+                        isVisible()
+                        allureScreenshot(name = "shouldNotRequireCVC_1", quality = 1)
+                        click()
+                    }
+                }
+            }
+            step("shouldNotRequireCVC verify") {
+                flakySafely {
+                    coVerify {
+                        mockCryptogramProcessor.create(any(), any(), any(), any())
+                    }
+                }
+            }
         }
     }
 }

@@ -25,7 +25,7 @@ import java.util.Locale
  * @param cardsToDelete the list of cards to be removed that the user has selected.
  */
 data class PaymentConfig internal constructor(
-    val order: String,
+    val order: String = "",
     val cardSaveOptions: CardSaveOptions,
     val holderInputOptions: HolderInputOptions,
     val cameraScannerOptions: CameraScannerOptions,
