@@ -107,7 +107,7 @@ class PaymentApiImplTest {
             holder = "CARDHOLDER",
             saveCard = false
         )
-        val processForm = paymentApiImpl.processForm(cryptogramApiData)
+        val processForm = paymentApiImpl.processForm(cryptogramApiData, true)
 
         assertEquals(0, processForm.errorCode)
         assertEquals(false, processForm.is3DSVer2)
@@ -138,7 +138,7 @@ class PaymentApiImplTest {
             holder = "CARDHOLDER",
             saveCard = false
         )
-        val processForm = paymentApiImpl.processForm(cryptogramApiData)
+        val processForm = paymentApiImpl.processForm(cryptogramApiData, true)
 
         assertEquals(0, processForm.errorCode)
         assertEquals(true, processForm.is3DSVer2)
@@ -164,7 +164,7 @@ class PaymentApiImplTest {
             holder = "CARDHOLDER",
             saveCard = true
         )
-        val processBindingForm = paymentApiImpl.processBindingForm(cryptogramApiData)
+        val processBindingForm = paymentApiImpl.processBindingForm(cryptogramApiData, true)
 
         assertEquals(1, processBindingForm.errorCode)
     }
@@ -236,7 +236,7 @@ class PaymentApiImplTest {
                 holder = "CARDHOLDER",
                 saveCard = false
             )
-            paymentApiImpl.processForm(cryptogramApiData)
+            paymentApiImpl.processForm(cryptogramApiData, true)
         }
     }
 
@@ -255,7 +255,7 @@ class PaymentApiImplTest {
                 holder = "CARDHOLDER",
                 saveCard = false
             )
-            paymentApiImpl.processBindingForm(cryptogramApiData)
+            paymentApiImpl.processBindingForm(cryptogramApiData, true)
         }
     }
 

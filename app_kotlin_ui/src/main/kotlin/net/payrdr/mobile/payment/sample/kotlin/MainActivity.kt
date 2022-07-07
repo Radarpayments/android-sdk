@@ -44,9 +44,11 @@ import kotlinx.android.synthetic.main.activity_main.localeRuButton
 import kotlinx.android.synthetic.main.activity_main.localeUkButton
 import kotlinx.android.synthetic.main.activity_main.merchantIdInput
 import kotlinx.android.synthetic.main.activity_main.sdkButton
+import kotlinx.android.synthetic.main.activity_main.sdkButtonWeb
 import net.payrdr.mobile.payment.sample.kotlin.helpers.copyToClipboard
 import net.payrdr.mobile.payment.sample.kotlin.helpers.log
 import net.payrdr.mobile.payment.sample.kotlin.payment.PaymentFormActivity
+import net.payrdr.mobile.payment.sample.kotlin.payment.PaymentFormActivityWeb
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSActivity
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSManualActivity
 import net.payrdr.mobile.payment.sdk.core.model.ExpiryDate
@@ -116,7 +118,8 @@ class MainActivity : AppCompatActivity() {
         localeUkButton.setOnClickListener { executeLocaleCheckout(ukrainian()) }
         challengeFlowButton.setOnClickListener { executeThreeDSChallengeFlow() }
         challengeFlowManualButton.setOnClickListener { executeThreeDSChallengeFlowManual() }
-        sdkButton.setOnClickListener{ executePaymentCycleSdk() }
+        sdkButton.setOnClickListener { executePaymentCycleSdk() }
+        sdkButtonWeb.setOnClickListener { executePaymentCycleSdkWeb() }
 
         GooglePayUtils.possiblyShowGooglePayButton(
             context = this,
@@ -143,6 +146,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun executePaymentCycleSdk() {
         startActivity(Intent(this, PaymentFormActivity::class.java))
+    }
+
+    private fun executePaymentCycleSdkWeb() {
+        startActivity(Intent(this, PaymentFormActivityWeb::class.java))
     }
 
     private fun executeThreeDSChallengeFlow() {

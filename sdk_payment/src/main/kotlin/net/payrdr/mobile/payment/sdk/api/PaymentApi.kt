@@ -13,6 +13,7 @@ import net.payrdr.mobile.payment.sdk.payment.model.CryptogramGPayApiData
 /**
  * Interface for carrying out a full payment cycle.
  */
+@Suppress("TooManyFunctions")
 interface PaymentApi {
 
     /**
@@ -29,7 +30,10 @@ interface PaymentApi {
      * @param cryptogramApiData cryptogram and data for its creation.
      * @return [ProcessFormResponse] payment status data for first payment try.
      */
-    suspend fun processForm(cryptogramApiData: CryptogramApiData): ProcessFormResponse
+    suspend fun processForm(
+        cryptogramApiData: CryptogramApiData,
+        threeDSSDK: Boolean
+    ): ProcessFormResponse
 
     /**
      * API method for making payments with a binding card.
@@ -37,7 +41,10 @@ interface PaymentApi {
      * @param cryptogramApiData cryptogram and data for its creation.
      * @return [ProcessFormResponse] payment status data for first payment try.
      */
-    suspend fun processBindingForm(cryptogramApiData: CryptogramApiData): ProcessFormResponse
+    suspend fun processBindingForm(
+        cryptogramApiData: CryptogramApiData,
+        threeDSSDK: Boolean
+    ): ProcessFormResponse
 
     /**
      * API method for making card payments with 3DS.

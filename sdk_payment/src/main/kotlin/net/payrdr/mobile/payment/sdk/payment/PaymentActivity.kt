@@ -10,8 +10,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import net.payrdr.mobile.payment.sdk.Constants.INTENT_EXTRA_ERROR
+import net.payrdr.mobile.payment.sdk.Constants.INTENT_EXTRA_RESULT
 import net.payrdr.mobile.payment.sdk.Constants.IS_GOOGLE_PAY
 import net.payrdr.mobile.payment.sdk.Constants.MDORDER
+import net.payrdr.mobile.payment.sdk.Constants.REQUEST_CODE_3DS
 import net.payrdr.mobile.payment.sdk.Constants.REQUEST_CODE_CRYPTOGRAM
 import net.payrdr.mobile.payment.sdk.Constants.TIMEOUT_THREE_DS
 import net.payrdr.mobile.payment.sdk.LogDebug
@@ -42,6 +45,7 @@ import net.payrdr.mobile.payment.sdk.payment.model.CryptogramGPayApiData
 import net.payrdr.mobile.payment.sdk.payment.model.GPayDelegate
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentData
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
+import net.payrdr.mobile.payment.sdk.payment.model.WebChallengeParam
 import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeParameters
 import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeStatusReceiver
 import net.payrdr.mobile.payment.sdk.threeds.spec.Factory
@@ -163,6 +167,16 @@ class PaymentActivity : AppCompatActivity() {
             )
         }
 
+        override fun openWebChallenge(webChallengeParam: WebChallengeParam) {
+            this@PaymentActivity.startActivityForResult(
+                ActivityWebChallenge.prepareIntent(
+                    this@PaymentActivity,
+                    webChallengeParam,
+                ),
+                REQUEST_CODE_3DS
+            )
+        }
+
         override fun cleanup(transaction: Transaction?, threeDS2Service: ThreeDS2Service) {
             transaction?.close()
             threeDS2Service.cleanup(this@PaymentActivity)
@@ -182,6 +196,8 @@ class PaymentActivity : AppCompatActivity() {
         }
 
         override fun getPaymentConfig() = sdkPaymentConfig
+
+        override fun get3DSOption(): Boolean = SDKPayment.use3ds2sdk
     }
 
     private val gPayDelegate = object : GPayDelegate {
@@ -260,6 +276,17 @@ class PaymentActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_3DS) {
+            val paymentData = data?.getParcelableExtra(INTENT_EXTRA_RESULT) as PaymentData?
+            if (paymentData != null) {
+                finishWithResult(paymentData)
+            } else {
+                val exception = data?.getSerializableExtra(INTENT_EXTRA_ERROR) as SDKException?
+                finishWithError(exception ?: SDKException("Unknown error"))
+            }
+        }
+
         // Processing the result of the formation of seToken.
         SDKForms.handleCryptogramResult(
             requestCode,

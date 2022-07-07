@@ -8,6 +8,11 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"
             android:theme="@style/PAYRDRTransparentTheme" />
+
+        <activity
+            android:name=".payment.ActivityWebChallenge"
+            android:screenOrientation="portrait"
+            android:theme="@style/PAYRDRTransparentTheme" />
     </application>
 
 </manifest>

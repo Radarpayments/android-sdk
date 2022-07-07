@@ -11,7 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,6 +23,7 @@
         <activity android:name=".threeds.ThreeDSActivity" />
         <activity android:name=".threeds.ThreeDSManualActivity" />
         <activity android:name=".payment.PaymentFormActivity" />
+        <activity android:name=".payment.PaymentFormActivityWeb" />
 
         <meta-data
             android:name="com.google.android.gms.ads.AD_MANAGER_APP"

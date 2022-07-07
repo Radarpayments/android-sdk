@@ -80,3 +80,5 @@ vkyvbG0
 qameta
 uiautomator
 jaxb
+PAREQ
+webdriver

@@ -34,14 +34,15 @@ class PaymentApiImpl(
         }
 
     override suspend fun processForm(
-        cryptogramApiData: CryptogramApiData
+        cryptogramApiData: CryptogramApiData,
+        threeDSSDK: Boolean
     ): ProcessFormResponse = startRunCatching {
         val body = mapOf(
             "seToken" to cryptogramApiData.seToken,
             "MDORDER" to cryptogramApiData.mdOrder,
             "TEXT" to cryptogramApiData.holder,
             "bindingNotNeeded" to "${(!cryptogramApiData.saveCard)}",
-            "threeDSSDK" to "true"
+            "threeDSSDK" to "$threeDSSDK"
         )
         val connection = URL("$baseUrl/rest/processform.do").executePostParams(body)
         val res = connection.responseBodyToJsonObject()
@@ -50,13 +51,14 @@ class PaymentApiImpl(
     }
 
     override suspend fun processBindingForm(
-        cryptogramApiData: CryptogramApiData
+        cryptogramApiData: CryptogramApiData,
+        threeDSSDK: Boolean
     ): ProcessFormResponse = startRunCatching {
         val body = mapOf(
             "seToken" to cryptogramApiData.seToken,
             "MDORDER" to cryptogramApiData.mdOrder,
             "TEXT" to cryptogramApiData.holder,
-            "threeDSSDK" to "true"
+            "threeDSSDK" to "$threeDSSDK"
         )
         val connection = URL("$baseUrl/rest/processBindingForm.do").executePostParams(body)
         val res = connection.responseBodyToJsonObject()

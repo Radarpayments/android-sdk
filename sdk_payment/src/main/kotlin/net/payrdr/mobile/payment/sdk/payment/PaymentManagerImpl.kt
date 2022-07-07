@@ -13,6 +13,7 @@ import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormSecondResponse
 import net.payrdr.mobile.payment.sdk.api.entity.SessionStatusResponse
 import net.payrdr.mobile.payment.sdk.exceptions.SDKAlreadyPaymentException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKDeclinedException
+import net.payrdr.mobile.payment.sdk.exceptions.SDKNotConfigureException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKOrderNotExistException
 import net.payrdr.mobile.payment.sdk.form.GooglePayConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.SDKException
@@ -34,6 +35,7 @@ import net.payrdr.mobile.payment.sdk.payment.model.CryptogramApiData
 import net.payrdr.mobile.payment.sdk.payment.model.CryptogramGPayApiData
 import net.payrdr.mobile.payment.sdk.payment.model.GPayDelegate
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentData
+import net.payrdr.mobile.payment.sdk.payment.model.WebChallengeParam
 import net.payrdr.mobile.payment.sdk.threeds.impl.Factory
 import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeParameters
 import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeStatusReceiver
@@ -168,25 +170,49 @@ class PaymentManagerImpl(
      * @param cryptogramApiData result of the creating a cryptogram.
      */
     suspend fun processFormData(cryptogramApiData: CryptogramApiData, isBinding: Boolean) {
-        val paymentResult = if (isBinding) {
+        val paymentResult: ProcessFormResponse = if (isBinding) {
             paymentApi.processBindingForm(
-                cryptogramApiData = cryptogramApiData
+                cryptogramApiData = cryptogramApiData,
+                threeDSSDK = activityDelegate.get3DSOption()
             )
         } else {
             paymentApi.processForm(
-                cryptogramApiData = cryptogramApiData
+                cryptogramApiData = cryptogramApiData,
+                threeDSSDK = activityDelegate.get3DSOption()
             )
         }
-        if (!paymentResult.is3DSVer2) {
-            LogDebug.logIfDebug("processForm - Payment without 3DS: $paymentResult")
-            checkOrderStatus()
-        } else {
-            LogDebug.logIfDebug("processForm - Payment need 3DS: $paymentResult")
-            processThreeDSData(
-                cryptogramApiData = cryptogramApiData,
-                processFormResponse = paymentResult,
-                isBinding = isBinding
-            )
+
+        when {
+            paymentResult.threeDSMethodURL != null -> {
+                LogDebug.logIfDebug("Merchant is not configured to be used without 3DS2SDK: $paymentResult")
+                throw SDKNotConfigureException(
+                    message = "Merchant is not configured to be used without 3DS2SDK",
+                    cause = null
+                )
+            }
+            paymentResult.is3DSVer2 -> {
+                LogDebug.logIfDebug("processForm - Payment need 3DSVer2: $paymentResult")
+                processThreeDSData(
+                    cryptogramApiData = cryptogramApiData,
+                    processFormResponse = paymentResult,
+                    isBinding = isBinding
+                )
+            }
+            paymentResult.acsUrl != null -> {
+                LogDebug.logIfDebug("processForm - Payment need 3DSVer1: $paymentResult")
+                threeDSFormDelegate.openWebChallenge(
+                    WebChallengeParam(
+                        cryptogramApiData.mdOrder,
+                        paymentResult.acsUrl,
+                        paymentResult.paReq!!,
+                        paymentResult.termUrl!!,
+                    )
+                )
+            }
+            else -> {
+                LogDebug.logIfDebug("processForm - Payment without 3DS: $paymentResult")
+                checkOrderStatus()
+            }
         }
     }
 

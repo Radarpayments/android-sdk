@@ -1,5 +1,6 @@
 package net.payrdr.mobile.payment.sdk.payment
 
+import net.payrdr.mobile.payment.sdk.payment.model.WebChallengeParam
 import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeParameters
 import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeStatusReceiver
 import net.payrdr.mobile.payment.sdk.threeds.spec.Factory
@@ -33,6 +34,15 @@ interface ThreeDSFormDelegate {
         transaction: Transaction?,
         challengeParameters: ChallengeParameters,
         challengeStatusReceiver: ChallengeStatusReceiver
+    )
+
+    /**
+     *  Start Web Challenge screen.
+     *
+     *  @param webChallengeParam parameters for Web Challenge.
+     */
+    fun openWebChallenge(
+        webChallengeParam: WebChallengeParam,
     )
 
     /**

@@ -22,7 +22,7 @@ import net.payrdr.mobile.payment.sdk.form.SDKException
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentData
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 
-class PaymentFormActivity: AppCompatActivity() {
+class PaymentFormActivityWeb : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +49,7 @@ class PaymentFormActivity: AppCompatActivity() {
             .trimIndent()
 
         val paymentConfig = SDKPaymentConfig(baseUrl, dsRoot)
-        SDKPayment.init(paymentConfig, use3ds2sdk = true)
+        SDKPayment.init(paymentConfig, use3ds2sdk = false)
         paymentCheckout.setOnClickListener {
             SDKPayment.checkout(this, mdOrder.text.trim().toString())
         }
@@ -88,10 +88,13 @@ class PaymentFormActivity: AppCompatActivity() {
     }
 
     companion object {
-        private const val ERROR_WORK_CREATE_TRANSACTION: String = "Exception: while create transaction with EC or RSA"
-        private const val ERROR_ALREADY_DEPOSITED_ORDER: String = "Exception: the order has already been deposited"
+        private const val ERROR_WORK_CREATE_TRANSACTION: String =
+            "Exception: while create transaction with EC or RSA"
+        private const val ERROR_ALREADY_DEPOSITED_ORDER: String =
+            "Exception: the order has already been deposited"
         private const val ERROR_DECLINED_ORDER: String = "Exception: the order has been declined"
-        private const val ERROR_CRYPTOGRAM_CANCELED: String = "Exception: the cryptogram creation has been canceled or some error"
+        private const val ERROR_CRYPTOGRAM_CANCELED: String =
+            "Exception: the cryptogram creation has been canceled or some error"
         private const val ERROR_PAYMENT_API: String = "Exception: the api work problem"
         private const val ERROR_ORDER_NOT_EXIT_API: String = "Exception: the order not exist"
         private const val ERROR_NOT_CONFIGURE_EXCEPTION: String =

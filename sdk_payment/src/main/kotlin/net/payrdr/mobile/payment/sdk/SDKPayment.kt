@@ -24,11 +24,18 @@ object SDKPayment {
         get() = innerSdkPaymentConfig
             ?: throw IllegalStateException("Please call SDKPayment.init() before.")
 
+    private var use3ds2sdkConfig: Boolean = true
+    internal val use3ds2sdk
+        get() = use3ds2sdkConfig
+
     /**
      * Initialization.
+     *
+     * @param use3ds2sdk using threeDS version 2 or not,
      */
-    fun init(sdkPaymentConfig: SDKPaymentConfig) {
+    fun init(sdkPaymentConfig: SDKPaymentConfig, use3ds2sdk: Boolean = true) {
         innerSdkPaymentConfig = sdkPaymentConfig
+        use3ds2sdkConfig = use3ds2sdk
     }
 
     /**

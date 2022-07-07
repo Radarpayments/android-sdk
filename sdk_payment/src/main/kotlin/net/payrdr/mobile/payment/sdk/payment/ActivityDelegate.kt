@@ -29,4 +29,11 @@ interface ActivityDelegate {
      * @return configuration object.
      */
     fun getPaymentConfig(): SDKPaymentConfig
+
+    /**
+     * Getting a ThreeDS SDK is version 2.
+     *
+     * @return boolean.
+     */
+    fun get3DSOption(): Boolean
 }
