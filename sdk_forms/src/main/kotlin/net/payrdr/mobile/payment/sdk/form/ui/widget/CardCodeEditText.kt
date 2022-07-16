@@ -8,7 +8,6 @@ import android.text.Spanned
 import android.text.method.PasswordTransformationMethod
 import android.util.AttributeSet
 import android.view.View.OnFocusChangeListener
-import androidx.appcompat.R
 import net.payrdr.mobile.payment.sdk.core.utils.digitsOnly
 import net.payrdr.mobile.payment.sdk.core.validation.CardCodeValidator
 import net.payrdr.mobile.payment.sdk.form.ui.adapter.TextWatcherAdapter
@@ -18,9 +17,8 @@ import net.payrdr.mobile.payment.sdk.form.ui.adapter.TextWatcherAdapter
  */
 class CardCodeEditText @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.editTextStyle
-) : BaseTextInputEditText(context, attrs, defStyleAttr) {
+    attrs: AttributeSet? = null
+) : BaseTextInputEditText(context, attrs) {
 
     private var cardCodeValidator: CardCodeValidator = CardCodeValidator(context)
 

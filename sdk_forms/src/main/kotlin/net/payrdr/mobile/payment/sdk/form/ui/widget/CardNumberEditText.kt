@@ -11,11 +11,10 @@ import kotlin.math.min
 /**
  * UI element for entering the card number.
  */
-class CardNumberEditText @JvmOverloads constructor(
+open class CardNumberEditText @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle
-) : BaseTextInputEditText(context, attrs, defStyleAttr) {
+    attrs: AttributeSet? = null
+) : BaseTextInputEditText(context, attrs) {
 
     private var cardNumberValidator: CardNumberValidator = CardNumberValidator(context)
 

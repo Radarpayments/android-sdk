@@ -6,7 +6,7 @@ object Versions {
     const val kotlinx_coroutines_android = "1.3.7"
     const val appcompat = "1.1.0"
     const val androidx_constraintlayout = "1.1.3"
-    const val android_material = "1.2.0-beta01"
+    const val android_material = "1.6.0"
     const val io_card_android_sdk = "5.5.1"
     const val com_caverock_androidsvg = "1.4"
     const val com_github_devnied_emvnfccard = "3.0.1"

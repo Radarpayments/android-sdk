@@ -10,8 +10,7 @@ import org.json.JSONObject
  * @param backgroundGradient gradient colors background.
  * @param backgroundLightness true if the background is light colors, otherwise false.
  * @param textColor the color of the text on the card, in the format #ffffff or #fff.
- * @param logo link to the card bank logo file.
- * @param logoInvert card bank logo file link for light background.
+ * @param logoMini link to the card bank logo file.
  * @param paymentSystem payment system name.
  * @param status response answer.
  */
@@ -20,8 +19,7 @@ data class CardInfo(
     val backgroundGradient: List<String>,
     val backgroundLightness: Boolean,
     val textColor: String,
-    val logo: String,
-    val logoInvert: String,
+    val logoMini: String,
     val paymentSystem: String,
     val status: String
 ) {
@@ -39,8 +37,7 @@ data class CardInfo(
             backgroundGradient = jsonObject.getJSONArray("backgroundGradient").asStringList(),
             backgroundLightness = jsonObject.getBoolean("backgroundLightness"),
             textColor = jsonObject.getString("textColor"),
-            logo = jsonObject.getString("logo"),
-            logoInvert = jsonObject.getString("logoInvert"),
+            logoMini = jsonObject.getString("logoMini"),
             paymentSystem = jsonObject.getString("paymentSystem"),
             status = jsonObject.getString("status")
         )

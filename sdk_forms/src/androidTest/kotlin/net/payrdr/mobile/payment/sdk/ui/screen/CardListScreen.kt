@@ -13,21 +13,21 @@ object CardListScreen : KScreen<CardListScreen>() {
     override val viewClass: Class<*>?
         get() = CardListActivity::class.java
 
-    val doneButton = KButton { withId(R.id.doneButton) }
+    val doneButton = KButton { withId(R.id.addNewCardIcon) }
 
     val editList = KImageView { withId(R.id.editCardsList) }
 
-    val bindingCard3890 = KTextView { withText("•• 3890") }
+    val bindingCard3890 = KTextView { withText("** 3890") }
 
-    val bindingCard5675 = KTextView { withText("•• 5675") }
+    val bindingCard5675 = KTextView { withText("** 5675") }
 
-    val bindingCard1441 = KTextView { withText("•• 1441") }
+    val bindingCard1441 = KTextView { withText("** 1441") }
 
-    val bindingCard0377 = KTextView { withText("•• 0377") }
+    val bindingCard0377 = KTextView { withText("** 0377") }
 
-    val bindingCard0115 = KTextView { withText("•• 0115") }
+    val bindingCard0115 = KTextView { withText("** 0115") }
 
-    val bindingCard1234 = KTextView { withText("•• 1234") }
+    val bindingCard1234 = KTextView { withText("** 1234") }
 
-    val bindingCard6281 = KTextView { withText("•• 6281") }
+    val bindingCard6281 = KTextView { withText("** 6281") }
 }

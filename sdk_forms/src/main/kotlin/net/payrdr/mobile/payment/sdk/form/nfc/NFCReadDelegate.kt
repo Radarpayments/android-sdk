@@ -79,7 +79,12 @@ class NFCReadDelegate(private val nfcAdapter: NfcAdapter) {
      */
     fun onResume(activity: Activity, activityClass: Class<*>) {
         val updateIntent = Intent(activity, activityClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        val pendingIntent = PendingIntent.getActivity(activity, 0, updateIntent, 0)
+        val flag = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            PendingIntent.FLAG_MUTABLE
+        } else {
+            PendingIntent.FLAG_ONE_SHOT
+        }
+        val pendingIntent = PendingIntent.getActivity(activity, 0, updateIntent, flag)
         nfcAdapter.enableForegroundDispatch(activity, pendingIntent, arrayOf<IntentFilter>(), null)
     }
 

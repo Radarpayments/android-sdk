@@ -2,7 +2,7 @@ package net.payrdr.mobile.payment.sdk.form.ui.widget
 
 import android.content.Context
 import android.util.AttributeSet
-import kotlinx.android.synthetic.main.layout_bank_card.view.cardExpiry
+import androidx.appcompat.widget.AppCompatTextView
 import net.payrdr.mobile.payment.sdk.core.model.ExpiryDate
 import net.payrdr.mobile.payment.sdk.core.utils.digitsOnly
 
@@ -11,9 +11,8 @@ import net.payrdr.mobile.payment.sdk.core.utils.digitsOnly
  */
 class ExpiryTextView @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = android.R.attr.textViewStyle
-) : BaseTextView(context, attrs, defStyleAttr) {
+    attrs: AttributeSet? = null
+) : AppCompatTextView(context, attrs) {
 
     /**
      * Set the expiration date of the card.
@@ -28,7 +27,7 @@ class ExpiryTextView @JvmOverloads constructor(
         }
         val formatted = StringBuilder(EXPIRY_MASK)
         formatted.replace(0, digitsOnly.length, digitsOnly.toString())
-        cardExpiry.text = formatted
+        text = formatted
     }
 
     /**

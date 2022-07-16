@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.util.Log
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import net.payrdr.mobile.payment.sdk.core.component.impl.DefaultPaymentStringProcessor
 import net.payrdr.mobile.payment.sdk.core.component.impl.RSACryptogramCipher
 import net.payrdr.mobile.payment.sdk.form.Constants.REQUEST_CODE_CRYPTOGRAM
@@ -16,6 +17,7 @@ import net.payrdr.mobile.payment.sdk.form.model.SDKConfig
 import net.payrdr.mobile.payment.sdk.form.ui.CardListActivity
 import net.payrdr.mobile.payment.sdk.form.ui.CardNewActivity
 import net.payrdr.mobile.payment.sdk.form.ui.GooglePayActivity
+import net.payrdr.mobile.payment.sdk.form.ui.PaymentBottomSheetFragment
 import net.payrdr.mobile.payment.sdk.form.ui.helper.LocalizationSetting
 import net.payrdr.mobile.payment.sdk.form.ui.helper.ThemeSetting
 import net.payrdr.mobile.payment.sdk.core.BuildConfig as BuildConfigCore
@@ -138,6 +140,28 @@ object SDKForms {
             GooglePayActivity.prepareIntent(fragment.requireContext(), config),
             REQUEST_CODE_CRYPTOGRAM
         )
+    }
+
+    /**
+     * Launching the payment process for Google Pay payment from [FragmentManager].
+     *
+     * @param manager for launching bottom sheet.
+     * @param tag string for transaction naming.
+     * @param config payment configuration.
+     * @param googlePayConfig payment google pay configuration.
+     */
+    fun cryptogram(
+        manager: FragmentManager,
+        tag: String?,
+        config: PaymentConfig,
+        googlePayConfig: GooglePayPaymentConfig
+    ) {
+        checkNotNull(config)
+        LocalizationSetting.setLanguage(config.locale)
+        ThemeSetting.setTheme(config.theme)
+        val paymentBottomSheetFragment = PaymentBottomSheetFragment()
+        paymentBottomSheetFragment.setGooglePayButtonCLickListener(googlePayConfig)
+        paymentBottomSheetFragment.show(manager, tag, config)
     }
 
     /**

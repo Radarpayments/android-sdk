@@ -149,9 +149,6 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                         isVisible()
                         allureScreenshot(name = "shouldScrollWithSoftwareKeyboard_1", quality = 1)
                     }
-                    cardHolderInput {
-                        isDisplayed()
-                    }
                     checkSaveCard {
                         isDisplayed()
                     }
@@ -210,10 +207,6 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                     cardCodeInput {
                         hasFocus()
                         typeText("123")
-                    }
-                    cardHolderInput {
-                        hasFocus()
-                        typeText("JOHN")
                     }
                 }
             }
@@ -376,9 +369,6 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                             quality = 1
                         )
                     }
-                    cardHolderInput {
-                        isDisplayed()
-                    }
                 }
             }
         }
@@ -452,12 +442,6 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                     cardCodeInput {
                         typeText("012")
                     }
-                    pressKey(KeyEvent.KEYCODE_ENTER)
-                    allureScreenshot(name = "shouldRunWithConfiguredSaveCardHide_1", quality = 1)
-                    cardHolderInput {
-                        typeText("KONSTANTINOPOLSKY")
-                    }
-                    pressKey(KeyEvent.KEYCODE_ENTER)
                     allureScreenshot(name = "shouldRunWithConfiguredSaveCardHide_1", quality = 1)
                     doneButton {
                         click()
@@ -528,12 +512,6 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                     cardCodeInput {
                         typeText("012")
                     }
-                    pressKey(KeyEvent.KEYCODE_ENTER)
-                    allureScreenshot(name = "shouldRunWithConfiguredSaveCardHide_1", quality = 1)
-                    cardHolderInput {
-                        typeText("KONSTANTINOPOLSKY")
-                    }
-                    pressKey(KeyEvent.KEYCODE_ENTER)
                     allureScreenshot(name = "shouldRunWithConfiguredSaveCardHide_1", quality = 1)
                     doneButton {
                         click()

@@ -79,7 +79,10 @@ jobs:
           arch: x86_64
           disable-animations: true
           profile: Nexus 6
-          script: ./gradlew :sdk_payment:connectedAndroidTest
+          script: ./gradlew :sdk_core:connectedAndroidTest
+            ./gradlew :sdk_forms:connectedAndroidTest
+            ./gradlew :sdk_payment:connectedAndroidTest
+            ./script_allure_results_pack.sh
 
       - name: Upload spoon result (Artifact)
         if: always()

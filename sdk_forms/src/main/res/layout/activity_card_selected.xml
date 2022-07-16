@@ -1,73 +1,255 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
-    tools:context=".ui.CardSelectedActivity">
+    android:orientation="vertical"
+    android:scrollbars="none">
 
-    <requestFocus />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".ui.CardNewActivity">
+
+            <LinearLayout
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/payrdr_medium_dimen"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/arrow_back"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="@dimen/payrdr_large_dimen"
+                    android:contentDescription="@string/payrdr_back_arrow_icon"
+                    android:src="@drawable/ic_back" />
+
+                <TextView
+                    android:id="@+id/title"
+                    style="@style/PAYRDRTextViewStyleBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="16dp"
+                    android:layout_weight="1"
+                    android:text="@string/payrdr_title_payment" />
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/dropshadow"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@drawable/toolbar_dropshadow"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+            <net.payrdr.mobile.payment.sdk.form.ui.widget.BankCardView
+                android:id="@+id/bankCardView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="@dimen/payrdr_form_card_margin"
+                android:layout_marginTop="@dimen/payrdr_very_large_dimen"
+                android:layout_marginEnd="@dimen/payrdr_form_card_margin"
+                android:background="@color/payrdr_general_night_color"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+            <net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
+                android:id="@+id/cardNumberInputLayout"
+                style="@style/PAYRDRTextInputLayoutAppearance"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/payrdr_medium_dimen"
+                android:layout_marginTop="@dimen/payrdr_large_dimen"
+                android:layout_marginEnd="@dimen/payrdr_medium_dimen"
+                android:theme="@style/PAYRDRTextInputLayoutAppearance"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bankCardView">
+
+                <net.payrdr.mobile.payment.sdk.form.ui.widget.CardNumberEditText
+                    android:id="@+id/cardNumberInput"
+                    style="@style/PAYRDREditTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:hint="@string/payrdr_card_number"
+                    android:imeOptions="actionNext"
+                    android:nextFocusDown="@id/cardExpiryInput"
+                    android:paddingBottom="12dp"
+                    android:text="•••• •••• •••• ••••"
+                    android:textColor="@color/hint_text_color">
+
+                </net.payrdr.mobile.payment.sdk.form.ui.widget.CardNumberEditText>
+            </net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout>
+
+            <net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
+                android:id="@+id/cardExpiryInputLayout"
+                style="@style/PAYRDRTextInputLayoutAppearance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/payrdr_medium_dimen"
+                android:layout_marginTop="@dimen/payrdr_large_dimen"
+                android:orientation="vertical"
+                android:theme="@style/PAYRDRTextInputLayoutAppearance"
+                app:layout_constraintEnd_toStartOf="@+id/cardCodeInputLayout"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardNumberInputLayout">
+
+                <net.payrdr.mobile.payment.sdk.form.ui.widget.CardExpiryEditText
+                    android:id="@+id/cardExpiryInput"
+                    style="@style/PAYRDREditTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:hint="@string/payrdr_card_expiry_placeholder"
+                    android:imeOptions="actionNext"
+                    android:nextFocusDown="@id/cardCodeInput"
+                    android:text="••/••"
+                    android:textColor="@color/hint_text_color" />
+
+            </net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout>
+
+            <net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
+                android:id="@+id/cardCodeInputLayout"
+                style="@style/PAYRDRTextInputLayoutAppearance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/payrdr_large_dimen"
+                android:layout_marginTop="@dimen/payrdr_large_dimen"
+                android:layout_marginEnd="@dimen/payrdr_medium_dimen"
+                android:theme="@style/PAYRDRTextInputLayoutAppearance"
+                app:layout_constraintBottom_toBottomOf="@+id/cardExpiryInputLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/cardExpiryInputLayout"
+                app:layout_constraintTop_toBottomOf="@+id/cardNumberInputLayout"
+                app:layout_constraintVertical_bias="0.0">
+
+                <net.payrdr.mobile.payment.sdk.form.ui.widget.CardCodeEditText
+                    android:id="@+id/cardCodeInput"
+                    style="@style/PAYRDREditTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:hint="@string/payrdr_code"
+                    android:nextFocusDown="@id/cardHolderInput" />
+            </net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="cardExpiryInputLayout,cardCodeInputLayout"
+                tools:layout_editor_absoluteY="321dp" />
+
+            <net.payrdr.mobile.payment.sdk.form.ui.widget.GeneralButton
+                android:id="@+id/doneButton"
+                style="@style/ButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/payrdr_medium_dimen"
+                android:layout_marginTop="@dimen/payrdr_very_large_dimen"
+                android:layout_marginEnd="@dimen/payrdr_medium_dimen"
+                android:focusable="true"
+                android:text="@string/payrdr_payment_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/barrier">
+
+                <requestFocus />
+            </net.payrdr.mobile.payment.sdk.form.ui.widget.GeneralButton>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:title="Title" />
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/payrdr_medium_dimen"
+        android:layout_marginTop="@dimen/payrdr_large_dimen"
+        android:layout_marginEnd="@dimen/payrdr_medium_dimen"
+        android:layout_marginBottom="@dimen/payrdr_very_large_dimen"
+        android:gravity="center_vertical"
+        android:padding="12dp">
 
-    <net.payrdr.mobile.payment.sdk.form.ui.widget.BankCardView
-        android:id="@+id/bankCardView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-
-    <net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
-        android:id="@+id/cardCodeInputLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/payrdr_card_selected_code_margin_right"
-        android:layout_marginBottom="@dimen/payrdr_card_selected_code_margin_bottom"
-        android:background="@drawable/background_input_code"
-        android:paddingBottom="8dp"
-        android:textColorHint="@color/payrdr_color_saved_card_cvc_hint"
-        app:errorEnabled="false"
-        app:layout_constraintBottom_toBottomOf="@+id/bankCardView"
-        app:layout_constraintEnd_toEndOf="@+id/bankCardView"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/bankCardView"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintVertical_bias="1.0">
-
-        <net.payrdr.mobile.payment.sdk.form.ui.widget.CardCodeEditText
-            android:id="@+id/cardCodeInput"
-            android:layout_width="120dp"
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@android:color/transparent"
-            android:gravity="center"
-            android:hint="@string/payrdr_code"
-            android:textColor="@color/payrdr_color_saved_card_cvc_text"
-            app:hintTextAppearance="@style/TextAppearance.AppCompat.Small" />
-    </net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout>
+            android:contentDescription="@string/verify_system_image_content_description"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageView2"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_verify_visa_tds" />
 
-    <Button
-        android:id="@+id/doneButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/payrdr_form_padding"
-        android:layout_marginEnd="@dimen/payrdr_form_padding"
-        android:text="@string/payrdr_done_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/verify_system_image_content_description"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView3"
+            app:layout_constraintEnd_toStartOf="@+id/imageView3"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imageView"
+            app:layout_constraintTop_toTopOf="@+id/imageView3"
+            app:srcCompat="@drawable/ic_verify_jcb_tds" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/verify_system_image_content_description"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageView4"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imageView2"
+            app:layout_constraintTop_toTopOf="@+id/imageView4"
+            app:srcCompat="@drawable/ic_verify_pci_tds" />
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/verify_system_image_content_description"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView"
+            app:layout_constraintEnd_toStartOf="@+id/imageView5"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imageView3"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_verify_mastercard_tds" />
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:contentDescription="@string/verify_system_image_content_description"
+            android:scaleType="fitEnd"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imageView4"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_verify_mir_tds" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

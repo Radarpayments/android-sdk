@@ -51,12 +51,6 @@ class BankCardViewDisplayVariantsTest : CoreUIViewTest<BankCardView>() {
         activityTestRule.runOnUiThread {
             testedView.apply {
                 setBankLogoUrl(url)
-                setBackground("#63d01c", "#01b27a")
-                setHolderName("Mabel Fergie")
-                setTextColor("#fff")
-                setExpiry("03/20")
-                setNumber("42764414")
-                setPaymentSystem("visa", true)
             }
         }
 
@@ -73,12 +67,6 @@ class BankCardViewDisplayVariantsTest : CoreUIViewTest<BankCardView>() {
         activityTestRule.runOnUiThread {
             testedView.apply {
                 setBankLogoUrl(url)
-                setBackground("#444", "#222")
-                setHolderName("MARK WATNEY")
-                setTextColor("#fff")
-                setExpiry("03/25")
-                setNumber("55369138")
-                setPaymentSystem("mastercard", true)
             }
         }
         allureScreenshot(name = "Tinkoff Bank", quality = 1)
@@ -94,12 +82,6 @@ class BankCardViewDisplayVariantsTest : CoreUIViewTest<BankCardView>() {
         activityTestRule.runOnUiThread {
             testedView.apply {
                 setBankLogoUrl(url)
-                setBackground("#044b98", "#02356c")
-                setHolderName("RICHARD HENDRICKS")
-                setTextColor("#fff")
-                setExpiry("09/20")
-                setNumber("67645463")
-                setPaymentSystem("mastercard", true)
             }
         }
         allureScreenshot(name = "Gazprom Bank", quality = 1)
@@ -115,12 +97,6 @@ class BankCardViewDisplayVariantsTest : CoreUIViewTest<BankCardView>() {
         activityTestRule.runOnUiThread {
             testedView.apply {
                 setBankLogoUrl(url)
-                setBackground("#ff9f1c", "#fe7a1d")
-                setHolderName("JOHN DOE")
-                setTextColor("#fff")
-                setExpiry("08/22")
-                setNumber("53213003")
-                setPaymentSystem("mastercard", true)
             }
         }
         allureScreenshot(name = "Qiwi Bank", quality = 1)

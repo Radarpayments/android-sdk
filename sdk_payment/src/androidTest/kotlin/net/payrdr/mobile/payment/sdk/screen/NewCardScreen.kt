@@ -23,5 +23,5 @@ object NewCardScreen : KScreen<NewCardScreen>() {
 
     val doneButton = KButton { withId(R.id.doneButton) }
 
-    val checkSaveCard = KCheckBox { withId(R.id.checkSaveCard) }
+    val checkSaveCard = KCheckBox { withId(R.id.switchBox) }
 }

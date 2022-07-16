@@ -3,53 +3,64 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="58dp">
+    android:layout_height="wrap_content">
 
     <com.caverock.androidsvg.SVGImageView
         android:id="@+id/cardSystem"
-        android:layout_width="46dp"
-        android:layout_height="30dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        android:background="@drawable/background_list_item_card_icon"
+        android:layout_width="36dp"
+        android:layout_height="24dp"
+        android:layout_marginVertical="@dimen/payrdr_large_dimen"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/background_card_system_logo"
+        android:padding="@dimen/payrdr_very_small_dimen"
         android:scaleType="fitCenter"
-        android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/cardNumber"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/cardExpiry"
-        app:layout_constraintStart_toEndOf="@+id/cardSystem"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="•• 5472" />
-
-    <net.payrdr.mobile.payment.sdk.form.ui.widget.ExpiryTextView
-        android:id="@+id/cardExpiry"
+        style="@style/PAYRDRTextViewStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="@dimen/payrdr_medium_dimen"
+        android:layout_marginEnd="@dimen/payrdr_small_dimen"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/arrow"
+        app:layout_constraintStart_toEndOf="@+id/cardSystem"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="** 5472" />
+
+    <net.payrdr.mobile.payment.sdk.form.ui.widget.ExpiryTextView
+        android:id="@+id/expiryDate"
+        style="@style/PAYRDRTextViewStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/payrdr_medium_dimen"
+        android:layout_marginEnd="@dimen/payrdr_small_dimen"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cardNumber"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="12 / 25" />
 
     <ImageView
-        android:id="@+id/arrow"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="16dp"
+        android:id="@+id/delete"
+        android:layout_width="@dimen/payrdr_large_dimen"
+        android:layout_height="@dimen/payrdr_large_dimen"
+        android:layout_marginEnd="@dimen/payrdr_medium_dimen"
+        android:contentDescription="@string/go_to_confirmation_screen_content_description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/go_to_confirmation_screen_content_description"
         app:srcCompat="@drawable/ic_arrow_right" />
+
+    <View
+        android:id="@+id/bottomLineCardItem"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginEnd="@dimen/payrdr_medium_dimen"
+        android:background="@color/box_stroke_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

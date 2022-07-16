@@ -16,9 +16,8 @@ import net.payrdr.mobile.payment.sdk.form.ui.adapter.TextWatcherAdapter
  */
 class CardHolderEditText @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle
-) : BaseTextInputEditText(context, attrs, defStyleAttr) {
+    attrs: AttributeSet? = null
+) : BaseTextInputEditText(context, attrs) {
 
     private var cardHolderValidator: CardHolderValidator = CardHolderValidator(context)
 

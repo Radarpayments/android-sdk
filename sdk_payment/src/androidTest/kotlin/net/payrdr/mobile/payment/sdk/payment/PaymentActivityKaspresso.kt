@@ -115,10 +115,6 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
                 isVisible()
                 typeText(cvc)
             }
-            cardHolderInput {
-                isVisible()
-                typeText(holder)
-            }
         }
     }
 
@@ -866,15 +862,6 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
             .check(ViewAssertions.matches(ViewMatchers.hasFocus()))
         Espresso.onView(ViewMatchers.withId(R.id.cardCodeInput))
             .perform(ViewActions.typeText("123"), ViewActions.closeSoftKeyboard())
-        try {
-            Espresso.onView(ViewMatchers.withId(R.id.cardHolderInput)).perform(
-                ViewActions.typeText("CARD HOLDER"),
-                ViewActions.closeSoftKeyboard()
-            )
-        } catch (e: Exception) {
-            // TODO
-        }
-//        takeScreen()
         Espresso.onView(ViewMatchers.withId(R.id.doneButton)).perform(ViewActions.click())
         val mdOrder: String? = regOrderWithBindingCard()
         SDKPayment.checkout(activityTestRule.activity, mdOrder!!)

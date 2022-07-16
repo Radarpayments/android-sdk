@@ -9,6 +9,5 @@ import com.google.android.material.textfield.TextInputLayout
  */
 open class BaseTextInputLayout @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = com.google.android.material.R.attr.textInputStyle
-) : TextInputLayout(context, attrs, defStyleAttr)
+    attrs: AttributeSet? = null
+) : TextInputLayout(context, attrs)

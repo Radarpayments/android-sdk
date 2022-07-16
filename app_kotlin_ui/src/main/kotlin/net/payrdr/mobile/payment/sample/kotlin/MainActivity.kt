@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.gms.wallet.PaymentDataRequest
 import com.google.android.gms.wallet.WalletConstants
 import kotlinx.android.synthetic.main.activity_main.amountInput
+import kotlinx.android.synthetic.main.activity_main.bottomSheetButton
 import kotlinx.android.synthetic.main.activity_main.cardCameraOffButton
 import kotlinx.android.synthetic.main.activity_main.cardDoneTextButton
 import kotlinx.android.synthetic.main.activity_main.cardEasyButton
@@ -100,13 +101,67 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        bottomSheetButton.setOnClickListener {
+            val cards = setOf(
+                Card(
+                    "492980xxxxxx7724", "aa199a55-cf16-41b2-ac9e-cddc731edd19",
+                    ExpiryDate(2025, 12)
+                ),
+                Card(
+                    "558620xxxxxx6614", "6617c0b1-9976-45d9-b659-364ecac099e2",
+                    ExpiryDate(2024, 6)
+                ),
+                Card(
+                    "415482xxxxxx0000", "3d2d320f-ca9a-4713-977c-c852accf8a7b",
+                    ExpiryDate(2019, 1)
+                ),
+                Card("411790xxxxxx123456", "ceae68c1-cb02-4804-9526-6d6b2f1f2793")
+            )
+            val order = "00210bac-0ed1-474b-8ec2-5648cdfc4212"
+            val paymentConfig = PaymentConfigBuilder(order)
+                // Optional, by default localized translation "Pay".
+                .buttonText("Оплатить 200 Ꝑ")
+                // Optional, default HIDE.
+                .cardSaveOptions(CardSaveOptions.YES_BY_DEFAULT)
+                // Optional, default HIDE.
+                .holderInputOptions(HolderInputOptions.VISIBLE)
+                // Optional, default true.
+                .bindingCVCRequired(false)
+                // Optional, default ENABLED.
+                .cameraScannerOptions(CameraScannerOptions.ENABLED)
+                // Optional, default ENABLED.
+                .nfcScannerOptions(NfcScannerOptions.ENABLED)
+                // Optional, default DEFAULT.
+                .theme(Theme.DEFAULT)
+                // Optionally, the locale of the payment form is determined automatically.
+                .locale(launchLocale)
+                // Optional, the default is an empty list.
+                .cards(cards)
+                // Optionally, a unique payment identifier is generated automatically.
+                .uuid("27fb1ebf-895e-4b15-bfeb-6ecae378fe8e")
+                // Optionally, the time for generating the payment is set automatically.
+                .timestamp(System.currentTimeMillis())
+                // Optional, default is NO_DELETE.
+                .cardDeleteOptions(CardDeleteOptions.NO_DELETE)
+                .build()
+            SDKForms.cryptogram(
+                supportFragmentManager,
+                "bottom sheet",
+                paymentConfig,
+                createGooglePayConfig()
+            )
+        }
         cardEasyButton.setOnClickListener { executeEasyCheckout() }
         cardCameraOffButton.setOnClickListener { executeCameraOffCheckout() }
         cardNfcOffButton.setOnClickListener { executeNfcOffCheckout() }
         cardDoneTextButton.setOnClickListener { executeDoneTextCheckout() }
         cardNewButton.setOnClickListener { executeCheckoutWithoutCards() }
         cardListNotRequiredCVCButton.setOnClickListener { executeCheckout(false) }
-        cardListNotRequiredCVCButtonWithDelCard.setOnClickListener { executeCheckoutWithDeletingCard(false) }
+        cardListNotRequiredCVCButtonWithDelCard.setOnClickListener {
+            executeCheckoutWithDeletingCard(
+                false
+            )
+        }
         darkThemeButton.setOnClickListener { executeThemeCheckout(true) }
         lightThemeButton.setOnClickListener { executeThemeCheckout(false) }
         cardListRequiredCVCButton.setOnClickListener { executeCheckout(true) }

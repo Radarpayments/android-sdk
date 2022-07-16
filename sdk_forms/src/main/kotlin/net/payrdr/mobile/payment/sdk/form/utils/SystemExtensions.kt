@@ -1,7 +1,6 @@
 package net.payrdr.mobile.payment.sdk.form.utils
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.payrdr.mobile.payment.sdk.form.R
 import net.payrdr.mobile.payment.sdk.form.model.Theme
 
@@ -50,17 +50,16 @@ fun deviceHasGooglePlayServices(context: Context): Boolean {
  * @param activity the screen on which the NFC enable request should be made.
  */
 fun askToEnableNfc(activity: Activity) {
-    val builder = AlertDialog.Builder(activity, R.style.PAYRDRAlertDialogTheme).apply {
-        setTitle(R.string.payrdr_nfc_disabled_title)
-        setMessage(R.string.payrdr_nfc_disabled_message)
-        setPositiveButton(R.string.payrdr_enable) { _, _ ->
+    MaterialAlertDialogBuilder(activity)
+        .setTitle(R.string.payrdr_nfc_disabled_title)
+        .setMessage(R.string.payrdr_nfc_disabled_message)
+        .setPositiveButton(R.string.payrdr_enable) { _, _ ->
             launchNfcSettings(activity)
         }
-        setNegativeButton(R.string.payrdr_cancel) { dialog, _ ->
+        .setNegativeButton(R.string.payrdr_cancel) { dialog, _ ->
             dialog.dismiss()
         }
-    }
-    builder.show()
+        .show()
 }
 
 /**

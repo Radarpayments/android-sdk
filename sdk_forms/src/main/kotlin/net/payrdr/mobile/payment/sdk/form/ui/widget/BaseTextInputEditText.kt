@@ -9,9 +9,8 @@ import com.google.android.material.textfield.TextInputEditText
  */
 open class BaseTextInputEditText @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = androidx.appcompat.R.attr.editTextStyle
-) : TextInputEditText(context, attrs, defStyleAttr) {
+    attrs: AttributeSet? = null
+) : TextInputEditText(context, attrs) {
 
     /**
      * Listener to output an error message.

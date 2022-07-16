@@ -7,12 +7,12 @@
             android:name=".payment.PaymentActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"
-            android:theme="@style/PAYRDRTransparentTheme" />
+            android:theme="@style/Theme.App.Material" />
 
         <activity
             android:name=".payment.ActivityWebChallenge"
             android:screenOrientation="portrait"
-            android:theme="@style/PAYRDRTransparentTheme" />
+            android:theme="@style/Theme.App.Material" />
     </application>
 
 </manifest>

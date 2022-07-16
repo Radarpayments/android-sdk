@@ -16,7 +16,7 @@
             android:name=".core.TestActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"
-            android:theme="@style/PAYRDRTransparentTheme" />
+            android:theme="@style/Theme.App.Material" />
     </application>
 
 </manifest>

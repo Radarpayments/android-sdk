@@ -84,11 +84,7 @@ class RemoteCardInfoProviderTest {
         assertEquals("#efe6a2", info.backgroundGradient[1])
         assertEquals(true, info.backgroundLightness)
         assertEquals("#000", info.textColor)
-        assertEquals("${urlBin}logo/main/364b8b2f-64f1-4268-b1df-9b19575c68e1/1.svg", info.logo)
-        assertEquals(
-            "${urlBin}logo/invert/364b8b2f-64f1-4268-b1df-9b19575c68e1/1.svg",
-            info.logoInvert
-        )
+        assertEquals("${urlBin}logo/mini/364b8b2f-64f1-4268-b1df-9b19575c68e1/1.svg", info.logoMini)
         assertEquals("visa", info.paymentSystem)
         assertEquals("SUCCESS", info.status)
         Unit

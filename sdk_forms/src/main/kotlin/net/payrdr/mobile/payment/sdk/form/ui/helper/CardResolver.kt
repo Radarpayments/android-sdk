@@ -62,19 +62,7 @@ internal class CardResolver(
 
     private fun BankCardView.setupCardInfo(cardInfo: CardInfo?) {
         cardInfo?.let { info ->
-            setTextColor(info.textColor)
-            if (info.backgroundGradient.size >= 2) {
-                setBackground(info.backgroundGradient[0], info.backgroundGradient[1])
-            } else {
-                setBackground(info.backgroundColor, info.backgroundColor)
-            }
-            if (info.backgroundLightness) {
-                setBankLogoUrl(info.logo)
-                setPaymentSystem(info.paymentSystem, false)
-            } else {
-                setBankLogoUrl(info.logoInvert)
-                setPaymentSystem(info.paymentSystem, true)
-            }
+            setBankLogoUrl(info.logoMini)
         } ?: setupUnknownBrand()
     }
 

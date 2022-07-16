@@ -2,17 +2,18 @@ package net.payrdr.mobile.payment.sdk.form.ui
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
 import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_card_new.bankCardView
-import kotlinx.android.synthetic.main.activity_card_new.cardCodeInput
-import kotlinx.android.synthetic.main.activity_card_new.doneButton
-import kotlinx.android.synthetic.main.activity_card_new.toolbar
-import kotlinx.android.synthetic.main.activity_card_selected.cardCodeInputLayout
-import kotlinx.android.synthetic.main.list_item_card_saved.view.cardExpiry
+import com.caverock.androidsvg.SVG
+import kotlinx.android.synthetic.main.activity_card_selected.bankCardView
+import kotlinx.android.synthetic.main.activity_card_selected.cardCodeInput
+import kotlinx.android.synthetic.main.activity_card_selected.cardNumberInputLayout
+import kotlinx.android.synthetic.main.activity_card_selected.doneButton
+import kotlinx.android.synthetic.main.activity_card_selected.toolbar
+import kotlinx.android.synthetic.main.activity_card_selected.view.arrow_back
+import kotlinx.android.synthetic.main.activity_card_selected.view.title
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.payrdr.mobile.payment.sdk.core.model.CardBindingIdIdentifier
@@ -26,6 +27,7 @@ import net.payrdr.mobile.payment.sdk.form.model.CryptogramData
 import net.payrdr.mobile.payment.sdk.form.model.PaymentConfig
 import net.payrdr.mobile.payment.sdk.form.model.PaymentDataStatus
 import net.payrdr.mobile.payment.sdk.form.model.PaymentInfoBindCard
+import net.payrdr.mobile.payment.sdk.form.ui.helper.CardLogoAssetsResolver
 import net.payrdr.mobile.payment.sdk.form.ui.helper.CardResolver
 import net.payrdr.mobile.payment.sdk.form.utils.finishWithError
 import net.payrdr.mobile.payment.sdk.form.utils.finishWithResult
@@ -53,28 +55,14 @@ class CardSelectedActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_selected)
-        setSupportActionBar(toolbar)
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setTitle(R.string.payrdr_title_payment)
+        toolbar.title.text = resources.getString(R.string.payrdr_title_payment)
+        toolbar.arrow_back.setOnClickListener {
+            onBackPressed()
         }
+        setStartLogoPaymentSystem()
         cardResolver.resolve(card.pan)
-        config.buttonText?.let { text ->
-            doneButton.text = text
-        }
         config.bindingCVCRequired.let { cvcRequired ->
-            cardCodeInputLayout.visibility = if (cvcRequired) VISIBLE else INVISIBLE
-        }
-        bankCardView.apply {
-            setNumber(card.pan)
-            enableHolderName(false)
-            if (card.expiryDate != null) {
-                cardExpiry.setExpiry(card.expiryDate!!)
-                cardExpiry.visibility = VISIBLE
-            } else {
-                cardExpiry.visibility = INVISIBLE
-                cardExpiry.setExpiry("")
-            }
+            cardCodeInput.isEnabled = cvcRequired
         }
         cardCodeInput onDisplayError { message ->
             if (message != null) {
@@ -109,6 +97,18 @@ class CardSelectedActivity : BaseActivity() {
         }
     }
 
+    private fun setStartLogoPaymentSystem() {
+        val logoResource = CardLogoAssetsResolver.resolveByPan(this, card.pan)
+        if (logoResource != null) {
+            val logoSVG = SVG.getFromAsset(resources.assets, logoResource)
+            logoSVG.documentHeight = PAYMENT_SYSTEM_LOGO_HEIGHT
+            logoSVG.documentWidth = PAYMENT_SYSTEM_LOGO_WIDTH
+            val logoPictures = logoSVG.renderToPicture()
+            val logoDrawable = PictureDrawable(logoPictures)
+            cardNumberInputLayout.startIconDrawable = logoDrawable
+        }
+    }
+
     @Suppress("TooGenericExceptionCaught")
     private fun preparePaymentData() {
         workScope.launch(Dispatchers.Main) {
@@ -140,6 +140,9 @@ class CardSelectedActivity : BaseActivity() {
     }
 
     companion object {
+
+        private const val PAYMENT_SYSTEM_LOGO_HEIGHT = 50f
+        private const val PAYMENT_SYSTEM_LOGO_WIDTH = 80f
 
         /**
          * Prepares [Intent] to launch the payment screen of the selected card.

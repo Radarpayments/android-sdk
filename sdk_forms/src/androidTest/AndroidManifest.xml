@@ -8,7 +8,7 @@
 
     <application
         android:requestLegacyExternalStorage="true"
-        android:theme="@style/PAYRDRDefaultTheme"
+        android:theme="@style/Theme.App.Material"
         android:usesCleartextTraffic="true">
         <activity android:name=".test.core.CoreTestActivity" />
     </application>

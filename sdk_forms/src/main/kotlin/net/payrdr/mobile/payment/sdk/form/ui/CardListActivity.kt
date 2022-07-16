@@ -1,19 +1,18 @@
 package net.payrdr.mobile.payment.sdk.form.ui
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.synthetic.main.activity_card_list.cardList
-import kotlinx.android.synthetic.main.activity_card_list.doneButton
 import kotlinx.android.synthetic.main.activity_card_list.editCardsList
-import kotlinx.android.synthetic.main.activity_card_new.toolbar
+import kotlinx.android.synthetic.main.activity_card_list.toolbar
+import kotlinx.android.synthetic.main.activity_card_list.view.arrow_back
+import kotlinx.android.synthetic.main.activity_card_list.view.title
 import net.payrdr.mobile.payment.sdk.form.Constants
 import net.payrdr.mobile.payment.sdk.form.R
 import net.payrdr.mobile.payment.sdk.form.model.Card
@@ -37,19 +36,14 @@ class CardListActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_list)
-        setSupportActionBar(toolbar)
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setTitle(R.string.payrdr_title_card_list)
+        toolbar.title.text = resources.getString(R.string.payrdr_title_card_list)
+        toolbar.arrow_back.setOnClickListener {
+            onBackPressed()
         }
         cardsAdapter.cards = config.cards.toList()
         cardList.apply {
             adapter = cardsAdapter
             layoutManager = LinearLayoutManager(this@CardListActivity)
-            addItemDecoration(DividerItemDecoration(context, RecyclerView.VERTICAL))
-        }
-        doneButton.setOnClickListener {
-            openNewCard()
         }
         if (config.cardDeleteOptions == CardDeleteOptions.YES_DELETE) {
             editCardsList.visibility = View.VISIBLE
@@ -68,6 +62,11 @@ class CardListActivity : BaseActivity() {
                 deleteCardFromList(card)
             }
         }
+        cardsAdapter.newCardSelectListener = object : CardListAdapter.NewCardSelectListener {
+            override fun onCardSelected() {
+                openNewCard()
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -84,8 +83,6 @@ class CardListActivity : BaseActivity() {
     }
 
     private fun deleteCardFromList(card: Card) {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this@CardListActivity)
-        val messageDialog = getString(R.string.payrdr_card_deleting_question, card.pan)
         val dialogClickListener: DialogInterface.OnClickListener =
             DialogInterface.OnClickListener { dialog, which ->
                 when (which) {
@@ -95,16 +92,22 @@ class CardListActivity : BaseActivity() {
                     }
                 }
             }
-        builder.setMessage(messageDialog)
-            .setPositiveButton(getString(R.string.payrdr_yes_title), dialogClickListener)
-            .setNegativeButton(getString(R.string.payrdr_no_title), dialogClickListener)
+        MaterialAlertDialogBuilder(this)
+            .setTitle("You really want to delete?")
+            .setMessage("The card cannot be restored. You'll have to add a new card.")
+            .setPositiveButton("delete", dialogClickListener)
+            .setNegativeButton("cancel", dialogClickListener)
             .show()
     }
 
     private fun changeEditCardState() {
+        if (editCardsList.text == resources.getString(R.string.payrdr_edit_card_list)) {
+            editCardsList.text = resources.getString(R.string.payrdr_title_edit_card_list)
+        } else {
+            editCardsList.text = resources.getString(R.string.payrdr_edit_card_list)
+        }
         cardsAdapter.showDelIcon = !cardsAdapter.showDelIcon
         updateCardsListView(config)
-        doneButton.visibility = if (cardsAdapter.showDelIcon) View.GONE else View.VISIBLE
     }
 
     private fun updateCardsListView(config: PaymentConfig) {

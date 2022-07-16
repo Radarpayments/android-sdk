@@ -11,6 +11,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     compileSdkVersion(BuildVersionsAndroid.compileSdkVersion)
 
     defaultConfig {
@@ -19,6 +23,7 @@ android {
         multiDexEnabled = true
         versionCode = BuildVersionsAndroid.versionCode
         versionName = SDKBuildVersions.sdkPaymentVersion
+
 
         testInstrumentationRunner("io.qameta.allure.android.runners.AllureAndroidJUnitRunner")
         buildConfigField(

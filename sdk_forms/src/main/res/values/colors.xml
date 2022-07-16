@@ -14,4 +14,21 @@
     <color name="payrdr_color_shadow">#AA808084</color>
     <color name="payrdr_color_card_background">#FFFFFF</color>
     <color name="payrdr_color_list_divider">#E1E2E6</color>
+    <color name="payrdr_general_light_color">#000000</color>
+    <color name="payrdr_general_night_color">#FFFFFF</color>
+    <color name="payrdr_background_bottom_sheet_color">#FFFFFF</color>
+    <color name="payrdr_background_bottom_cancel_color">#F2F2F2</color>
+
+    <color name="hint_text_color">#6C6C6C</color>
+    <color name="box_stroke_color">#DBDBDB</color>
+    <color name="background_logo_color">#F2F2F2</color>
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="onSecondary">#000000</color>
+    <color name="onSurface">#6200EE</color>
+    <color name="background_alert_dialog">#FFFFFF</color>
+    <color name="window_color">#FFFFFF</color>
+    <color name="status_bar_color">#131313</color>
+    <color name="colorThumb">#FFFFFF</color>
+    <color name="colorTrack">#9E9E9E</color>
+    <color name="colorSwitchActivated">#4090C7</color>
 </resources>

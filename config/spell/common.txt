@@ -82,3 +82,8 @@ uiautomator
 jaxb
 PAREQ
 webdriver
+dropshadow
+hideable
+coordinatorlayout
+xmark
+bottomsheet

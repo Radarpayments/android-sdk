@@ -3,14 +3,18 @@ package net.payrdr.mobile.payment.sdk.form.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.PictureDrawable
 import android.nfc.NfcAdapter
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.lifecycle.MutableLiveData
+import com.caverock.androidsvg.SVG
 import com.github.devnied.emvnfccard.exception.CommunicationException
 import io.card.payment.CardIOActivity
 import io.card.payment.CardIOActivity.EXTRA_HIDE_CARDIO_LOGO
@@ -28,12 +32,14 @@ import kotlinx.android.synthetic.main.activity_card_new.cardCodeInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.cardExpiryInput
 import kotlinx.android.synthetic.main.activity_card_new.cardExpiryInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.cardHolderInput
-import kotlinx.android.synthetic.main.activity_card_new.cardHolderInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.cardNumberInput
 import kotlinx.android.synthetic.main.activity_card_new.cardNumberInputLayout
-import kotlinx.android.synthetic.main.activity_card_new.checkSaveCard
 import kotlinx.android.synthetic.main.activity_card_new.doneButton
+import kotlinx.android.synthetic.main.activity_card_new.switchBox
+import kotlinx.android.synthetic.main.activity_card_new.switchBoxText
 import kotlinx.android.synthetic.main.activity_card_new.toolbar
+import kotlinx.android.synthetic.main.activity_card_new.view.arrow_back
+import kotlinx.android.synthetic.main.activity_card_new.view.title
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.payrdr.mobile.payment.sdk.core.model.CardInfo
@@ -49,12 +55,12 @@ import net.payrdr.mobile.payment.sdk.form.component.CryptogramProcessor
 import net.payrdr.mobile.payment.sdk.form.model.CameraScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.CardSaveOptions
 import net.payrdr.mobile.payment.sdk.form.model.CryptogramData
-import net.payrdr.mobile.payment.sdk.form.model.HolderInputOptions
 import net.payrdr.mobile.payment.sdk.form.model.NfcScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.PaymentConfig
 import net.payrdr.mobile.payment.sdk.form.model.PaymentDataStatus
 import net.payrdr.mobile.payment.sdk.form.model.PaymentInfoNewCard
 import net.payrdr.mobile.payment.sdk.form.nfc.NFCReadDelegate
+import net.payrdr.mobile.payment.sdk.form.ui.helper.CardLogoAssetsResolver
 import net.payrdr.mobile.payment.sdk.form.ui.helper.CardResolver
 import net.payrdr.mobile.payment.sdk.form.ui.helper.LocalizationSetting
 import net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputEditText
@@ -86,15 +92,19 @@ class CardNewActivity : BaseActivity() {
         intent.getParcelableExtra<PaymentConfig>(INTENT_EXTRA_CONFIG) as PaymentConfig
     }
 
+    private val newCardEntered: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val firstFieldCardEntered: MutableLiveData<String> = MutableLiveData("")
+    private val secondFieldCardEntered: MutableLiveData<String> = MutableLiveData("")
+    private val firthFieldCardEntered: MutableLiveData<String> = MutableLiveData("")
+
     private var nfcReader: NFCReadDelegate? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_new)
-        setSupportActionBar(toolbar)
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setTitle(R.string.payrdr_title_payment)
+        toolbar.title.text = resources.getString(R.string.payrdr_title_payment)
+        toolbar.arrow_back.setOnClickListener {
+            onBackPressed()
         }
         configure(config)
     }
@@ -142,47 +152,36 @@ class CardNewActivity : BaseActivity() {
 
     @Suppress("LongMethod")
     private fun configure(config: PaymentConfig) {
+        configureStateButton()
         bankCardView.setupUnknownBrand()
         cardNumberInput onInputStatusChanged jumpToNextInput
         cardExpiryInput onInputStatusChanged jumpToNextInput
         cardCodeInput onInputStatusChanged jumpToNextInput
         cardNumberInput onDisplayError { cardNumberInputLayout.error = it }
-        cardHolderInput onDisplayError { cardHolderInputLayout.error = it }
         cardExpiryInput onDisplayError { cardExpiryInputLayout.error = it }
         cardCodeInput onDisplayError { cardCodeInputLayout.error = it }
-        cardHolderInput afterTextChanged { holder -> bankCardView.setHolderName(holder) }
-        cardExpiryInput afterTextChanged { expiry -> bankCardView.setExpiry(expiry) }
         cardNumberInput afterTextChanged { number ->
-            bankCardView.setNumber(number)
             cardResolver.resolve(
                 number = number,
                 withDelay = true
             )
         }
-        cardNumberInput
         doneButton.setOnClickListener { onDone() }
         config.buttonText?.let { text -> doneButton.text = text }
         when (config.cardSaveOptions) {
             CardSaveOptions.HIDE -> {
-                checkSaveCard.visibility = GONE
+                switchBox.visibility = GONE
+                switchBoxText.visibility = GONE
             }
             CardSaveOptions.YES_BY_DEFAULT -> {
-                checkSaveCard.visibility = VISIBLE
-                checkSaveCard.isChecked = true
+                switchBox.visibility = VISIBLE
+                switchBoxText.visibility = VISIBLE
+                switchBox.isChecked = true
             }
             CardSaveOptions.NO_BY_DEFAULT -> {
-                checkSaveCard.visibility = VISIBLE
-                checkSaveCard.isChecked = false
-            }
-        }
-        when (config.holderInputOptions) {
-            HolderInputOptions.HIDE -> {
-                cardHolderInputLayout.visibility = GONE
-                bankCardView.enableHolderName(false)
-            }
-            HolderInputOptions.VISIBLE -> {
-                cardHolderInputLayout.visibility = VISIBLE
-                bankCardView.enableHolderName(true)
+                switchBox.visibility = VISIBLE
+                switchBoxText.visibility = VISIBLE
+                switchBox.isChecked = false
             }
         }
         val buttons: MutableList<Pair<Int, () -> Unit>> = mutableListOf()
@@ -190,14 +189,46 @@ class CardNewActivity : BaseActivity() {
             nfcReader = NFCReadDelegate(NfcAdapter.getDefaultAdapter(applicationContext)).apply {
                 nfcCardListener = this@CardNewActivity.nfcCardListener
             }
-            buttons.add(R.drawable.ic_nfc to { showHintNFC() })
+            buttons.add(R.drawable.icon_nfc to { showHintNFC() })
         } else {
             nfcReader = null
         }
         if (config.cameraScannerOptions == CameraScannerOptions.ENABLED && deviceHasCamera(this)) {
-            buttons.add(R.drawable.ic_card to { startScanner() })
+            buttons.add(R.drawable.icon_card to { startScanner() })
         }
         cardNumberInput.addRightButtons(buttons)
+    }
+
+    private fun configureStateButton() {
+        newCardEntered.observe(this) {
+            doneButton.isEnabled = it
+        }
+        firstFieldCardEntered.observe(this) {
+            newCardEntered.value = firstFieldCardEntered.value!!.isNotEmpty() &&
+                secondFieldCardEntered.value!!.isNotEmpty() &&
+                firthFieldCardEntered.value!!.isNotEmpty()
+        }
+        secondFieldCardEntered.observe(this) {
+            newCardEntered.value = firstFieldCardEntered.value!!.isNotEmpty() &&
+                secondFieldCardEntered.value!!.isNotEmpty() &&
+                firthFieldCardEntered.value!!.isNotEmpty()
+        }
+        firthFieldCardEntered.observe(this) {
+            newCardEntered.value = firstFieldCardEntered.value!!.isNotEmpty() &&
+                secondFieldCardEntered.value!!.isNotEmpty() &&
+                firthFieldCardEntered.value!!.isNotEmpty()
+        }
+
+        cardNumberInput afterTextChanged { number ->
+            setStartLogoPaymentSystem(number)
+            firstFieldCardEntered.value = number
+        }
+        cardCodeInput afterTextChanged { code ->
+            secondFieldCardEntered.value = code
+        }
+        cardExpiryInput afterTextChanged { expiry ->
+            firthFieldCardEntered.value = expiry
+        }
     }
 
     override fun onResume() {
@@ -228,6 +259,26 @@ class CardNewActivity : BaseActivity() {
         return true
     }
 
+    @Suppress("TooGenericExceptionCaught")
+    private fun setStartLogoPaymentSystem(pan: String) {
+        try {
+            if (pan == "") {
+                cardNumberInputLayout.startIconDrawable = null
+            }
+            val logoResource = CardLogoAssetsResolver.resolveByPan(this, pan)
+            if (logoResource != null) {
+                val logoSVG = SVG.getFromAsset(resources.assets, logoResource)
+                logoSVG.documentHeight = PAYMENT_SYSTEM_LOGO_HEIGHT
+                logoSVG.documentWidth = PAYMENT_SYSTEM_LOGO_WIDTH
+                val logoPictures = logoSVG.renderToPicture()
+                val logoDrawable = PictureDrawable(logoPictures)
+                cardNumberInputLayout.startIconDrawable = logoDrawable
+            }
+        } catch (exception: Exception) {
+            Log.e("PAYRDRSDK", exception.message ?: exception.toString())
+        }
+    }
+
     private fun onDone() {
         val fields = activeInputFields()
         if (fields.all { it.errorMessage == null }) {
@@ -239,9 +290,6 @@ class CardNewActivity : BaseActivity() {
 
     private fun activeInputFields(): MutableList<BaseTextInputEditText> {
         val fields = mutableListOf(cardNumberInput, cardExpiryInput, cardCodeInput)
-        if (config.holderInputOptions == HolderInputOptions.VISIBLE) {
-            fields.add(cardHolderInput)
-        }
         return fields
     }
 
@@ -267,7 +315,7 @@ class CardNewActivity : BaseActivity() {
                         seToken = seToken,
                         info = PaymentInfoNewCard(
                             order = config.order,
-                            saveCard = checkSaveCard.isChecked,
+                            saveCard = switchBox.isChecked,
                             holder = cardHolderInput.text.toString()
                         ),
                         deletedCardsList = config.cardsToDelete
@@ -322,6 +370,9 @@ class CardNewActivity : BaseActivity() {
     }
 
     companion object {
+
+        private const val PAYMENT_SYSTEM_LOGO_HEIGHT = 50f
+        private const val PAYMENT_SYSTEM_LOGO_WIDTH = 80f
 
         /**
          * Prepares [Intent] to launch the new card payment screen.

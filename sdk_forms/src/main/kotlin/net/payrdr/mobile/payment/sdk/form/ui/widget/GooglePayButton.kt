@@ -12,9 +12,8 @@ import net.payrdr.mobile.payment.sdk.form.R
  */
 class GooglePayButton @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = android.R.attr.buttonStyle
-) : FrameLayout(context, attrs, defStyleAttr) {
+    attrs: AttributeSet? = null
+) : FrameLayout(context, attrs) {
 
     private var imageFormat: ImageFormat = ImageFormat.WITHOUT_TEXT
     private var backgroundFormat: BackgroundFormat = BackgroundFormat.SHADOW

@@ -28,8 +28,7 @@ class RemoteCardInfoProvider(
             val connection = URL(url).executePostJson(body)
             val info = CardInfo.fromJson(connection.responseBodyToJsonObject())
             info.copy(
-                logo = urlBin + info.logo,
-                logoInvert = urlBin + info.logoInvert
+                logoMini = urlBin + info.logoMini
             )
         } catch (cause: Exception) {
             throw CardInfoProviderException("Error while load card info", cause)
