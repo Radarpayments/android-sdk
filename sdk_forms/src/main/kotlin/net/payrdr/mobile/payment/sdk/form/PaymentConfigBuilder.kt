@@ -1,5 +1,6 @@
 package net.payrdr.mobile.payment.sdk.form
 
+import net.payrdr.mobile.payment.sdk.core.Logger
 import net.payrdr.mobile.payment.sdk.form.model.CameraScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.Card
 import net.payrdr.mobile.payment.sdk.form.model.CardDeleteOptions
@@ -40,6 +41,12 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun buttonText(buttonText: String): PaymentConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "buttonText($buttonText): Change the text of the payment button.",
+            null
+        )
         this.buttonText = buttonText
     }
 
@@ -52,6 +59,12 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun cards(cards: Set<Card>): PaymentConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "cards($cards): Adding a list of linked cards.",
+            null
+        )
         this.cards = cards
     }
 
@@ -64,6 +77,12 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun cardSaveOptions(options: CardSaveOptions): PaymentConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "cardSaveOptions($options): Option to manage the ability to bind a new card.",
+            null
+        )
         this.cardSaveOptions = options
     }
 
@@ -76,6 +95,12 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun cameraScannerOptions(options: CameraScannerOptions): PaymentConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "cameraScannerOptions($options):",
+            null
+        )
         this.cameraScannerOptions = options
     }
 
@@ -88,6 +113,12 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun nfcScannerOptions(options: NfcScannerOptions): PaymentConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "nfcScannerOptions($options): Option to control the functionality of card scanning via NFC.",
+            null
+        )
         this.nfcScannerOptions = options
     }
 
@@ -100,6 +131,12 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun theme(theme: Theme): PaymentConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "theme($theme): Option to control the theme of the interface.",
+            null
+        )
         this.theme = theme
     }
 
@@ -112,6 +149,12 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun holderInputOptions(options: HolderInputOptions): PaymentConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "holderInputOptions($options):",
+            null
+        )
         this.holderInputOptions = options
     }
 
@@ -124,6 +167,12 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun uuid(uuid: String): PaymentConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "uuid($uuid): Setting a unique identifier for the payment.",
+            null
+        )
         this.uuid = uuid
     }
 
@@ -136,6 +185,12 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun timestamp(timestamp: Long): PaymentConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "timestamp($timestamp): Setting the time of formation of payment.",
+            null
+        )
         this.timestamp = timestamp
     }
 
@@ -148,6 +203,12 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun locale(locale: Locale): PaymentConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "locale($locale): Installation of localization.",
+            null
+        )
         this.locale = locale
     }
 
@@ -160,6 +221,12 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun bindingCVCRequired(required: Boolean): PaymentConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "bindingCVCRequired($required):",
+            null
+        )
         this.bindingCVCRequired = required
     }
 
@@ -172,6 +239,12 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun cardDeleteOptions(options: CardDeleteOptions): PaymentConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "cardDeleteOptions($options): Option to manage the ability to remove the card.",
+            null
+        )
         this.cardDeleteOptions = options
     }
 

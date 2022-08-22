@@ -38,6 +38,7 @@ import net.payrdr.mobile.payment.sdk.form.utils.executePostParams
 import net.payrdr.mobile.payment.sdk.form.utils.responseBodyToJsonObject
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentData
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
+import net.payrdr.mobile.payment.sdk.screen.BottomSheetScreen
 import net.payrdr.mobile.payment.sdk.screen.CardListScreen
 import net.payrdr.mobile.payment.sdk.screen.NewCardScreen
 import net.payrdr.mobile.payment.sdk.screen.SelectedCardScreen
@@ -56,7 +57,7 @@ import java.net.URL
 @LargeTest
 @Suppress("LargeClass", "MaxLineLength")
 @RunWith(AllureAndroidJUnit4::class)
-class PaymentActivityKaspresso : DocLocScreenshotTestCase(
+class PaymentActivityKaspressoTest : DocLocScreenshotTestCase(
     kaspressoBuilder = Kaspresso.Builder.simple(
         customize = {
             screenshotParams = ScreenshotParams(quality = 1)
@@ -193,6 +194,13 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
             }
 
             step("shouldReturnSuccessPaymentDataWithoutThreeDsWithNewCard Fill Out Form") {
+                BottomSheetScreen {
+                    Thread.sleep(10000L)
+                    newCardItem {
+                        isVisible()
+                        click()
+                    }
+                }
                 testCardWithout3DS.fillOutForm()
                 NewCardScreen {
                     closeSoftKeyboard()
@@ -217,7 +225,7 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
 
     @ScreenShooterTest
     @Test
-    @Suppress("EmptyFunctionBlock")
+    @Suppress("EmptyFunctionBlock", "LongMethod")
     fun shouldReturnSuccessPaymentDataWithThreeDsWithNewCard() {
         run {
             var actualResult: PaymentData? = null
@@ -241,6 +249,13 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
                 SDKPayment.checkout(activityTestRule.activity, mdOrder!!)
             }
             step("shouldReturnSuccessPaymentDataWithThreeDsWithNewCard Fill Out Form") {
+                BottomSheetScreen {
+                    Thread.sleep(10000L)
+                    allPayment {
+                        isVisible()
+                        click()
+                    }
+                }
                 testCardWith3DS.fillOutForm()
                 NewCardScreen {
                     closeSoftKeyboard()
@@ -291,6 +306,13 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
                 SDKPayment.checkout(activityTestRule.activity, mdOrder!!)
             }
             step("shouldSaveCardForNewCard Fill Out Form") {
+                BottomSheetScreen {
+                    Thread.sleep(10000L)
+                    newCardItem {
+                        isVisible()
+                        click()
+                    }
+                }
                 testCardWithout3DS.fillOutForm()
                 NewCardScreen {
                     closeSoftKeyboard()
@@ -325,6 +347,13 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
                 SDKPayment.checkout(activityTestRule.activity, mdOrder!!)
             }
             step("shouldNotSaveCardForNewCard Fill Out Form") {
+                BottomSheetScreen {
+                    Thread.sleep(10000L)
+                    newCardItem {
+                        isVisible()
+                        click()
+                    }
+                }
                 testCardWithout3DS.fillOutForm()
                 NewCardScreen {
                     checkSaveCard {
@@ -379,6 +408,13 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
                 SDKPayment.checkout(activityTestRule.activity, mdOrder!!)
             }
             step("shouldReturnSDKCryptogramExceptionWhenPressBackBtnWithNewCard Press Back") {
+                BottomSheetScreen {
+                    Thread.sleep(10000L)
+                    newCardItem {
+                        isVisible()
+                        click()
+                    }
+                }
                 NewCardScreen {
                     cardNumberInput {
                         isVisible()
@@ -402,6 +438,7 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
 
     @ScreenShooterTest
     @Test
+    @Ignore
     @Suppress("EmptyFunctionBlock")
     fun shouldReturnAlreadyPaymentExceptionWithNewCard() {
         run {
@@ -413,6 +450,7 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
                         data,
                         object : ResultPaymentCallback<PaymentData> {
                             override fun onSuccess(result: PaymentData) {
+                                result
                             }
 
                             override fun onFail(e: SDKException) {
@@ -426,6 +464,13 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
                 SDKPayment.checkout(activityTestRule.activity, mdOrder!!)
             }
             step("shouldReturnAlreadyPaymentExceptionWithNewCard Fill Out Form") {
+                BottomSheetScreen {
+                    Thread.sleep(10000L)
+                    newCardItem {
+                        isVisible()
+                        click()
+                    }
+                }
                 testCardWithout3DS.fillOutForm()
                 NewCardScreen {
                     closeSoftKeyboard()
@@ -483,7 +528,7 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
 
     @ScreenShooterTest
     @Test
-    @Suppress("EmptyFunctionBlock")
+    @Suppress("EmptyFunctionBlock", "LongMethod")
     @Ignore("actualResult always null")
     fun shouldReturnSDKDeclinedExceptionWithNewCard() {
         run {
@@ -508,6 +553,13 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
                 SDKPayment.checkout(activityTestRule.activity, mdOrder!!)
             }
             step("shouldReturnSDKDeclinedExceptionWithNewCard Fill Out Form") {
+                BottomSheetScreen {
+                    Thread.sleep(10000L)
+                    newCardItem {
+                        isVisible()
+                        click()
+                    }
+                }
                 testCardWith3DS.fillOutForm()
                 NewCardScreen {
                     closeSoftKeyboard()
@@ -553,7 +605,7 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
 
     @ScreenShooterTest
     @Test
-    @Suppress("EmptyFunctionBlock")
+    @Suppress("EmptyFunctionBlock", "LongMethod")
     fun shouldReturnPaymentDataByNewCardWithBindingCard() {
         run {
             var actualResult: PaymentData? = null
@@ -576,6 +628,13 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
                 SDKPayment.checkout(activityTestRule.activity, mdOrder!!)
             }
             step("shouldReturnPaymentDataByNewCardWithBindingCard From List Card Screen To New Card") {
+                BottomSheetScreen {
+                    Thread.sleep(10000L)
+                    allPayment {
+                        isVisible()
+                        click()
+                    }
+                }
                 CardListScreen {
                     doneButton {
                         isVisible()
@@ -646,6 +705,13 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
                 SDKPayment.checkout(activityTestRule.activity, mdOrder!!)
             }
             step("shouldReturnSuccessWithoutCVCPaymentWithBindingCard From List Card Screen To New Card Screen") {
+                BottomSheetScreen {
+                    Thread.sleep(10000L)
+                    allPayment {
+                        isVisible()
+                        click()
+                    }
+                }
                 CardListScreen {
                     doneButton {
                         isVisible()
@@ -686,6 +752,13 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
             step("shouldReturnSuccessWithoutCVCPaymentWithBindingCard Choose Binding Card") {
                 val mdOrderBinding: String? = regOrderWithBindingCard("mobile-sdk-api", "956")
                 SDKPayment.checkout(activityTestRule.activity, mdOrderBinding!!)
+                BottomSheetScreen {
+                    Thread.sleep(10000L)
+                    allPayment {
+                        isVisible()
+                        click()
+                    }
+                }
                 CardListScreen {
                     bindingCard {
                         isVisible()
@@ -752,6 +825,13 @@ class PaymentActivityKaspresso : DocLocScreenshotTestCase(
                 SDKPayment.checkout(activityTestRule.activity, mdOrder!!)
             }
             step("shouldReturnAvailableOptionForEditCardList Edit List Displayed Assert") {
+                BottomSheetScreen {
+                    Thread.sleep(10000L)
+                    allPayment {
+                        isVisible()
+                        click()
+                    }
+                }
                 CardListScreen {
                     editList {
                         isDisplayed()

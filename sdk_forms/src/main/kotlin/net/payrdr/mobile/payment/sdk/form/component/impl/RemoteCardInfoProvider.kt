@@ -2,6 +2,8 @@ package net.payrdr.mobile.payment.sdk.form.component.impl
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.payrdr.mobile.payment.sdk.core.Logger
+import net.payrdr.mobile.payment.sdk.form.Constants
 import net.payrdr.mobile.payment.sdk.form.component.CardInfo
 import net.payrdr.mobile.payment.sdk.form.component.CardInfoProvider
 import net.payrdr.mobile.payment.sdk.form.component.CardInfoProviderException
@@ -24,6 +26,12 @@ class RemoteCardInfoProvider(
     @Suppress("TooGenericExceptionCaught")
     override suspend fun resolve(bin: String): CardInfo = withContext(Dispatchers.IO) {
         try {
+            Logger.log(
+                this.javaClass,
+                Constants.TAG,
+                "resolve($bin):",
+                null
+            )
             val body = JSONObject(mapOf("bin" to bin)).toString()
             val connection = URL(url).executePostJson(body)
             val info = CardInfo.fromJson(connection.responseBodyToJsonObject())
@@ -31,6 +39,12 @@ class RemoteCardInfoProvider(
                 logoMini = urlBin + info.logoMini
             )
         } catch (cause: Exception) {
+            Logger.log(
+                this.javaClass,
+                Constants.TAG,
+                "resolve($bin): Error",
+                CardInfoProviderException("Error while load card info", cause)
+            )
             throw CardInfoProviderException("Error while load card info", cause)
         }
     }

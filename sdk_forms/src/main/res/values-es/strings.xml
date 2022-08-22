@@ -1,11 +1,11 @@
 <resources>
     <string name="payrdr_title_payment">Pago</string>
     <string name="payrdr_title_card_list">Método de pago</string>
-    <string name="payrdr_title_sub_card_list">Tarjetas guardadas</string>
-    <string name="payrdr_button_card_new">Agregar nueva tarjeta</string>
+    <string name="payrdr_title_sub_card_list">Todas las tarjetas</string>
+    <string name="payrdr_button_card_new">Agregar tarjeta nueva</string>
     <string name="payrdr_title_edit_card_list">Editar</string>
     <string name="payrdr_card_holder_placeholder">Nombre</string>
-    <string name="payrdr_card_number">Número de la tarjeta</string>
+    <string name="payrdr_number_card_hint">Número de tarjeta</string>
     <string name="payrdr_card_expiry_placeholder">MM/YY</string>
     <string name="payrdr_done_button">Pagar</string>
     <string name="payrdr_switch_view_title">Guardar tarjeta</string>
@@ -17,4 +17,12 @@
     <string name="payrdr_nfc_disabled_title">NFC está deshabilitado</string>
     <string name="payrdr_nfc_disabled_message">Para leer los datos de la tarjeta a través de NFC, debe habilitar NFC en su teléfono. ¿Quieres habilitar NFC en tu teléfono?</string>
     <string name="payrdr_nfc_read_error">Error de lectura de datos de la tarjeta</string>
+    <string name="or_pay_by_card">O pagar con tarjeta</string>
+    <string name="payrdr_all_payment_methods">Todos los métodos de pago</string>
+    <string name="payrdr_save_changes">Guardar</string>
+    <string name="payrdr_payment_button">Pagar</string>
+    <string name="payrdr_alert_dialog_title">¿Confirma que desea eliminar esta tarjeta?</string>
+    <string name="payrdr_alert_dialog_text">Si más adelante cambia de opinión, deberá volver a agregarla.</string>
+    <string name="payrdr_alert_dialog_cancel">Cancelar</string>
+    <string name="payrdr_alert_dialog_delete">Eliminar</string>
 </resources>

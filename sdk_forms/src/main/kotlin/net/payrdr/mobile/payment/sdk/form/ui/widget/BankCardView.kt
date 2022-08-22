@@ -6,12 +6,10 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import android.util.AttributeSet
 import android.view.View
-import android.view.View.MeasureSpec.EXACTLY
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.layout_bank_card.view.cardBankLogo
 import net.payrdr.mobile.payment.sdk.form.R
-import kotlin.math.min
 
 /**
  * UI component for displaying bank card data.
@@ -59,21 +57,5 @@ class BankCardView @JvmOverloads constructor(
      */
     fun setupUnknownBrand() {
         setBankLogoUrl(null)
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val params = layoutParams
-        val formMargin = if (params is MarginLayoutParams) {
-            params.leftMargin + params.rightMargin
-        } else {
-            0
-        }
-        val size = min(
-            resources.getDimensionPixelSize(R.dimen.payrdr_card_width) + formMargin,
-            width + formMargin
-        )
-        val widthSpec = MeasureSpec.makeMeasureSpec(size, EXACTLY)
-        val heightSpec = MeasureSpec.makeMeasureSpec(size, EXACTLY)
-        super.onMeasure(widthSpec, heightSpec)
     }
 }

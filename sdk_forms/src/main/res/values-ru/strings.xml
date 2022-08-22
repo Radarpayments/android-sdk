@@ -1,11 +1,11 @@
 <resources>
     <string name="payrdr_title_payment">Оплата</string>
     <string name="payrdr_title_card_list">Способ оплаты</string>
-    <string name="payrdr_title_sub_card_list">Сохраненные карты</string>
-    <string name="payrdr_title_edit_card_list">Редактировать</string>
-    <string name="payrdr_button_card_new">Оплатить новой картой</string>
+    <string name="payrdr_title_sub_card_list">Все карты</string>
+    <string name="payrdr_title_edit_card_list">Изменить</string>
+    <string name="payrdr_button_card_new">Добавить карту</string>
     <string name="payrdr_card_holder_placeholder">Имя фамилия</string>
-    <string name="payrdr_card_number">Номер карты</string>
+    <string name="payrdr_number_card_hint">Номер карты</string>
     <string name="payrdr_card_expiry_placeholder">MM/YY</string>
     <string name="payrdr_done_button">Оплатить</string>
     <string name="payrdr_card_scan_message">Держите карту внутри рамки.\n Она будет считана автоматически.</string>
@@ -17,4 +17,12 @@
     <string name="payrdr_nfc_disabled_title">NFC отключен</string>
     <string name="payrdr_nfc_disabled_message">Для считывания данных карты по NFC необходимо включить NFC на телефоне. Хотите включить NFC на телефоне?</string>
     <string name="payrdr_nfc_read_error">Ошибка чтения данных карты</string>
+    <string name="or_pay_by_card">Или оплатить картой</string>
+    <string name="payrdr_all_payment_methods">Все способы оплаты</string>
+    <string name="payrdr_save_changes">Сохранить</string>
+    <string name="payrdr_payment_button">Оплатить</string>
+    <string name="payrdr_alert_dialog_title">Вы точно хотите удалить эту карту?</string>
+    <string name="payrdr_alert_dialog_text">Чтобы снова использовать эту карту, нужно будет добавить ее еще раз.</string>
+    <string name="payrdr_alert_dialog_cancel">Отмена</string>
+    <string name="payrdr_alert_dialog_delete">Удалить</string>
 </resources>

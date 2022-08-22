@@ -16,7 +16,7 @@
         <activity
             android:name=".ui.CardNewActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan"
             android:theme="@style/Theme.App.Material" />
 
         <activity
@@ -34,7 +34,7 @@
         <activity
             android:name=".ui.GooglePayActivity"
             android:windowSoftInputMode="stateAlwaysHidden"
-            android:theme="@style/Theme.App.Material" />
+            android:theme="@style/Theme.App.Material.Transparent" />
 
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"

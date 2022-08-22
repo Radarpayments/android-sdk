@@ -25,6 +25,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         uiSetupDelegate.onCreate(savedInstanceState)
+        uiSetupDelegate.updateConfiguration(this)
         super.onCreate(savedInstanceState)
         setupDefaultResult()
     }

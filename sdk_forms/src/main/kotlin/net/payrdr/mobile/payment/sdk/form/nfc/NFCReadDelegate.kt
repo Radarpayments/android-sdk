@@ -8,6 +8,8 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import com.github.devnied.emvnfccard.parser.EmvTemplate
+import net.payrdr.mobile.payment.sdk.core.Logger
+import net.payrdr.mobile.payment.sdk.form.Constants
 import java.util.Date
 
 /**
@@ -15,7 +17,9 @@ import java.util.Date
  *
  * @param nfcAdapter adapter for interaction with NFC.
  */
-class NFCReadDelegate(private val nfcAdapter: NfcAdapter) {
+class NFCReadDelegate(
+    private val nfcAdapter: NfcAdapter
+) {
 
     /**
      * A listener to track the process of reading card data via NFC.
@@ -35,6 +39,12 @@ class NFCReadDelegate(private val nfcAdapter: NfcAdapter) {
             NfcAdapter.ACTION_TAG_DISCOVERED == intent.action
         ) {
             try {
+                Logger.log(
+                    this.javaClass,
+                    Constants.TAG,
+                    "onNewIntent($intent): NFCReadDelegate.onNewIntent()",
+                    null
+                )
                 val iTag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
                 val provider = NFCProvider(IsoDep.get(iTag))
                 val config: EmvTemplate.Config = EmvTemplate.Config()
@@ -56,6 +66,12 @@ class NFCReadDelegate(private val nfcAdapter: NfcAdapter) {
                     )
                 }
             } catch (e: Exception) {
+                Logger.log(
+                    this.javaClass,
+                    Constants.TAG,
+                    "onNewIntent($intent): Error NFCReadDelegate.onNewIntent()",
+                    e
+                )
                 nfcCardListener?.onCardReadError(e)
             }
             return true

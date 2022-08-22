@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import net.payrdr.mobile.payment.sdk.LogDebug
 import net.payrdr.mobile.payment.sdk.api.PaymentApi
 import net.payrdr.mobile.payment.sdk.api.PaymentApiImpl
+import net.payrdr.mobile.payment.sdk.api.entity.BindingItem
 import net.payrdr.mobile.payment.sdk.api.entity.FinishedPaymentInfoResponse
 import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormResponse
 import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormSecondResponse
@@ -78,6 +79,7 @@ class PaymentManagerImpl(
     private lateinit var threeDS2Service: ThreeDS2Service
     private var transaction: Transaction? = null
 
+    @Suppress("LongMethod")
     override suspend fun checkout(order: String, gPayClicked: Boolean) {
         // start PaymentActivity
         // The first step is to call the getSessionStatus method
@@ -97,23 +99,24 @@ class PaymentManagerImpl(
 
         // 4 - Completion with the result of the payment (return to the payment start screen).
         mdOrder = order
+        val sessionStatusResponse = getSessionStatus()
+//        val gPaySettings = paymentApi.getPaymentSettings()
+        val isTestEnvironment = "gPaySettings.environment" == "TEST"
+        val gPayConfig = createGooglePayConfig(
+            mdOrder,
+//            gPaySettings.gateway,
+//            gPaySettings.merchantId,
+            "gPaySettings.gateway",
+            "gPaySettings.merchantId",
+            sessionStatusResponse.amount!!,
+            sessionStatusResponse.currencyAlphaCode!!,
+            sessionStatusResponse.merchantInfo.merchantLogin,
+            sessionStatusResponse.merchantInfo.merchantFullName,
+            isTestEnvironment
+        )
         if (gPayClicked) {
-            val sessionStatusResponse = getSessionStatus()
-            val gPaySettings = paymentApi.getPaymentSettings()
-            val isTestEnvironment = gPaySettings.environment == "TEST"
-            val gPayConfig = createGooglePayConfig(
-                mdOrder,
-                gPaySettings.gateway,
-                gPaySettings.merchantId,
-                sessionStatusResponse.amount!!,
-                sessionStatusResponse.currencyAlphaCode!!,
-                sessionStatusResponse.merchantInfo.merchantLogin,
-                sessionStatusResponse.merchantInfo.merchantFullName,
-                isTestEnvironment
-            )
             gPayDelegate.openGPayForm(gPayConfig)
         } else {
-            val sessionStatusResponse = getSessionStatus()
             when {
                 sessionStatusResponse.remainingSecs == null -> {
                     val response = getFinishedPaymentInfo(mdOrder)
@@ -135,16 +138,24 @@ class PaymentManagerImpl(
                     }
                 }
                 sessionStatusResponse.bindingItems.isNullOrEmpty() -> {
-                    cardFormDelegate.openNewCardForm(order, sessionStatusResponse.bindingEnabled)
+                    cardFormDelegate.openBottomSheet(
+                        mdOrder = order,
+                        bindingEnabled = sessionStatusResponse.bindingEnabled,
+                        bindingCards = emptyList<BindingItem>(),
+                        cvcNotRequired = sessionStatusResponse.cvcNotRequired,
+                        bindingDeactivationEnabled = sessionStatusResponse.bindingDeactivationEnabled,
+                        googlePayConfig = gPayConfig
+                    )
                     LogDebug.logIfDebug("Creating cryptogram with New Card")
                 }
                 else -> {
-                    cardFormDelegate.openBindingCardForm(
+                    cardFormDelegate.openBottomSheet(
                         mdOrder = order,
                         bindingEnabled = sessionStatusResponse.bindingEnabled,
                         bindingCards = sessionStatusResponse.bindingItems,
                         cvcNotRequired = sessionStatusResponse.cvcNotRequired,
-                        bindingDeactivationEnabled = sessionStatusResponse.bindingDeactivationEnabled
+                        bindingDeactivationEnabled = sessionStatusResponse.bindingDeactivationEnabled,
+                        googlePayConfig = gPayConfig
                     )
                     LogDebug.logIfDebug("Creating cryptogram with Binding Card")
                 }

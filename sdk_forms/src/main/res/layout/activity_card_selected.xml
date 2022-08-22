@@ -64,7 +64,7 @@
                 android:layout_marginStart="@dimen/payrdr_form_card_margin"
                 android:layout_marginTop="@dimen/payrdr_very_large_dimen"
                 android:layout_marginEnd="@dimen/payrdr_form_card_margin"
-                android:background="@color/payrdr_general_night_color"
+
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
@@ -87,7 +87,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:enabled="false"
-                    android:hint="@string/payrdr_card_number"
+                    android:hint="@string/payrdr_number_card_hint"
                     android:imeOptions="actionNext"
                     android:nextFocusDown="@id/cardExpiryInput"
                     android:paddingBottom="12dp"

@@ -6,7 +6,15 @@ import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.bindingIdInput
+import kotlinx.android.synthetic.main.activity_main.cardCodeInput
+import kotlinx.android.synthetic.main.activity_main.cardExpiryInput
+import kotlinx.android.synthetic.main.activity_main.cardHolderInput
+import kotlinx.android.synthetic.main.activity_main.cardNumberInput
+import kotlinx.android.synthetic.main.activity_main.generateWithBinding
+import kotlinx.android.synthetic.main.activity_main.generateWithCard
+import kotlinx.android.synthetic.main.activity_main.mdOrderInput
+import kotlinx.android.synthetic.main.activity_main.pubKeyInput
 import net.payrdr.mobile.payment.sdk.core.SDKCore
 import net.payrdr.mobile.payment.sdk.core.TokenResult
 import net.payrdr.mobile.payment.sdk.core.model.BindingParams

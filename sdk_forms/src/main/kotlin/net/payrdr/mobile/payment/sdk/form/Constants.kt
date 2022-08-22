@@ -11,4 +11,5 @@ object Constants {
     internal const val INTENT_EXTRA_CARD = "payment.sdk.card"
     internal const val INTENT_EXTRA_RESULT = "payment.sdk.result"
     internal const val INTENT_EXTRA_ERROR = "payment.sdk.error"
+    internal const val TAG = "SDK Forms"
 }

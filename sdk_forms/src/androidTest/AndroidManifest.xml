@@ -11,6 +11,7 @@
         android:theme="@style/Theme.App.Material"
         android:usesCleartextTraffic="true">
         <activity android:name=".test.core.CoreTestActivity" />
+        <activity android:name=".test.core.TestActivity"/>
     </application>
 
 </manifest>

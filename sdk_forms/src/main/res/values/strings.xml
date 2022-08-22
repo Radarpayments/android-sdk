@@ -1,11 +1,11 @@
 <resources>
     <string name="payrdr_title_payment">Payment</string>
-    <string name="payrdr_title_card_list">Payment methods</string>
+    <string name="payrdr_title_card_list">Payment method</string>
     <string name="payrdr_title_sub_card_list">All cards</string>
     <string name="payrdr_title_edit_card_list">Edit</string>
     <string name="payrdr_button_card_new">Add new card</string>
     <string name="payrdr_card_holder_placeholder">Name</string>
-    <string name="payrdr_card_number">Number card</string>
+    <string name="payrdr_number_card_hint">Card number</string>
     <string name="payrdr_card_expiry_placeholder">MM/YY</string>
     <string name="payrdr_done_button">Submit payment</string>
     <string name="payrdr_code" translatable="false">CVV</string>
@@ -19,7 +19,7 @@
     <string name="payrdr_nfc_disabled_title">NFC is disabled</string>
     <string name="payrdr_nfc_disabled_message">To read card data via NFC, you need to enable NFC on your phone. Want to enable NFC on your phone?</string>
     <string name="payrdr_nfc_read_error">Card data read error</string>
-    <string name="payrdr_all_payment_methods" translatable="false">All payment methods</string>
+    <string name="payrdr_all_payment_methods">All payment methods</string>
 
     <string name="payrdr_dismiss_image_button" translatable="false">Dismiss Button</string>
     <string name="payrdr_back_arrow_icon" translatable="false">Back arrow</string>
@@ -28,8 +28,12 @@
     <string name="buy_with_googlepay_button_content_description" translatable="false">Buy with Google Pay</string>
     <string name="verify_system_image_content_description" translatable="false">Verified payment system logo</string>
     <string name="buy_with_gpay_content_description" translatable="false">Buy with GPay</string>
-    <string name="payrdr_edit_card_list" translatable="false">Save</string>
-    <string name="payrdr_payment_button" translatable="false">Buy</string>
+    <string name="payrdr_save_changes">Save</string>
+    <string name="payrdr_payment_button">Pay</string>
     <string name="go_to_confirmation_screen_content_description" translatable="false">Go to confirmation screen</string>
-    <string name="or_pay_by_card" translatable="false">Or pay by card</string>
+    <string name="or_pay_by_card">Or pay by card</string>
+    <string name="payrdr_alert_dialog_title">Are you sure you want to remove this card?</string>
+    <string name="payrdr_alert_dialog_text">If you change your mind later, you\'ll have to add it again.</string>
+    <string name="payrdr_alert_dialog_cancel">Cancel</string>
+    <string name="payrdr_alert_dialog_delete">Remove</string>
 </resources>

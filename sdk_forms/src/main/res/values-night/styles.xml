@@ -57,13 +57,13 @@
     </style>
 
     <style name="PAYRDRTextAppearanceError" parent="TextAppearance.Design.Error">
-        <item name="android:textColor">@color/payrdr_color_error_text</item>
+        <item name="android:textColor">@color/error_color</item>
     </style>
 
     <style name="PAYRDREditTextStyle" parent="Widget.AppCompat.EditText">
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
         <item name="android:textColor">@color/onSecondary</item>
-        <item name="errorTextColor">@color/payrdr_color_error_text</item>
+        <item name="errorTextColor">@color/error_color</item>
         <item name="android:textColorHint">@color/hint_text_color</item>
         <item name="android:minHeight">48dp</item>
     </style>

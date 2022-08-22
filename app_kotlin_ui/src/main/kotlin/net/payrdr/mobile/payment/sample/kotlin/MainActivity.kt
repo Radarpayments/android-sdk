@@ -4,6 +4,7 @@ package net.payrdr.mobile.payment.sample.kotlin
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
@@ -52,6 +53,8 @@ import net.payrdr.mobile.payment.sample.kotlin.payment.PaymentFormActivity
 import net.payrdr.mobile.payment.sample.kotlin.payment.PaymentFormActivityWeb
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSActivity
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSManualActivity
+import net.payrdr.mobile.payment.sdk.core.LogInterface
+import net.payrdr.mobile.payment.sdk.core.Logger
 import net.payrdr.mobile.payment.sdk.core.model.ExpiryDate
 import net.payrdr.mobile.payment.sdk.form.GooglePayConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.PaymentConfigBuilder
@@ -90,6 +93,7 @@ import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.german
 import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.russian
 import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.spanish
 import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.ukrainian
+import net.payrdr.mobile.payment.sdk.threeds.ThreeDSLogger
 import org.json.JSONObject
 import java.math.BigDecimal
 import java.util.Locale
@@ -100,6 +104,29 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Logger.addLogInterface(object : LogInterface {
+            override fun log(
+                classMethod: Class<Any>,
+                tag: String,
+                message: String,
+                exception: Exception?
+            ) {
+                Log.i(tag, "$classMethod: $message", exception)
+            }
+        })
+
+        ThreeDSLogger.INSTANCE.addLogInterface(object : net.payrdr.mobile.payment.sdk.threeds.LogInterface {
+            override fun log(
+                classMethod: Class<*>,
+                tag: String,
+                message: String,
+                exception: Throwable?
+            ) {
+                Log.i(tag, "$classMethod: $message", exception)
+            }
+        })
+
         setContentView(R.layout.activity_main)
         bottomSheetButton.setOnClickListener {
             val cards = setOf(
@@ -113,6 +140,43 @@ class MainActivity : AppCompatActivity() {
                 ),
                 Card(
                     "415482xxxxxx0000", "3d2d320f-ca9a-4713-977c-c852accf8a7b",
+                    ExpiryDate(2019, 1)
+                ),
+                Card(
+                    "532130xxxxxx1687", "aa199a55-cf16-41b2-ac9e-cddc731edd19",
+                    ExpiryDate(2023, 4)
+                ),
+                Card(
+                    "427644xxxxxx1831", "6617c0b1-9976-45d9-b659-364ecac099e2",
+                    ExpiryDate(2020, 3)
+                ),
+                Card(
+                    "427644xxxxxx9407", "3d2d320f-ca9a-4713-977c-c852accf8a7b",
+                    ExpiryDate(2019, 1)
+                ),
+                Card(
+                    "532130xxxxxx2712", "aa199a55-cf16-41b2-ac9e-cddc731edd19",
+                    ExpiryDate(2022, 8)
+                ),
+                Card(
+                    "532130xxxxxx6972", "6617c0b1-9976-45d9-b659-364ecac099e2",
+                    ExpiryDate(2022, 8)
+                ),
+                Card(
+                    "553691xxxxxx9319", "3d2d320f-ca9a-4713-977c-c852accf8a7b",
+                    ExpiryDate(2025, 3)
+                ),
+                Card("411790xxxxxx123456", "ceae68c1-cb02-4804-9526-6d6b2f1f2793"),
+                Card(
+                    "492980xxxxxx3333", "aa199a55-cf16-41b2-ac9e-cddc731edd19",
+                    ExpiryDate(2025, 12)
+                ),
+                Card(
+                    "558620xxxxxx6444", "6617c0b1-9976-45d9-b659-364ecac099e2",
+                    ExpiryDate(2024, 6)
+                ),
+                Card(
+                    "415482xxxxxx1322", "3d2d320f-ca9a-4713-977c-c852accf8a7b",
                     ExpiryDate(2019, 1)
                 ),
                 Card("411790xxxxxx123456", "ceae68c1-cb02-4804-9526-6d6b2f1f2793")

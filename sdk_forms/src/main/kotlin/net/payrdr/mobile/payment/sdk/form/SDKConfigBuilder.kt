@@ -1,5 +1,6 @@
 package net.payrdr.mobile.payment.sdk.form
 
+import net.payrdr.mobile.payment.sdk.core.Logger
 import net.payrdr.mobile.payment.sdk.form.component.CardInfoProvider
 import net.payrdr.mobile.payment.sdk.form.component.KeyProvider
 import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteCardInfoProvider
@@ -24,7 +25,21 @@ class SDKConfigBuilder {
      * @param providerUrl url address for receiving encryption keys
      */
     fun keyProviderUrl(providerUrl: String): SDKConfigBuilder = apply {
-        if (this.keyProvider != null) throw SDKException("You should use only one key provider build-method")
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "keyProviderUrl($providerUrl): Set the remote key provider by url.",
+            null
+        )
+        if (this.keyProvider != null) {
+            Logger.log(
+                this.javaClass,
+                Constants.TAG,
+                "keyProviderUrl($providerUrl): Error",
+                SDKException("You should use only one key provider build-method")
+            )
+            throw SDKException("You should use only one key provider build-method")
+        }
         this.keyProvider = RemoteKeyProvider(providerUrl)
     }
 
@@ -34,7 +49,21 @@ class SDKConfigBuilder {
      * @param provider the encryption key provider to use.
      */
     fun keyProvider(provider: KeyProvider): SDKConfigBuilder = apply {
-        if (this.keyProvider != null) throw SDKException("You should use only one key provider build-method")
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "keyProvider($provider): Set the provider of the encryption key.",
+            null
+        )
+        if (this.keyProvider != null) {
+            Logger.log(
+                this.javaClass,
+                Constants.TAG,
+                "keyProvider($provider): Error",
+                SDKException("You should use only one key provider build-method")
+            )
+            throw SDKException("You should use only one key provider build-method")
+        }
         this.keyProvider = provider
     }
 

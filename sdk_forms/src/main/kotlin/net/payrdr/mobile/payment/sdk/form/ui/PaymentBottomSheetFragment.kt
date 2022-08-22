@@ -1,6 +1,5 @@
 package net.payrdr.mobile.payment.sdk.form.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,6 +12,7 @@ import kotlinx.android.synthetic.main.fragment_bottom_sheet_payment.allPaymentMe
 import kotlinx.android.synthetic.main.fragment_bottom_sheet_payment.cardList
 import kotlinx.android.synthetic.main.fragment_bottom_sheet_payment.dismissButton
 import kotlinx.android.synthetic.main.fragment_bottom_sheet_payment.googlePayButton
+import net.payrdr.mobile.payment.sdk.form.Constants
 import net.payrdr.mobile.payment.sdk.form.R
 import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.model.Card
@@ -60,7 +60,7 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         allPaymentMethodLayout.setOnClickListener {
-            SDKForms.cryptogram(this, config)
+            SDKForms.cryptogram(requireActivity(), config)
             dismiss()
         }
 
@@ -80,7 +80,7 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
         cardsAdapter.cards = config.cards.toList()
         cardList.apply {
             adapter = cardsAdapter
-            layoutManager = LinearLayoutManager(requireContext())
+            layoutManager = LinearLayoutManager(requireActivity())
         }
 
         cardsAdapter.cardSelectListener = object : CardListAdapter.CardSelectListener {
@@ -104,23 +104,17 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun openNewCard() {
-        startActivity(
-            CardNewActivity.prepareIntent(requireContext(), config).also {
-                it.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
-            }
+        requireActivity().startActivityForResult(
+            CardNewActivity.prepareIntent(requireActivity(), config),
+            Constants.REQUEST_CODE_CRYPTOGRAM
         )
         dismiss()
     }
 
     private fun openSavedCard(card: Card) {
-        startActivity(
-            CardSelectedActivity.prepareIntent(
-                requireContext(),
-                config,
-                card
-            ).also {
-                it.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
-            }
+        requireActivity().startActivityForResult(
+            CardSelectedActivity.prepareIntent(requireActivity(), config, card),
+            Constants.REQUEST_CODE_CRYPTOGRAM
         )
         dismiss()
     }

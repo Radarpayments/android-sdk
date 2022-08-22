@@ -5,6 +5,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import net.payrdr.mobile.payment.sdk.core.Logger
 import net.payrdr.mobile.payment.sdk.core.component.impl.DefaultPaymentStringProcessor
 import net.payrdr.mobile.payment.sdk.core.component.impl.RSACryptogramCipher
 import net.payrdr.mobile.payment.sdk.form.Constants.REQUEST_CODE_CRYPTOGRAM
@@ -75,11 +76,23 @@ object SDKForms {
         LocalizationSetting.setLanguage(config.locale)
         ThemeSetting.setTheme(config.theme)
         if (config.cards.isEmpty()) {
+            Logger.log(
+                this.javaClass,
+                Constants.TAG,
+                "cryptogram($activity, $config):",
+                null
+            )
             activity.startActivityForResult(
                 CardNewActivity.prepareIntent(activity, config),
                 REQUEST_CODE_CRYPTOGRAM
             )
         } else {
+            Logger.log(
+                this.javaClass,
+                Constants.TAG,
+                "cryptogram($activity, $config): Launching the payment process from List Card Activity",
+                null
+            )
             activity.startActivityForResult(
                 CardListActivity.prepareIntent(activity, config),
                 REQUEST_CODE_CRYPTOGRAM
@@ -97,6 +110,12 @@ object SDKForms {
         checkNotNull(cryptogramProcessor)
         LocalizationSetting.setLanguage(config.locale)
         ThemeSetting.setTheme(config.theme)
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "cryptogram($activity, $config):",
+            null
+        )
         activity.startActivityForResult(
             GooglePayActivity.prepareIntent(activity, config),
             REQUEST_CODE_CRYPTOGRAM
@@ -114,11 +133,23 @@ object SDKForms {
         LocalizationSetting.setLanguage(config.locale)
         ThemeSetting.setTheme(config.theme)
         if (config.cards.isEmpty()) {
+            Logger.log(
+                this.javaClass,
+                Constants.TAG,
+                "cryptogram($fragment, $config): Launching the payment process from New Card Fragment",
+                null
+            )
             fragment.startActivityForResult(
                 CardNewActivity.prepareIntent(fragment.requireContext(), config),
                 REQUEST_CODE_CRYPTOGRAM
             )
         } else {
+            Logger.log(
+                this.javaClass,
+                Constants.TAG,
+                "cryptogram($fragment, $config): Launching the payment process from List Card Fragment",
+                null
+            )
             fragment.startActivityForResult(
                 CardListActivity.prepareIntent(fragment.requireContext(), config),
                 REQUEST_CODE_CRYPTOGRAM
@@ -136,6 +167,12 @@ object SDKForms {
         checkNotNull(cryptogramProcessor)
         LocalizationSetting.setLanguage(config.locale)
         ThemeSetting.setTheme(config.theme)
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "SDK-Forms: cryptogram($fragment, $config): ",
+            null
+        )
         fragment.startActivityForResult(
             GooglePayActivity.prepareIntent(fragment.requireContext(), config),
             REQUEST_CODE_CRYPTOGRAM

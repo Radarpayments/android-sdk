@@ -34,6 +34,14 @@ internal open class UIDelegate(private val activity: AppCompatActivity) {
         setup(true)
     }
 
+    fun updateConfiguration(context: Context) {
+        @Suppress("DEPRECATION")
+        context.resources.updateConfiguration(
+            context.resources.configuration,
+            context.resources.displayMetrics
+        )
+    }
+
     fun onSaveInstanceState(outState: Bundle) {
         outState.apply {
             putSerializable(BUNDLE_LANGUAGE, currentLanguage)

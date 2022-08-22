@@ -1,6 +1,7 @@
 package net.payrdr.mobile.payment.sdk.form
 
 import com.google.android.gms.wallet.PaymentDataRequest
+import net.payrdr.mobile.payment.sdk.core.Logger
 import net.payrdr.mobile.payment.sdk.form.model.GooglePayPaymentConfig
 import net.payrdr.mobile.payment.sdk.form.model.Theme
 import java.util.Locale
@@ -32,6 +33,12 @@ class GooglePayConfigBuilder(
      * @return the current constructor.
      */
     fun theme(theme: Theme): GooglePayConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "theme($theme): Option to control the theme",
+            null
+        )
         this.theme = theme
     }
 
@@ -44,6 +51,12 @@ class GooglePayConfigBuilder(
      * @return the current constructor.
      */
     fun locale(locale: Locale): GooglePayConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "locale($locale): Installation of localization.",
+            null
+        )
         this.locale = locale
     }
 
@@ -56,6 +69,12 @@ class GooglePayConfigBuilder(
      * @return the current constructor.
      */
     fun uuid(uuid: String): GooglePayConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "uuid($uuid): Setting a unique identifier for the payment.",
+            null
+        )
         this.uuid = uuid
     }
 
@@ -68,6 +87,12 @@ class GooglePayConfigBuilder(
      * @return the current constructor.
      */
     fun timestamp(timestamp: Long): GooglePayConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "timestamp($timestamp): Setting the time of formation of payment.",
+            null
+        )
         this.timestamp = timestamp
     }
 
@@ -80,6 +105,12 @@ class GooglePayConfigBuilder(
      * @return the current constructor.
      */
     fun testEnvironment(testEnvironment: Boolean): GooglePayConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "testEnvironment($testEnvironment): Setting the flag to use the test environment.",
+            null
+        )
         this.testEnvironment = testEnvironment
     }
 

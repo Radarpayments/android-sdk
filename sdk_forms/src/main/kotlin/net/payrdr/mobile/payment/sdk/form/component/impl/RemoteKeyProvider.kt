@@ -2,7 +2,9 @@ package net.payrdr.mobile.payment.sdk.form.component.impl
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.payrdr.mobile.payment.sdk.core.Logger
 import net.payrdr.mobile.payment.sdk.core.model.Key
+import net.payrdr.mobile.payment.sdk.form.Constants
 import net.payrdr.mobile.payment.sdk.form.component.KeyProvider
 import net.payrdr.mobile.payment.sdk.form.component.KeyProviderException
 import net.payrdr.mobile.payment.sdk.form.utils.asList
@@ -21,10 +23,22 @@ class RemoteKeyProvider(private var url: String) : KeyProvider {
     @Suppress("TooGenericExceptionCaught")
     override suspend fun provideKey(): Key = withContext(Dispatchers.IO) {
         try {
+            Logger.log(
+                this.javaClass,
+                Constants.TAG,
+                "provideKey(): Key provider based on the external url of the resource.",
+                null
+            )
             val connection = URL(url).executeGet()
             val keys = ActiveKeysDto.fromJson(connection.responseBodyToJsonObject()).keys
             keys.first().toKey()
         } catch (cause: Exception) {
+            Logger.log(
+                this.javaClass,
+                Constants.TAG,
+                "provideKey(): Error",
+                KeyProviderException("Error while load active keys", cause)
+            )
             throw KeyProviderException("Error while load active keys", cause)
         }
     }

@@ -88,23 +88,23 @@ class CardListActivity : BaseActivity() {
                 when (which) {
                     DialogInterface.BUTTON_POSITIVE -> {
                         config.cardsToDelete.add(card)
-                        changeEditCardState()
+                        updateCardsListView(config)
                     }
                 }
             }
         MaterialAlertDialogBuilder(this)
-            .setTitle("You really want to delete?")
-            .setMessage("The card cannot be restored. You'll have to add a new card.")
-            .setPositiveButton("delete", dialogClickListener)
-            .setNegativeButton("cancel", dialogClickListener)
+            .setTitle(resources.getString(R.string.payrdr_alert_dialog_title))
+            .setMessage(resources.getString(R.string.payrdr_alert_dialog_text))
+            .setPositiveButton(resources.getString(R.string.payrdr_alert_dialog_delete), dialogClickListener)
+            .setNegativeButton(resources.getString(R.string.payrdr_alert_dialog_cancel), dialogClickListener)
             .show()
     }
 
     private fun changeEditCardState() {
-        if (editCardsList.text == resources.getString(R.string.payrdr_edit_card_list)) {
+        if (editCardsList.text == resources.getString(R.string.payrdr_save_changes)) {
             editCardsList.text = resources.getString(R.string.payrdr_title_edit_card_list)
         } else {
-            editCardsList.text = resources.getString(R.string.payrdr_edit_card_list)
+            editCardsList.text = resources.getString(R.string.payrdr_save_changes)
         }
         cardsAdapter.showDelIcon = !cardsAdapter.showDelIcon
         updateCardsListView(config)

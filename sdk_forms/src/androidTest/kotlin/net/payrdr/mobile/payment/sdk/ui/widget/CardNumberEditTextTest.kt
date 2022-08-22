@@ -32,7 +32,7 @@ class CardNumberEditTextTest : CoreUIViewTest<CardNumberEditText>() {
     override fun prepareView(context: Context): CardNumberEditText {
         return CardNumberEditText(context).apply {
             showError = true
-            hint = getString(R.string.payrdr_card_number)
+            hint = getString(R.string.payrdr_number_card_hint)
         }
     }
 

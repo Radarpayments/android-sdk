@@ -12,6 +12,7 @@ object Constants {
     internal const val REQUEST_CODE_3DS = 60004
     internal const val INTENT_EXTRA_RESULT = "payment.sdk.result"
     internal const val INTENT_EXTRA_ERROR = "payment.sdk.error"
+    internal const val TAG = "SDK Payment"
     internal const val INTENT_EXTRA_ACS_URL = "acsUrl"
     internal const val INTENT_EXTRA_TERM_URL = "termUrl"
     internal const val INTENT_EXTRA_PAREQ = "paReq"

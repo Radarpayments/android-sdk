@@ -32,7 +32,6 @@ import net.payrdr.mobile.payment.sdk.form.model.CardDeleteOptions
 import net.payrdr.mobile.payment.sdk.form.model.CardSaveOptions
 import net.payrdr.mobile.payment.sdk.form.model.CryptogramData
 import net.payrdr.mobile.payment.sdk.form.model.GooglePayPaymentConfig
-import net.payrdr.mobile.payment.sdk.form.model.HolderInputOptions
 import net.payrdr.mobile.payment.sdk.form.model.PaymentInfoBindCard
 import net.payrdr.mobile.payment.sdk.form.model.PaymentInfoGooglePay
 import net.payrdr.mobile.payment.sdk.form.model.PaymentInfoNewCard
@@ -68,28 +67,18 @@ class PaymentActivity : AppCompatActivity() {
      *  Property for calling the window of creating a cryptogram.
      */
     private val cardFormDelegate = object : CardFormDelegate {
-        override fun openNewCardForm(
-            mdOrder: String,
-            bindingEnabled: Boolean
-        ) {
-            SDKForms.cryptogram(
-                activity = this@PaymentActivity,
-                config = PaymentConfigBuilder(mdOrder)
-                    .holderInputOptions(HolderInputOptions.VISIBLE)
-                    .cardSaveOptions(savedFunctionByConfig(bindingEnabled))
-                    .build()
-            )
-        }
 
-        override fun openBindingCardForm(
+        override fun openBottomSheet(
             mdOrder: String,
             bindingEnabled: Boolean,
             bindingCards: List<BindingItem>,
             cvcNotRequired: Boolean,
-            bindingDeactivationEnabled: Boolean
+            bindingDeactivationEnabled: Boolean,
+            googlePayConfig: GooglePayPaymentConfig
         ) {
             SDKForms.cryptogram(
-                activity = this@PaymentActivity,
+                manager = supportFragmentManager,
+                tag = null,
                 config = PaymentConfigBuilder(mdOrder)
                     .cards(bindingCards.toCards())
                     .bindingCVCRequired(!cvcNotRequired)
@@ -98,7 +87,8 @@ class PaymentActivity : AppCompatActivity() {
                         if (bindingDeactivationEnabled) CardDeleteOptions.YES_DELETE
                         else CardDeleteOptions.NO_DELETE
                     )
-                    .build()
+                    .build(),
+                googlePayConfig = googlePayConfig
             )
         }
 
@@ -158,7 +148,7 @@ class PaymentActivity : AppCompatActivity() {
             challengeParameters: ChallengeParameters,
             challengeStatusReceiver: ChallengeStatusReceiver
         ) {
-            // Запуск Challenge Flow.
+
             transaction!!.doChallenge(
                 this@PaymentActivity,
                 challengeParameters,

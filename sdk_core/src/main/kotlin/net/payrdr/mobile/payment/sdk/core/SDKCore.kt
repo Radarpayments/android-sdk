@@ -26,7 +26,9 @@ import java.util.UUID
 /**
  * @param context context for getting string resources.
  */
-class SDKCore(context: Context) {
+class SDKCore(
+    context: Context
+) {
 
     private val paymentStringProcessor: PaymentStringProcessor = DefaultPaymentStringProcessor()
     private val cryptogramCipher: CryptogramCipher = RSACryptogramCipher()
@@ -51,6 +53,13 @@ class SDKCore(context: Context) {
         timestamp: Long = System.currentTimeMillis()
     ): TokenResult {
 
+        Logger.log(
+            this.javaClass,
+            Logger.TAG,
+            "generateWithCard($params, $timestamp): Token generation method for a new card.",
+            null
+        )
+
         val validatorsMap = mapOf(
             params.cardHolder to cardHolderValidator,
             params.mdOrder to orderNumberValidator,
@@ -70,8 +79,22 @@ class SDKCore(context: Context) {
         )
 
         for ((fieldValue, validator) in validatorsMap) {
+            Logger.log(
+                this.javaClass,
+                Logger.TAG,
+                "generateWithCard($params, $timestamp): Validate ${fieldErrors[fieldValue]}",
+                null
+            )
             if (fieldValue != null) {
                 validator.validate(fieldValue).takeIf { !it.isValid }?.let {
+                    Logger.log(
+                        this.javaClass,
+                        Logger.TAG,
+                        "generateWithCard($params, $timestamp): Error ${fieldErrors[fieldValue]}",
+                        IllegalArgumentException(
+                            (fieldErrors[fieldValue] ?: ParamField.UNKNOWN).toString()
+                        )
+                    )
                     return TokenResult.withErrors(
                         mapOf(
                             (fieldErrors[fieldValue] ?: error(ParamField.UNKNOWN)) to it.errorCode!!
@@ -150,6 +173,14 @@ class SDKCore(context: Context) {
         params: BindingParams,
         timestamp: Long = System.currentTimeMillis()
     ): TokenResult {
+
+        Logger.log(
+            this.javaClass,
+            Logger.TAG,
+            "generateWithBinding($params, $timestamp): Token generation method for a saved card.",
+            null
+        )
+
         val validatorsMap = mapOf(
             params.mdOrder to orderNumberValidator,
             params.bindingID to cardBindingIdValidator,
@@ -165,8 +196,22 @@ class SDKCore(context: Context) {
         )
 
         for ((fieldValue, validator) in validatorsMap) {
+            Logger.log(
+                this.javaClass,
+                Logger.TAG,
+                "generateWithBinding($params, $timestamp): Validate ${fieldErrors[fieldValue]}",
+                null
+            )
             if (fieldValue != null) {
                 validator.validate(fieldValue).takeIf { !it.isValid }?.let {
+                    Logger.log(
+                        this.javaClass,
+                        Logger.TAG,
+                        "generateWithBinding($params, $timestamp): Error ${fieldErrors[fieldValue]}",
+                        IllegalArgumentException(
+                            (fieldErrors[fieldValue] ?: ParamField.UNKNOWN).toString()
+                        )
+                    )
                     return TokenResult.withErrors(
                         mapOf(
                             (fieldErrors[fieldValue] ?: error(ParamField.UNKNOWN)) to it.errorCode!!
@@ -233,6 +278,9 @@ class SDKCore(context: Context) {
         pubKey: String,
         timestamp: Long,
     ): TokenResult {
+
+        Logger.log(this.javaClass, Logger.TAG, "generation method:", null)
+
         val paymentString = paymentStringProcessor.createPaymentString(
             order = mdOrder,
             timestamp = timestamp,
@@ -248,8 +296,18 @@ class SDKCore(context: Context) {
             val token = cryptogramCipher.encode(paymentString, key)
             TokenResult.withToken(token)
         } catch (e: IllegalArgumentException) {
+            Logger.log(
+                this.javaClass,
+                Logger.TAG, " generation method: Error",
+                IllegalArgumentException("${ParamField.PUB_KEY} is invalid")
+            )
             TokenResult.withErrors(mapOf(ParamField.PUB_KEY to "invalid"))
         } catch (e: Exception) {
+            Logger.log(
+                this.javaClass,
+                Logger.TAG, " generation method: Error",
+                IllegalArgumentException("${ParamField.UNKNOWN} is unknown")
+            )
             TokenResult.withErrors(mapOf(ParamField.UNKNOWN to "unknown"))
         }
     }

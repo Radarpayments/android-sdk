@@ -34,6 +34,7 @@ import net.payrdr.mobile.payment.sdk.form.utils.executePostParams
 import net.payrdr.mobile.payment.sdk.form.utils.responseBodyToJsonObject
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentData
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
+import net.payrdr.mobile.payment.sdk.screen.BottomSheetScreen
 import net.payrdr.mobile.payment.sdk.screen.NewCardScreen
 import org.junit.Assert
 import org.junit.Before
@@ -45,7 +46,7 @@ import java.net.URL
 @LargeTest
 @Suppress("LargeClass", "MaxLineLength")
 @RunWith(AllureAndroidJUnit4::class)
-class PaymentWebChallengeActivity : DocLocScreenshotTestCase(
+class PaymentWebChallengeActivityTest : DocLocScreenshotTestCase(
     kaspressoBuilder = Kaspresso.Builder.simple(
         customize = {
             screenshotParams = ScreenshotParams(quality = 1)
@@ -83,8 +84,7 @@ class PaymentWebChallengeActivity : DocLocScreenshotTestCase(
     private data class TestCard(
         val pan: String,
         val expiry: String,
-        val cvc: String,
-        val holder: String
+        val cvc: String
     )
 
     @get:Rule
@@ -104,25 +104,19 @@ class PaymentWebChallengeActivity : DocLocScreenshotTestCase(
                 isVisible()
                 typeText(cvc)
             }
-            cardHolderInput {
-                isVisible()
-                typeText(holder)
-            }
         }
     }
 
     private val testCardWith3DSWithPaRes = TestCard(
         pan = "4012001038166662",
         expiry = "12/24",
-        cvc = "123",
-        holder = "CARD HOLDER"
+        cvc = "123"
     )
 
     private val testCardWith3DS = TestCard(
         pan = "5000001111111115",
         expiry = "12/30",
-        cvc = "123",
-        holder = "CARD HOLDER"
+        cvc = "123"
     )
 
     @Before
@@ -180,9 +174,18 @@ class PaymentWebChallengeActivity : DocLocScreenshotTestCase(
                     )
                 }
 
-            step("shouldReturnSuccessPaymentDataWithThreeDsVer1WithNewCard Open New Card Screen") {
+            step("shouldReturnSuccessPaymentDataWithThreeDsVer1WithNewCard Open Payment BottomSheet Screen") {
                 val mdOrder: String? = regOrderWithNewCard()
                 SDKPayment.checkout(activityTestRule.activity, mdOrder!!)
+            }
+
+            step("shouldReturnSuccessPaymentDataWithThreeDsVer1WithNewCard Open New Card Screen") {
+                BottomSheetScreen {
+                    Thread.sleep(5000L)
+                    addNewCard {
+                        click()
+                    }
+                }
             }
 
             step("shouldReturnSuccessPaymentDataWithThreeDsVer1WithNewCard Fill Out Form") {
@@ -239,9 +242,18 @@ class PaymentWebChallengeActivity : DocLocScreenshotTestCase(
                     )
                 }
 
-            step("shouldReturnSuccessPaymentDataWithThreeDsVer1WithNewCardPaReq Open New Card Screen") {
+            step("shouldReturnSuccessPaymentDataWithThreeDsVer1WithNewCardPaReq Open Payment BottomSheet Screen") {
                 val mdOrder: String? = regOrderWithNewCard()
                 SDKPayment.checkout(activityTestRule.activity, mdOrder!!)
+            }
+
+            step("shouldReturnSuccessPaymentDataWithThreeDsVer1WithNewCardPaReq Open New Card Screen") {
+                BottomSheetScreen {
+                    Thread.sleep(5000L)
+                    addNewCard {
+                        click()
+                    }
+                }
             }
 
             step("shouldReturnSuccessPaymentDataWithThreeDsVer1WithNewCardPaReq Fill Out Form") {

@@ -167,7 +167,6 @@ class CardNewActivity : BaseActivity() {
             )
         }
         doneButton.setOnClickListener { onDone() }
-        config.buttonText?.let { text -> doneButton.text = text }
         when (config.cardSaveOptions) {
             CardSaveOptions.HIDE -> {
                 switchBox.visibility = GONE
