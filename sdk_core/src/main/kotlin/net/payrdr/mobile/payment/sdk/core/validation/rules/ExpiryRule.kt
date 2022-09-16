@@ -4,7 +4,6 @@ import net.payrdr.mobile.payment.sdk.core.utils.digitsOnly
 import net.payrdr.mobile.payment.sdk.core.validation.BaseValidationRule
 import net.payrdr.mobile.payment.sdk.core.validation.ValidationResult
 import net.payrdr.mobile.payment.sdk.core.validation.ValidationResult.Companion.VALID
-import java.util.Calendar
 
 /**
  * Rule for checking the right of the card expiration format.
@@ -49,8 +48,7 @@ class ExpiryRule(
         private const val MONTH_MIN = 1
         private const val MONTH_MAX = 12
         private const val INVALID_FIELD_VALUE = -1
-        private const val MAX_YEARS = 10
-        private val YEAR_MIN = Calendar.getInstance().get(Calendar.YEAR) % 100
-        private val YEAR_MAX = (Calendar.getInstance().get(Calendar.YEAR) + MAX_YEARS) % 100
+        private const val YEAR_MIN = 0
+        private const val YEAR_MAX = 99
     }
 }

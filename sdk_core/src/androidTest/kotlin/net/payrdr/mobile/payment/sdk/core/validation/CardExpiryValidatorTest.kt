@@ -38,6 +38,32 @@ class CardExpiryValidatorTest {
     }
 
     @Test
+    @Description("shouldAcceptExpiredDate")
+    fun shouldAcceptExpiredDate() {
+        with(cardExpiryValidator.validate("12/20")) {
+            assertEquals(true, isValid)
+            assertNull(errorMessage)
+            assertNull(errorCode)
+        }
+
+        with(cardExpiryValidator.validate("12/01")) {
+            assertEquals(true, isValid)
+            assertNull(errorMessage)
+            assertNull(errorCode)
+        }
+    }
+
+    @Test
+    @Description("shouldAcceptMaxExpiryDate")
+    fun shouldAcceptMaxExpiryDate() {
+        with(cardExpiryValidator.validate("12/99")) {
+            assertEquals(true, isValid)
+            assertNull(errorMessage)
+            assertNull(errorCode)
+        }
+    }
+
+        @Test
     @Description("shouldNotAcceptLessThanMinLength")
     fun shouldNotAcceptLessThanMinLength() {
         val result = cardExpiryValidator.validate("12")
@@ -91,16 +117,6 @@ class CardExpiryValidatorTest {
     @Description("shouldNotAcceptIncorrectLastYear")
     fun shouldNotAcceptIncorrectLastYear() {
         val result = cardExpiryValidator.validate("13/19")
-
-        assertEquals(false, result.isValid)
-        assertEquals(getString(R.string.payrdr_card_incorrect_expiry), result.errorMessage)
-        assertEquals(ValidationCodes.invalid, result.errorCode)
-    }
-
-    @Test
-    @Description("shouldNotAcceptIncorrectOverTenYears")
-    fun shouldNotAcceptIncorrectOverTenYears() {
-        val result = cardExpiryValidator.validate("13/31")
 
         assertEquals(false, result.isValid)
         assertEquals(getString(R.string.payrdr_card_incorrect_expiry), result.errorMessage)

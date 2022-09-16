@@ -249,26 +249,8 @@ class SDKCoreTest {
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateWithCardWithOutDateExpiry")
-    fun shouldReturnErrorWhileGenerateWithCardWithOutDateExpiry() {
-        val params = CardParams(
-            mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
-            pan = "5391119268214792",
-            cvc = "123",
-            expiryMMYY = "12/15",
-            cardHolder = "Joe Doe",
-            pubKey = testPubKey
-        )
-
-        val result = sdkCore.generateWithCard(params)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.invalid, result.errors[ParamField.EXPIRY])
-    }
-
-    @Test
-    @Description("shouldReturnErrorWhileGenerateWithCardWithMaxOutDateExpiry")
-    fun shouldReturnErrorWhileGenerateWithCardWithMaxOutDateExpiry() {
+    @Description("shouldNotReturnErrorWhileGenerateWithCardDateExpiry")
+    fun shouldNotReturnErrorWhileGenerateWithCardDateExpiry() {
         val params = CardParams(
             mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
             pan = "5391119268214792",
@@ -279,9 +261,8 @@ class SDKCoreTest {
         )
 
         val result = sdkCore.generateWithCard(params)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.invalid, result.errors[ParamField.EXPIRY])
+        assertNotEquals(null, result.token)
+        assertEquals(true, result.errors.isEmpty())
     }
 
     @Test
@@ -599,8 +580,8 @@ class SDKCoreTest {
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateInstanceWithCardWithOutDateExpiry")
-    fun shouldReturnErrorWhileGenerateInstanceWithCardWithOutDateExpiry() {
+    @Description("shouldNotReturnErrorWhileGenerateInstanceWithCardWithOutDateExpiry")
+    fun shouldNotReturnErrorWhileGenerateInstanceWithCardWithOutDateExpiry() {
         val params = CardParams(
             pan = "5391119268214792",
             cvc = "123",
@@ -610,14 +591,13 @@ class SDKCoreTest {
         )
 
         val result = sdkCore.generateInstanceWithCard(params)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.invalid, result.errors[ParamField.EXPIRY])
+        assertNotEquals(null, result.token)
+        assertEquals(true, result.errors.isEmpty())
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateInstanceWithCardWithMaxOutDateExpiry")
-    fun shouldReturnErrorWhileGenerateInstanceWithCardWithMaxOutDateExpiry() {
+    @Description("shouldNotReturnErrorWhileGenerateInstanceWithCardWithMaxOutDateExpiry")
+    fun shouldNotReturnErrorWhileGenerateInstanceWithCardWithMaxOutDateExpiry() {
         val params = CardParams(
             pan = "5391119268214792",
             cvc = "123",
@@ -627,9 +607,8 @@ class SDKCoreTest {
         )
 
         val result = sdkCore.generateInstanceWithCard(params)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.invalid, result.errors[ParamField.EXPIRY])
+        assertNotEquals(null, result.token)
+        assertEquals(true, result.errors.isEmpty())
     }
 
     @Test
