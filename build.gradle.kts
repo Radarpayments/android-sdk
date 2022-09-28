@@ -4,7 +4,6 @@ buildscript {
     val kotlin_version by extra("1.4.10")
     repositories {
         dependencies {
-//            classpath(files("spoon-runner-2.0.0-SNAPSHOT.jar"))
             classpath("io.qameta.allure:allure-gradle:2.8.1")
         }
         google()
@@ -14,7 +13,6 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.1.3")
-//        classpath("com.jaredsburrows:gradle-spoon-plugin:1.5.1")
         classpath(kotlin("gradle-plugin", version = kotlin_version))
         classpath(kotlin("serialization", version = kotlin_version))
 
