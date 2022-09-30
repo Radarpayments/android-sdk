@@ -9,8 +9,12 @@ import kotlinx.coroutines.runBlocking
 import net.payrdr.mobile.payment.sdk.form.component.KeyProvider
 import net.payrdr.mobile.payment.sdk.form.component.KeyProviderException
 import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
+import net.payrdr.mobile.payment.sdk.form.component.impl.SSLContextCustomCAFactory
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.tls.HandshakeCertificates
+import okhttp3.tls.HeldCertificate
+import okhttp3.tls.certificatePem
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -18,6 +22,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+import java.net.InetAddress
 
 @SmallTest
 @RunWith(AllureAndroidJUnit4::class)
@@ -34,7 +39,21 @@ class RemoteKeyProviderTest {
     @Before
     fun setUp() {
         server.start()
-        keyProvider = RemoteKeyProvider(server.url("/").toString())
+        val localhost: String = InetAddress.getByName("localhost").canonicalHostName
+        val localhostCertificate: HeldCertificate = HeldCertificate.Builder()
+            .addSubjectAlternativeName(localhost)
+            .build()
+
+        val serverCertificates: HandshakeCertificates = HandshakeCertificates.Builder()
+            .heldCertificate(localhostCertificate)
+            .build()
+        val server = MockWebServer()
+        server.useHttps(serverCertificates.sslSocketFactory(), false)
+
+        val pem = localhostCertificate.certificate.certificatePem()
+        val sslContext = SSLContextCustomCAFactory.fromPem(pem)
+
+        keyProvider = RemoteKeyProvider(server.url("/").toString(), sslContext)
     }
 
     @After
@@ -99,5 +118,32 @@ class RemoteKeyProviderTest {
 
         keyProvider.provideKey()
         Unit
+    }
+
+    @Test
+    fun shouldTrustToCustomCACertificate() = runBlocking {
+        server.enqueue(
+            MockResponse().setBody(
+                """
+                    {
+                        "keys": [{
+                            "keyValue": "-----BEGIN PUBLIC KEY-----FIRST KEY-----END PUBLIC KEY-----",
+                            "protocolVersion": "RSA",
+                            "keyExpiration": 1960710807000
+                        }, {
+                            "keyValue": "-----BEGIN PUBLIC KEY-----SECOND KEY-----END PUBLIC KEY-----",
+                            "protocolVersion": "RSA",
+                            "keyExpiration": 1960710864000
+                        }]
+                    }
+                """.trimIndent()
+            )
+        )
+
+        val key = keyProvider.provideKey()
+
+        assertEquals(key.protocol, "RSA")
+        assertEquals(key.expiration, 1960710807000)
+        assertEquals(key.value, "-----BEGIN PUBLIC KEY-----FIRST KEY-----END PUBLIC KEY-----")
     }
 }

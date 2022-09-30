@@ -15,6 +15,8 @@ fun String.pemKeyContent(): String =
         .replace("\n", "")
         .replace("-----BEGIN PUBLIC KEY-----", "")
         .replace("-----END PUBLIC KEY-----", "")
+        .replace("-----BEGIN CERTIFICATE-----", "")
+        .replace("-----END CERTIFICATE-----", "")
 
 /**
  * Extension for getting color from string format  #ffffff or abbreviated form #fff.

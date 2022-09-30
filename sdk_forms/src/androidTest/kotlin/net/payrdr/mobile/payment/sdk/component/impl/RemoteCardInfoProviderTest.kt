@@ -9,8 +9,12 @@ import kotlinx.coroutines.runBlocking
 import net.payrdr.mobile.payment.sdk.form.component.CardInfoProvider
 import net.payrdr.mobile.payment.sdk.form.component.CardInfoProviderException
 import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteCardInfoProvider
+import net.payrdr.mobile.payment.sdk.form.component.impl.SSLContextCustomCAFactory
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.tls.HandshakeCertificates
+import okhttp3.tls.HeldCertificate
+import okhttp3.tls.certificatePem
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -18,6 +22,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+import java.net.InetAddress
 
 @SmallTest
 @RunWith(AllureAndroidJUnit4::class)
@@ -34,11 +39,26 @@ class RemoteCardInfoProviderTest {
     @Before
     fun setUp() {
         server.start()
+        val localhost: String = InetAddress.getByName("localhost").canonicalHostName
+        val localhostCertificate: HeldCertificate = HeldCertificate.Builder()
+            .addSubjectAlternativeName(localhost)
+            .build()
+
+        val serverCertificates: HandshakeCertificates = HandshakeCertificates.Builder()
+            .heldCertificate(localhostCertificate)
+            .build()
+        val server = MockWebServer()
+        server.useHttps(serverCertificates.sslSocketFactory(), false)
+
+        val pem = localhostCertificate.certificate.certificatePem()
+        val sslContext = SSLContextCustomCAFactory.fromPem(pem)
+
         val url = server.url("/").toString()
         urlBin = "${url}bins/"
         cardInfoProvider = RemoteCardInfoProvider(
             url = url,
-            urlBin = urlBin
+            urlBin = urlBin,
+            sslContext = sslContext,
         )
     }
 

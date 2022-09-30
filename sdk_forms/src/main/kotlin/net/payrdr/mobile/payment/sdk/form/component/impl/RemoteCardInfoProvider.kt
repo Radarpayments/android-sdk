@@ -11,6 +11,7 @@ import net.payrdr.mobile.payment.sdk.form.utils.executePostJson
 import net.payrdr.mobile.payment.sdk.form.utils.responseBodyToJsonObject
 import org.json.JSONObject
 import java.net.URL
+import javax.net.ssl.SSLContext
 
 /**
  * Implementation of the provider of obtaining information about the card from a remote server.
@@ -19,8 +20,9 @@ import java.net.URL
  * @param urlBin prefix for getting binary data.
  */
 class RemoteCardInfoProvider(
-    private var url: String,
-    private var urlBin: String
+    private val url: String,
+    private val urlBin: String,
+    private val sslContext: SSLContext? = null,
 ) : CardInfoProvider {
 
     @Suppress("TooGenericExceptionCaught")
@@ -33,7 +35,7 @@ class RemoteCardInfoProvider(
                 null
             )
             val body = JSONObject(mapOf("bin" to bin)).toString()
-            val connection = URL(url).executePostJson(body)
+            val connection = URL(url).executePostJson(body, sslContext)
             val info = CardInfo.fromJson(connection.responseBodyToJsonObject())
             info.copy(
                 logoMini = urlBin + info.logoMini

@@ -23,6 +23,7 @@ object Versions {
     const val kotlinx_coroutines_test = "1.3.7"
     const val com_squareup_spoon = "2.0.0-SNAPSHOT"
     const val com_squareup_mockwebserver = "4.7.2"
+    const val com_squareup_okhttp_tls = "4.7.2"
     const val espresso_contrib = "3.0.2"
     const val test_runner = "1.1.0"
     const val javax_api = "2.3.1"
@@ -68,6 +69,8 @@ object TestLibs {
     const val com_squareup_spoon = "com.squareup.spoon:spoon-client:${Versions.com_squareup_spoon}"
     const val com_squareup_mockwebserver =
         "com.squareup.okhttp3:mockwebserver:${Versions.com_squareup_mockwebserver}"
+    const val com_squareup_okhttp_tls =
+        "com.squareup.okhttp3:okhttp-tls:${Versions.com_squareup_okhttp_tls}"
     const val espresso_contrib =
         "com.android.support.test.espresso:espresso-contrib:${Versions.espresso_contrib}"
     const val test_runner = "androidx.test:runner:${Versions.test_runner}"

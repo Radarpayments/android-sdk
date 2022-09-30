@@ -12,13 +12,15 @@ import net.payrdr.mobile.payment.sdk.form.utils.executeGet
 import net.payrdr.mobile.payment.sdk.form.utils.responseBodyToJsonObject
 import org.json.JSONObject
 import java.net.URL
+import javax.net.ssl.SSLContext
 
 /**
  * Key provider based on the external url of the resource.
  *
  * @param url the address of the remote server providing an active encryption key.
+ * @param sslContext custom sslContext.
  */
-class RemoteKeyProvider(private var url: String) : KeyProvider {
+class RemoteKeyProvider(private var url: String, private val sslContext: SSLContext? = null) : KeyProvider {
 
     @Suppress("TooGenericExceptionCaught")
     override suspend fun provideKey(): Key = withContext(Dispatchers.IO) {
@@ -29,7 +31,7 @@ class RemoteKeyProvider(private var url: String) : KeyProvider {
                 "provideKey(): Key provider based on the external url of the resource.",
                 null
             )
-            val connection = URL(url).executeGet()
+            val connection = URL(url).executeGet(sslContext)
             val keys = ActiveKeysDto.fromJson(connection.responseBodyToJsonObject()).keys
             keys.first().toKey()
         } catch (cause: Exception) {

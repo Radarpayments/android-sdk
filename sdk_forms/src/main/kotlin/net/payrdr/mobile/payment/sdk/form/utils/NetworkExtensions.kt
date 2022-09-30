@@ -9,6 +9,8 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder.encode
 import java.nio.charset.StandardCharsets.UTF_8
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLContext
 
 /**
  * Server successful response code.
@@ -35,10 +37,14 @@ fun HttpURLConnection.responseBodyToJsonObject(): JSONObject {
  *
  * @return returns [HttpURLConnection].
  */
-fun URL.executeGet(): HttpURLConnection = (openConnection() as HttpURLConnection).apply {
-    requestMethod = "GET"
-    setChunkedStreamingMode(0)
-}
+fun URL.executeGet(sslContext: SSLContext? = null): HttpsURLConnection =
+    (openConnection() as HttpsURLConnection).apply {
+        sslContext?.let {
+            sslSocketFactory = it.socketFactory
+        }
+        requestMethod = "GET"
+        setChunkedStreamingMode(0)
+    }
 
 /**
  * Extension for making a POST request with passing parameters as a Json object.
@@ -46,8 +52,11 @@ fun URL.executeGet(): HttpURLConnection = (openConnection() as HttpURLConnection
  * @param jsonBody json to send in the request body.
  * @return returns [HttpURLConnection].
  */
-fun URL.executePostJson(jsonBody: String): HttpURLConnection =
-    (openConnection() as HttpURLConnection).apply {
+fun URL.executePostJson(jsonBody: String, sslContext: SSLContext? = null): HttpsURLConnection =
+    (openConnection() as HttpsURLConnection).apply {
+        sslContext?.let {
+            sslSocketFactory = it.socketFactory
+        }
         requestMethod = "POST"
         setRequestProperty("Content-Type", "application/json")
         doOutput = true
@@ -65,8 +74,8 @@ fun URL.executePostJson(jsonBody: String): HttpURLConnection =
  * @param paramBody collection of parameters to send in the request body.
  * @return returns [HttpURLConnection].
  */
-fun URL.executePostParams(paramBody: Map<String, String>): HttpURLConnection =
-    (openConnection() as HttpURLConnection).apply {
+fun URL.executePostParams(paramBody: Map<String, String>): HttpsURLConnection =
+    (openConnection() as HttpsURLConnection).apply {
         requestMethod = "POST"
         setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
         doOutput = true

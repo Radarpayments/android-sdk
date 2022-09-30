@@ -63,7 +63,7 @@ class CardExpiryValidatorTest {
         }
     }
 
-        @Test
+    @Test
     @Description("shouldNotAcceptLessThanMinLength")
     fun shouldNotAcceptLessThanMinLength() {
         val result = cardExpiryValidator.validate("12")
