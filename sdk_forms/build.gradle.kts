@@ -22,9 +22,7 @@ android {
         versionCode = BuildVersionsAndroid.versionCode
         versionName = SDKBuildVersions.sdkFormsVersion
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
         testInstrumentationRunner("io.qameta.allure.android.runners.AllureAndroidJUnitRunner")
-
         buildConfigField(
             "String",
             "SDK_FORMS_VERSION_NUMBER",
@@ -73,10 +71,10 @@ android {
 
 allure {
     autoconfigure = true
-    version = "2.7.0" // Latest Allure Version
+    version = "2.20.1" // Latest Allure Version
 
-    useJUnit5 {
-        version = "2.7.0" // Latest Allure Version
+    useJUnit4 {
+        version = "2.20.1" // Latest Allure Version
     }
 }
 

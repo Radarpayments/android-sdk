@@ -15,7 +15,7 @@ class MarketApplication : Application() {
         super.onCreate()
         SDKForms.init(
             SDKConfigBuilder()
-                .keyProviderUrl("https://ecommerce.radarpayments.com/payment/se/keys.do")
+                .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
                 .build()
         )
 
@@ -25,7 +25,7 @@ class MarketApplication : Application() {
         //    val sslContext = SSLContextCustomCAFactory.fromBase64String()
         //    val sslContext = SSLContextCustomCAFactory.fromInputStream()
         //
-        //    val keyProvider = RemoteKeyProvider("https://ecommerce.radarpayments.com/payment/se/keys.do", sslContext)
+        //    val keyProvider = RemoteKeyProvider("https://dev.bpcbt.com/payment/se/keys.do", sslContext)
         //
         //    SDKForms.init(
         //        SDKConfigBuilder()

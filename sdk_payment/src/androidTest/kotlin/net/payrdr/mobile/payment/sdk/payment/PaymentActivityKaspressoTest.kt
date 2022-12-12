@@ -135,7 +135,7 @@ class PaymentActivityKaspressoTest : DocLocScreenshotTestCase(
 
     @Before
     fun setUp() {
-        baseUrl = "https://ecommerce.radarpayments.com/payment"
+        baseUrl = "https://dev.bpcbt.com/payment"
         /* spellchecker: disable */
         dsRoot = """
         MIICDTCCAbOgAwIBAgIUOO3a573khC9kCsQJGKj/PpKOSl8wCgYIKoZIzj0EA
@@ -158,7 +158,7 @@ class PaymentActivityKaspressoTest : DocLocScreenshotTestCase(
         paymentConfig = SDKPaymentConfig(baseUrl, dsRoot)
         SDKForms.init(
             SDKConfigBuilder()
-                .keyProviderUrl("https://ecommerce.radarpayments.com/payment/se/keys.do")
+                .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
                 .build()
         )
         SDKPayment.init(paymentConfig)
@@ -1156,7 +1156,7 @@ class PaymentActivityKaspressoTest : DocLocScreenshotTestCase(
     private fun getClientId(): String = System.currentTimeMillis().toString()
 
     private fun regOrderWithNewCard(): String? {
-        val url = "https://ecommerce.radarpayments.com/payment/rest/register.do"
+        val url = "https://dev.bpcbt.com/payment/rest/register.do"
         val body = mapOf(
             "amount" to "20000",
             "userName" to "mobile-sdk-api",
@@ -1174,7 +1174,7 @@ class PaymentActivityKaspressoTest : DocLocScreenshotTestCase(
         userName: String = "mobile-sdk-api",
         clientId: String = "955"
     ): String? {
-        val url = "https://ecommerce.radarpayments.com/payment/rest/register.do"
+        val url = "https://dev.bpcbt.com/payment/rest/register.do"
         val body = mapOf(
             "amount" to "2000",
             "userName" to userName,

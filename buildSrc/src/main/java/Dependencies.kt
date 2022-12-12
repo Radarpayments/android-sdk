@@ -27,7 +27,7 @@ object Versions {
     const val espresso_contrib = "3.0.2"
     const val test_runner = "1.1.0"
     const val javax_api = "2.3.1"
-    const val allure_kotlin = "2.2.7"
+    const val allure_kotlin = "2.4.0"
     const val kaspresso = "1.4.1"
 }
 

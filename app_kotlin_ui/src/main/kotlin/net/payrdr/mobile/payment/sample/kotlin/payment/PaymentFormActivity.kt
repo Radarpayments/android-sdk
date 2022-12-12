@@ -28,7 +28,7 @@ class PaymentFormActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment_form)
 
-        val baseUrl = "https://ecommerce.radarpayments.com/payment"
+        val baseUrl = "https://dev.bpcbt.com/payment"
         /* spellchecker: disable */
         val dsRoot = """
         MIICDTCCAbOgAwIBAgIUOO3a573khC9kCsQJGKj/PpKOSl8wCgYIKoZIzj0EA

@@ -23,16 +23,13 @@ android {
         multiDexEnabled = true
         versionCode = BuildVersionsAndroid.versionCode
         versionName = SDKBuildVersions.sdkPaymentVersion
-
-
         testInstrumentationRunner("io.qameta.allure.android.runners.AllureAndroidJUnitRunner")
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField(
             "String",
             "SDK_PAYMENT_VERSION_NUMBER",
             "\"${SDKBuildVersions.sdkPaymentVersion}\""
         )
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -75,10 +72,10 @@ android {
 
 allure {
     autoconfigure = true
-    version = "2.7.0" // Latest Allure Version
+    version = "2.20.1" // Latest Allure Version
 
-    useJUnit5 {
-        version = "2.7.0" // Latest Allure Version
+    useJUnit4 {
+        version = "2.20.1" // Latest Allure Version
     }
 }
 

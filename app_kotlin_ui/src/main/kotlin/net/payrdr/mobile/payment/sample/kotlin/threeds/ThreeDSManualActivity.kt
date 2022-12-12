@@ -3,6 +3,7 @@ package net.payrdr.mobile.payment.sample.kotlin.threeds
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_three_d_s_manual.*
 import net.payrdr.mobile.payment.sdk.threeds.impl.Factory
 import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeStatusReceiver
 import net.payrdr.mobile.payment.sdk.threeds.spec.CompletionEvent
@@ -10,14 +11,6 @@ import net.payrdr.mobile.payment.sdk.threeds.spec.ProtocolErrorEvent
 import net.payrdr.mobile.payment.sdk.threeds.spec.RuntimeErrorEvent
 import net.payrdr.mobile.payment.sdk.threeds.spec.ThreeDS2Service
 import net.payrdr.mobile.payment.sdk.threeds.spec.Transaction
-import kotlinx.android.synthetic.main.activity_three_d_s_manual.acsRefNumber
-import kotlinx.android.synthetic.main.activity_three_d_s_manual.acsSignedContent
-import kotlinx.android.synthetic.main.activity_three_d_s_manual.acsTransactionID
-import kotlinx.android.synthetic.main.activity_three_d_s_manual.executeThreeDSChallengeFlow
-import kotlinx.android.synthetic.main.activity_three_d_s_manual.initThreeDSTransaction
-import kotlinx.android.synthetic.main.activity_three_d_s_manual.logView
-import kotlinx.android.synthetic.main.activity_three_d_s_manual.threeDSAuthenticationRequestParams
-import kotlinx.android.synthetic.main.activity_three_d_s_manual.threeDSServerTransId
 import net.payrdr.mobile.payment.sample.kotlin.R
 import net.payrdr.mobile.payment.sample.kotlin.helpers.copyToClipboard
 import net.payrdr.mobile.payment.sample.kotlin.helpers.launchGlobalScope
@@ -40,6 +33,8 @@ class ThreeDSManualActivity : AppCompatActivity() {
         get() = acsSignedContent.text.toString()
     private val argThreeDSServerTransId: String
         get() = threeDSServerTransId.text.toString()
+    private val argThreeDSRequestorAppURL: String
+        get() = threeDSRequestorAppURL.text.toString()
 
     /* spellchecker: disable */
     private val dsRoot =
@@ -128,6 +123,7 @@ class ThreeDSManualActivity : AppCompatActivity() {
         challengeParameters.acsRefNumber = argAcsRefNumber
         challengeParameters.acsSignedContent = argAcsSignedContent
         challengeParameters.set3DSServerTransactionID(argThreeDSServerTransId)
+        challengeParameters.setThreeDSRequestorAppURL(argThreeDSRequestorAppURL)
 
         // Listener to handle the Challenge Flow execution process.
         val challengeStatusReceiver: ChallengeStatusReceiver = object : ChallengeStatusReceiver {

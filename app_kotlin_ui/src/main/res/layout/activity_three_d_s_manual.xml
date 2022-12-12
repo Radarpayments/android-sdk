@@ -101,6 +101,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/acsSignedContent" />
 
+        <EditText
+                android:id="@+id/threeDSRequestorAppURL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:hint="threeDSRequestorAppURL"
+                android:imeOptions="actionNext"
+                android:lines="1"
+                android:maxLines="1"
+                android:singleLine="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/threeDSServerTransId" />
+
         <Button
             android:id="@+id/executeThreeDSChallengeFlow"
             android:layout_width="match_parent"
@@ -111,7 +127,7 @@
             android:text="Run Challenge Flow"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/threeDSServerTransId" />
+            app:layout_constraintTop_toBottomOf="@+id/threeDSRequestorAppURL" />
 
         <TextView
             android:id="@+id/logView"

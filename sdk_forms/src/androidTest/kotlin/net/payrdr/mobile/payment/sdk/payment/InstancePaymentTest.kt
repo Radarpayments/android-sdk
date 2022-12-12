@@ -35,7 +35,7 @@ class InstancePaymentTest {
     fun setUp() {
         SDKForms.init(
             SDKConfigBuilder()
-                .keyProviderUrl("https://ecommerce.radarpayments.com/payment/se/keys.do")
+                .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
                 .build()
         )
     }
@@ -62,7 +62,7 @@ class InstancePaymentTest {
     }
 
     private fun makeInstancePayment(seToken: String): String? {
-        val url = "https://ecommerce.radarpayments.com/payment/rest/instantPayment.do"
+        val url = "https://dev.bpcbt.com/payment/rest/instantPayment.do"
         val body = mapOf(
             "amount" to "20000",
             "userName" to "mobile-sdk-api",

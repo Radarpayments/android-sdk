@@ -102,7 +102,7 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
         SDKForms.innerSdkConfig = SDKConfigBuilder()
             .keyProvider(
                 CachedKeyProvider(
-                    RemoteKeyProvider("https://ecommerce.radarpayments.com/payment/se/keys.do"),
+                    RemoteKeyProvider("https://dev.bpcbt.com/payment/se/keys.do"),
                     targetContext().getSharedPreferences("key", Context.MODE_PRIVATE)
                 )
             ).build()

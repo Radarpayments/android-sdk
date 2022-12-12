@@ -71,9 +71,10 @@ android {
 
 allure {
     autoconfigure = true
-    version = "2.7.0" // Latest Allure Version
-    useJUnit5 {
-        version = "2.7.0" // Latest Allure Version
+    version = "2.20.1" // Latest Allure Version
+
+    useJUnit4 {
+        version = "2.20.1" // Latest Allure Version
     }
 }
 

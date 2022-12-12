@@ -53,7 +53,7 @@ class PaymentFormFragment : Fragment() {
                     /* spellchecker: enable */
                     .replace("\n", "")
                     .trimIndent()
-            val paymentConfig = SDKPaymentConfig("https://ecommerce.radarpayments.com/payment/rest", dsRoot)
+            val paymentConfig = SDKPaymentConfig("https://dev.bpcbt.com/payment/rest", dsRoot)
             SDKPayment.init(paymentConfig)
             SDKPayment.checkout(this, mdOrder.text.trim().toString())
         }

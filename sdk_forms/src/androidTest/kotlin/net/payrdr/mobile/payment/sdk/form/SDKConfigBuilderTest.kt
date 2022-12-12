@@ -17,7 +17,7 @@ class SDKConfigBuilderTest {
     @Description("succeedBuildWithKeyProviderUrl")
     fun succeedBuildWithKeyProviderUrl() {
         SDKConfigBuilder()
-            .keyProviderUrl("https://ecommerce.radarpayments.com/payment/se/keys.do")
+            .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
             .build()
     }
 
@@ -27,7 +27,7 @@ class SDKConfigBuilderTest {
         SDKConfigBuilder()
             .keyProvider(
                 CachedKeyProvider(
-                    RemoteKeyProvider("https://ecommerce.radarpayments.com/payment/se/keys.do"),
+                    RemoteKeyProvider("https://dev.bpcbt.com/payment/se/keys.do"),
                     targetContext().getSharedPreferences("key", Context.MODE_PRIVATE)
                 )
             )
@@ -38,7 +38,7 @@ class SDKConfigBuilderTest {
     @Description("succeedBuildWithCustomCardInfoProvider")
     fun succeedBuildWithCustomCardInfoProvider() {
         SDKConfigBuilder()
-            .keyProviderUrl("https://ecommerce.radarpayments.com/payment/se/keys.do")
+            .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
             .cardInfoProvider(
                 RemoteCardInfoProvider(
                     url = "https://mrbin.io/bins/display",
@@ -58,8 +58,8 @@ class SDKConfigBuilderTest {
     @Description("buildWithTwoDifferentKeyProviderShouldThrowException")
     fun buildWithTwoDifferentKeyProviderShouldThrowException() {
         SDKConfigBuilder()
-            .keyProviderUrl("https://ecommerce.radarpayments.com/payment/se/keys.do")
-            .keyProvider(RemoteKeyProvider(url = "https://ecommerce.radarpayments.com/payment/se/keys.do"))
+            .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
+            .keyProvider(RemoteKeyProvider(url = "https://dev.bpcbt.com/payment/se/keys.do"))
             .build()
     }
 
@@ -67,8 +67,8 @@ class SDKConfigBuilderTest {
     @Description("buildWithTwoDifferentKeyProviderSwapOrderShouldThrowException")
     fun buildWithTwoDifferentKeyProviderSwapOrderShouldThrowException() {
         SDKConfigBuilder()
-            .keyProvider(RemoteKeyProvider(url = "https://ecommerce.radarpayments.com/payment/se/keys.do"))
-            .keyProviderUrl("https://ecommerce.radarpayments.com/payment/se/keys.do")
+            .keyProvider(RemoteKeyProvider(url = "https://dev.bpcbt.com/payment/se/keys.do"))
+            .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
             .build()
     }
 }
