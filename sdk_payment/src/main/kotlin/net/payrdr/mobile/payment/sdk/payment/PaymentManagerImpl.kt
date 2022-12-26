@@ -96,24 +96,25 @@ class PaymentManagerImpl(
         // b - Need 3DS
         // 3.b.1 - launch SDK 3DS (challenge flow)
         // c - Get an error
-
         // 4 - Completion with the result of the payment (return to the payment start screen).
+
         mdOrder = order
         val sessionStatusResponse = getSessionStatus()
-//        val gPaySettings = paymentApi.getPaymentSettings()
-        val isTestEnvironment = "gPaySettings.environment" == "TEST"
-        val gPayConfig = createGooglePayConfig(
-            mdOrder,
-//            gPaySettings.gateway,
-//            gPaySettings.merchantId,
-            "gPaySettings.gateway",
-            "gPaySettings.merchantId",
-            sessionStatusResponse.amount!!,
-            sessionStatusResponse.currencyAlphaCode!!,
-            sessionStatusResponse.merchantInfo.merchantLogin,
-            sessionStatusResponse.merchantInfo.merchantFullName,
-            isTestEnvironment
-        )
+        val isGPayAccepted = sessionStatusResponse.merchantOptions.contains("GOOGLEPAY")
+        var gPayConfig: GooglePayPaymentConfig? = null
+        if (isGPayAccepted) {
+            val gPaySettings = paymentApi.getPaymentSettings(login = sessionStatusResponse.merchantInfo.merchantLogin)
+            gPayConfig = createGooglePayConfig(
+                mdOrder,
+                gatewayGPay = gPaySettings.gateway,
+                merchantIdGPay = gPaySettings.merchantId,
+                amount = sessionStatusResponse.amount!!,
+                currencyCodeInput = sessionStatusResponse.currencyAlphaCode!!,
+                getawayMerchantIdConfig = sessionStatusResponse.merchantInfo.merchantLogin,
+                merchantFullName = sessionStatusResponse.merchantInfo.merchantFullName,
+                isTestEnvironment = gPaySettings.environment == "TEST",
+            )
+        }
         if (gPayClicked) {
             gPayDelegate.openGPayForm(gPayConfig)
         } else {
@@ -236,12 +237,19 @@ class PaymentManagerImpl(
         val paymentResult = paymentApi.gPayProcessForm(
             cryptogramGPayApiData = cryptogramGPayApiData
         )
-        LogDebug.logIfDebug("GPay Payment $paymentResult")
-        val paymentDataResponse = PaymentData(
-            mdOrder = mdOrder,
-            status = if (paymentResult.success.toBoolean()) "DEPOSITED" else "ERROR"
-        )
-        activityDelegate.finishActivityWithResult(paymentDataResponse)
+        LogDebug.logIfDebug("GPay Payment First Response $paymentResult")
+
+        if (paymentResult.data!!.acsUrl.isNotBlank()) {
+            val webChallengeParam = WebChallengeParam(
+                mdOrder = paymentResult.data.orderId,
+                acsUrl = paymentResult.data.acsUrl,
+                paReq = paymentResult.data.paReq,
+                termUrl = paymentResult.data.termUrl,
+            )
+            threeDSFormDelegate.openWebChallenge(
+                webChallengeParam = webChallengeParam,
+            )
+        }
     }
 
     /**
@@ -389,7 +397,7 @@ class PaymentManagerImpl(
         currencyCodeInput: String,
         getawayMerchantIdConfig: String,
         merchantFullName: String,
-        isTestEnvironment: Boolean
+        isTestEnvironment: Boolean,
     ): GooglePayPaymentConfig {
         val paymentData = GooglePayPaymentDataRequest.paymentDataRequestCreate {
             allowedPaymentMethods = AllowedPaymentMethods.allowedPaymentMethodsCreate {
@@ -436,7 +444,7 @@ class PaymentManagerImpl(
 
         return GooglePayConfigBuilder(
             order = mdOrder,
-            paymentData = PaymentDataRequest.fromJson(paymentData)
+            paymentData = PaymentDataRequest.fromJson(paymentData),
         ).testEnvironment(isTestEnvironment)
             .build()
     }

@@ -14,12 +14,14 @@ import kotlinx.android.synthetic.main.activity_three_d_s.returnUrl
 import kotlinx.android.synthetic.main.activity_three_d_s.text
 import kotlinx.android.synthetic.main.activity_three_d_s.threeDSCheckout
 import kotlinx.android.synthetic.main.activity_three_d_s.userName
+import net.payrdr.mobile.payment.sample.kotlin.MarketApplication
 import net.payrdr.mobile.payment.sample.kotlin.R
 import net.payrdr.mobile.payment.sample.kotlin.helpers.launchGlobalScope
 import net.payrdr.mobile.payment.sample.kotlin.helpers.log
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSGatewayApi.PaymentCheckOrderStatusRequest
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSGatewayApi.PaymentFinishOrderRequest
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSGatewayApi.PaymentOrderRequest
+import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.form.PaymentConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.ResultCryptogramCallback
 import net.payrdr.mobile.payment.sdk.form.SDKConfigBuilder
@@ -262,7 +264,7 @@ class ThreeDSActivity : AppCompatActivity() {
             this@ThreeDSActivity,
             challengeParameters,
             challengeStatusReceiver,
-            timeOut
+            timeOut,
         )
     }
 

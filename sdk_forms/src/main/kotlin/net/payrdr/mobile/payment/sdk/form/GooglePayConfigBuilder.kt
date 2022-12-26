@@ -16,7 +16,7 @@ import java.util.UUID
 @Suppress("TooManyFunctions")
 class GooglePayConfigBuilder(
     private val order: String = "",
-    private val paymentData: PaymentDataRequest
+    private val paymentData: PaymentDataRequest,
 ) {
     private var theme: Theme = Theme.SYSTEM
     private var locale: Locale = Locale.getDefault()

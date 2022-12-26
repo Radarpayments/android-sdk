@@ -1,5 +1,6 @@
 package net.payrdr.mobile.payment.sample.kotlin.payment
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -53,7 +54,9 @@ class PaymentFormFragment : Fragment() {
                     /* spellchecker: enable */
                     .replace("\n", "")
                     .trimIndent()
-            val paymentConfig = SDKPaymentConfig("https://dev.bpcbt.com/payment/rest", dsRoot)
+            val paymentConfig = SDKPaymentConfig("https://dev.bpcbt.com/payment/rest", dsRoot,
+                keyProviderUrl = "https://dev.bpcbt.com/payment/se/keys.do",
+            )
             SDKPayment.init(paymentConfig)
             SDKPayment.checkout(this, mdOrder.text.trim().toString())
         }
@@ -61,6 +64,10 @@ class PaymentFormFragment : Fragment() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_CANCELED) {
+            makeToast("Canceled payment by user")
+        }
+
         // Processing the result of the payment cycle.
         SDKPayment.handleCheckoutResult(requestCode, data, object :
             ResultPaymentCallback<PaymentData> {

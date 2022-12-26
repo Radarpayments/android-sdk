@@ -7,13 +7,17 @@ import org.json.JSONObject
  *
  * @param merchantUrl the URL of merchant storage.
  * @param merchantFullName the name of merchant.
+ * @param mcc mcc value.
  * @param merchantLogin the login of merchant in system.
+ * @param captchaMode is available captcha.
  * @param custom if merchant has a custom rules.
  */
 data class MerchantInfo(
     val merchantUrl: String,
     val merchantFullName: String,
+    val mcc: String,
     val merchantLogin: String,
+    val captchaMode: String,
     val custom: Boolean
 ) {
 
@@ -26,7 +30,9 @@ data class MerchantInfo(
             MerchantInfo(
                 merchantUrl = getString("merchantUrl"),
                 merchantFullName = getString("merchantFullName"),
+                mcc = getString("mcc"),
                 merchantLogin = getString("merchantLogin"),
+                captchaMode = getString("captchaMode"),
                 custom = getBoolean("custom")
             )
         }

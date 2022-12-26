@@ -25,6 +25,6 @@ interface CardFormDelegate {
         bindingCards: List<BindingItem>,
         cvcNotRequired: Boolean,
         bindingDeactivationEnabled: Boolean,
-        googlePayConfig: GooglePayPaymentConfig
+        googlePayConfig: GooglePayPaymentConfig?
     )
 }

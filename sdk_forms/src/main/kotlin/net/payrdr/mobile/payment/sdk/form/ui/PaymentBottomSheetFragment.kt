@@ -1,5 +1,6 @@
 package net.payrdr.mobile.payment.sdk.form.ui
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,10 +16,12 @@ import kotlinx.android.synthetic.main.fragment_bottom_sheet_payment.googlePayBut
 import net.payrdr.mobile.payment.sdk.form.Constants
 import net.payrdr.mobile.payment.sdk.form.R
 import net.payrdr.mobile.payment.sdk.form.SDKForms
+import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayUtils
 import net.payrdr.mobile.payment.sdk.form.model.Card
 import net.payrdr.mobile.payment.sdk.form.model.GooglePayPaymentConfig
 import net.payrdr.mobile.payment.sdk.form.model.PaymentConfig
 import net.payrdr.mobile.payment.sdk.form.ui.adapter.CardListAdapter
+import net.payrdr.mobile.payment.sdk.form.utils.finishWithUserCancellation
 
 /**
  * Bottom Sheet to start the payment process via all payment method.
@@ -55,6 +58,8 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        checkAvailableGPayPayment()
+
         savedInstanceState?.getParcelable<PaymentConfig>(CONFIG_KEY)?.also {
             config = it
         }
@@ -66,15 +71,7 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
 
         dismissButton.setOnClickListener {
             dismiss()
-        }
-
-        if (this::googlePayPaymentConfig.isInitialized) {
-            googlePayButton.setOnClickListener {
-                SDKForms.cryptogram(this, googlePayPaymentConfig)
-                dismiss()
-            }
-        } else {
-            googlePayButton.visibility = View.GONE
+            requireActivity().finishWithUserCancellation()
         }
 
         cardsAdapter.cards = config.cards.toList()
@@ -99,8 +96,15 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
-    internal fun setGooglePayButtonCLickListener(googlePayPaymentConfig: GooglePayPaymentConfig) {
-        this.googlePayPaymentConfig = googlePayPaymentConfig
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        requireActivity().finishWithUserCancellation()
+    }
+
+    internal fun setGooglePayPaymentConfig(googlePayPaymentConfig: GooglePayPaymentConfig?) {
+        googlePayPaymentConfig?.let {
+            this.googlePayPaymentConfig = googlePayPaymentConfig
+        }
     }
 
     private fun openNewCard() {
@@ -117,5 +121,48 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
             Constants.REQUEST_CODE_CRYPTOGRAM
         )
         dismiss()
+    }
+
+    private fun displayGooglePayButton(value: Boolean) {
+        googlePayButton.visibility = if (value) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+    }
+
+    private fun checkAvailableGPayPayment() {
+        if (this::googlePayPaymentConfig.isInitialized) {
+            GooglePayUtils.possiblyShowGooglePayButton(
+                context = this.requireContext(),
+                isReadyToPayJson = GooglePayUtils.getIsReadyToPayJson(),
+                paymentsClient = GooglePayUtils.createPaymentsClient(
+                    this.requireContext(),
+                    GooglePayUtils.getEnvironment(googlePayPaymentConfig.testEnvironment)
+                ),
+                callback = object : GooglePayUtils.GooglePayCheckCallback {
+                    override fun onNoGooglePlayServices() {
+                        displayGooglePayButton(false)
+                        Log.d("PAYRDRSDK", "GPay not supported by device")
+                    }
+
+                    override fun onNotReadyToRequest() {
+                        displayGooglePayButton(false)
+                        Log.d("PAYRDRSDK", "GPay not supported by device")
+                    }
+
+                    override fun onReadyToRequest() {
+                        displayGooglePayButton(true)
+                        googlePayButton.setOnClickListener {
+                            SDKForms.cryptogram(this@PaymentBottomSheetFragment, googlePayPaymentConfig)
+                            dismiss()
+                        }
+                    }
+                }
+            )
+        } else {
+            Log.d("PAYRDRSDK", "GPay not supported by server")
+            displayGooglePayButton(false)
+        }
     }
 }

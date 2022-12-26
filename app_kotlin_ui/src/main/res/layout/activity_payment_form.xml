@@ -70,5 +70,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titlePaymentGooglePay"
         app:payrdr_google_pay_button_image_format="with_text" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

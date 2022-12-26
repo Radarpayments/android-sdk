@@ -3,7 +3,16 @@ package net.payrdr.mobile.payment.sample.kotlin.threeds
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_three_d_s_manual.*
+import kotlinx.android.synthetic.main.activity_three_d_s_manual.acsRefNumber
+import kotlinx.android.synthetic.main.activity_three_d_s_manual.acsSignedContent
+import kotlinx.android.synthetic.main.activity_three_d_s_manual.acsTransactionID
+import kotlinx.android.synthetic.main.activity_three_d_s_manual.executeThreeDSChallengeFlow
+import kotlinx.android.synthetic.main.activity_three_d_s_manual.initThreeDSTransaction
+import kotlinx.android.synthetic.main.activity_three_d_s_manual.logView
+import kotlinx.android.synthetic.main.activity_three_d_s_manual.threeDSAuthenticationRequestParams
+import kotlinx.android.synthetic.main.activity_three_d_s_manual.threeDSServerTransId
+import kotlinx.android.synthetic.main.activity_three_d_s_manual.threeDSRequestorAppURL
+import net.payrdr.mobile.payment.sample.kotlin.MarketApplication
 import net.payrdr.mobile.payment.sdk.threeds.impl.Factory
 import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeStatusReceiver
 import net.payrdr.mobile.payment.sdk.threeds.spec.CompletionEvent
@@ -164,7 +173,7 @@ class ThreeDSManualActivity : AppCompatActivity() {
             this@ThreeDSManualActivity,
             challengeParameters,
             challengeStatusReceiver,
-            timeOut
+            timeOut,
         )
     }
 

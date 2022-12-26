@@ -14,7 +14,10 @@ import net.payrdr.mobile.payment.sdk.exceptions.SDKOrderNotExistException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKTransactionException
 import net.payrdr.mobile.payment.sdk.form.ResultPaymentCallback
+import net.payrdr.mobile.payment.sdk.form.SDKConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.SDKException
+import net.payrdr.mobile.payment.sdk.form.SDKForms
+import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
 import net.payrdr.mobile.payment.sdk.payment.PaymentActivity
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentData
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
@@ -43,6 +46,24 @@ object SDKPayment {
     fun init(sdkPaymentConfig: SDKPaymentConfig, use3ds2sdk: Boolean = true) {
         innerSdkPaymentConfig = sdkPaymentConfig
         use3ds2sdkConfig = use3ds2sdk
+
+        val sdkConfigBuilder = SDKConfigBuilder()
+
+        val keyProvider = if (sdkPaymentConfig.sslContextConfig != null) {
+            RemoteKeyProvider(
+                sdkPaymentConfig.keyProviderUrl,
+                sdkPaymentConfig.sslContextConfig.sslContext
+            )
+        } else {
+            RemoteKeyProvider(
+                sdkPaymentConfig.keyProviderUrl,
+            )
+        }
+        sdkConfigBuilder.keyProvider(keyProvider)
+
+        SDKForms.init(
+            sdkConfigBuilder.build()
+        )
     }
 
     /**

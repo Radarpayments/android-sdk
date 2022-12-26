@@ -155,7 +155,11 @@ class PaymentActivityKaspressoTest : DocLocScreenshotTestCase(
             .replace("\n", "")
             .trimIndent()
         paymentApi = PaymentApiImpl(baseUrl)
-        paymentConfig = SDKPaymentConfig(baseUrl, dsRoot)
+        paymentConfig = SDKPaymentConfig(
+            baseUrl,
+            dsRoot,
+            "https://dev.bpcbt.com/payment/se/keys.do",
+        )
         SDKForms.init(
             SDKConfigBuilder()
                 .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
@@ -880,7 +884,11 @@ class PaymentActivityKaspressoTest : DocLocScreenshotTestCase(
     @Suppress("EmptyFunctionBlock")
     @Ignore
     fun shouldReturnPaymentApiExceptionWhenPaymentUrlNotExistsWithNewCard() {
-        val config = SDKPaymentConfig("https://domain.com/payment", dsRoot)
+        val config = SDKPaymentConfig(
+            "https://domain.com/payment",
+            dsRoot,
+            "https://dev.bpcbt.com/payment/se/keys.do",
+        )
         SDKPayment.init(config)
 
         var actualResult: SDKException? = null

@@ -4,7 +4,9 @@ import android.content.Context
 import com.google.android.gms.wallet.IsReadyToPayRequest
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.Wallet
+import com.google.android.gms.wallet.WalletConstants
 import net.payrdr.mobile.payment.sdk.form.utils.deviceHasGooglePlayServices
+import org.json.JSONArray
 import org.json.JSONObject
 
 /**
@@ -12,6 +14,10 @@ import org.json.JSONObject
  */
 @Suppress("TooManyFunctions")
 object GooglePayUtils {
+    private val allowedCardAuthMethods = JSONArray(listOf("PAN_ONLY", "CRYPTOGRAM_3DS"))
+    private val allowedCardNetworks = JSONArray(
+        listOf("AMEX", "DISCOVER", "INTERAC", "JCB", "MASTERCARD", "MIR", "VISA")
+    )
 
     /**
      * Method of creating a customer for making a payment via Google Pay.
@@ -56,6 +62,33 @@ object GooglePayUtils {
             }
         } else {
             callback.onNoGooglePlayServices()
+        }
+    }
+
+    fun getEnvironment(isTest: Boolean) = if (isTest) {
+        WalletConstants.ENVIRONMENT_TEST
+    } else {
+        WalletConstants.ENVIRONMENT_PRODUCTION
+    }
+
+    fun getIsReadyToPayJson() = JSONObject().apply {
+        put("allowedPaymentMethods", JSONArray().put(baseCardPaymentMethod()))
+    }
+
+    private fun baseCardPaymentMethod(): JSONObject {
+        return JSONObject().apply {
+
+            val parameters = JSONObject().apply {
+                put("allowedAuthMethods", allowedCardAuthMethods)
+                put("allowedCardNetworks", allowedCardNetworks)
+                put("billingAddressRequired", true)
+                put("billingAddressParameters", JSONObject().apply {
+                    put("format", "FULL")
+                })
+            }
+
+            put("type", "CARD")
+            put("parameters", parameters)
         }
     }
 

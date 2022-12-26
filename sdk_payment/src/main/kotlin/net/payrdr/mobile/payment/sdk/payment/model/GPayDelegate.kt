@@ -12,5 +12,5 @@ interface GPayDelegate {
      *
      * @param config the configuration file for Google Pay.
      */
-    fun openGPayForm(config: GooglePayPaymentConfig)
+    fun openGPayForm(config: GooglePayPaymentConfig?)
 }

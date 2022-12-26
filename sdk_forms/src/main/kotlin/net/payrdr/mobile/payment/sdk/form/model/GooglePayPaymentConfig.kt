@@ -25,7 +25,7 @@ data class GooglePayPaymentConfig internal constructor(
     val locale: Locale,
     val timestamp: Long,
     val paymentData: PaymentDataRequest,
-    val testEnvironment: Boolean
+    val testEnvironment: Boolean,
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
@@ -35,7 +35,7 @@ data class GooglePayPaymentConfig internal constructor(
         source.readSerializable() as Locale,
         source.readLong(),
         source.readParcelable<PaymentDataRequest>(PaymentDataRequest::class.java.classLoader)!!,
-        source.readBooleanValue()
+        source.readBooleanValue(),
     )
 
     override fun describeContents() = 0

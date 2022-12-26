@@ -57,3 +57,12 @@ fun Activity.finishWithError(exception: Exception) {
     setResult(Activity.RESULT_OK, resultIntent)
     finish()
 }
+
+
+/**
+ * Stops the [Activity] by user cancellation payment.
+ */
+fun Activity.finishWithUserCancellation() {
+    setResult(Activity.RESULT_CANCELED)
+    finish()
+}

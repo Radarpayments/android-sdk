@@ -74,7 +74,7 @@ class PaymentActivity : AppCompatActivity() {
             bindingCards: List<BindingItem>,
             cvcNotRequired: Boolean,
             bindingDeactivationEnabled: Boolean,
-            googlePayConfig: GooglePayPaymentConfig
+            googlePayConfig: GooglePayPaymentConfig?
         ) {
             SDKForms.cryptogram(
                 manager = supportFragmentManager,
@@ -139,7 +139,9 @@ class PaymentActivity : AppCompatActivity() {
                 this@PaymentActivity,
                 configParams,
                 "ru-RU",
-                uiCustomization
+                uiCustomization,
+                SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext,
+                SDKPayment.sdkPaymentConfig.sslContextConfig?.trustManager,
             )
         }
 
@@ -148,12 +150,11 @@ class PaymentActivity : AppCompatActivity() {
             challengeParameters: ChallengeParameters,
             challengeStatusReceiver: ChallengeStatusReceiver
         ) {
-
             transaction!!.doChallenge(
                 this@PaymentActivity,
                 challengeParameters,
                 challengeStatusReceiver,
-                TIMEOUT_THREE_DS
+                TIMEOUT_THREE_DS,
             )
         }
 
@@ -191,13 +192,18 @@ class PaymentActivity : AppCompatActivity() {
     }
 
     private val gPayDelegate = object : GPayDelegate {
-        override fun openGPayForm(config: GooglePayPaymentConfig) {
-            LocalizationSetting.setLanguage(config.locale)
-            ThemeSetting.setTheme(config.theme)
-            this@PaymentActivity.startActivityForResult(
-                GooglePayActivity.prepareIntent(this@PaymentActivity, config),
-                REQUEST_CODE_CRYPTOGRAM
-            )
+        override fun openGPayForm(config: GooglePayPaymentConfig?) {
+            config?.let {
+                ThemeSetting.setTheme(config.theme)
+                LocalizationSetting.setLanguage(config.locale)
+                this@PaymentActivity.startActivityForResult(
+                    GooglePayActivity.prepareIntent(this@PaymentActivity, config),
+                    REQUEST_CODE_CRYPTOGRAM
+                )
+            } ?: run {
+                Log.d("PAYRDRSDK", "GPay not supported by server")
+                this@PaymentActivity.finish()
+            }
         }
     }
 

@@ -1,7 +1,9 @@
 package net.payrdr.mobile.payment.sample.kotlin.payment
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_payment_form.googlePayButtonFirst
@@ -19,6 +21,8 @@ import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKTransactionException
 import net.payrdr.mobile.payment.sdk.form.ResultPaymentCallback
 import net.payrdr.mobile.payment.sdk.form.SDKException
+import net.payrdr.mobile.payment.sdk.form.SDKForms
+import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayUtils
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentData
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 
@@ -48,18 +52,50 @@ class PaymentFormActivity: AppCompatActivity() {
             .replace("\n", "")
             .trimIndent()
 
-        val paymentConfig = SDKPaymentConfig(baseUrl, dsRoot)
+        val paymentConfig = SDKPaymentConfig(baseUrl, dsRoot,
+            keyProviderUrl = "https://dev.bpcbt.com/payment/se/keys.do",
+        )
         SDKPayment.init(paymentConfig, use3ds2sdk = true)
         paymentCheckout.setOnClickListener {
             SDKPayment.checkout(this, mdOrder.text.trim().toString())
         }
-        googlePayButtonFirst.setOnClickListener {
-            SDKPayment.checkout(this, mdOrder.text.trim().toString(), true)
-        }
+
+        GooglePayUtils.possiblyShowGooglePayButton(
+            context = this,
+            isReadyToPayJson = GooglePayUtils.getIsReadyToPayJson(),
+            paymentsClient = GooglePayUtils.createPaymentsClient(
+                this,
+                GooglePayUtils.getEnvironment(isTest = true)
+            ),
+            callback = object : GooglePayUtils.GooglePayCheckCallback {
+                override fun onNoGooglePlayServices() {
+                    displayGooglePayButton(false)
+                }
+
+                override fun onNotReadyToRequest() {
+                    displayGooglePayButton(false)
+                }
+
+                override fun onReadyToRequest() {
+                    displayGooglePayButton(true)
+                    googlePayButtonFirst.setOnClickListener {
+                        SDKPayment.checkout(
+                            this@PaymentFormActivity,
+                            mdOrder.text.trim().toString(),
+                            true
+                        )
+                    }
+                }
+            }
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_CANCELED) {
+            makeToast("Canceled payment by user")
+        }
+
         SDKPayment.handleCheckoutResult(requestCode, data, object :
             ResultPaymentCallback<PaymentData> {
             override fun onSuccess(result: PaymentData) {
@@ -85,6 +121,14 @@ class PaymentFormActivity: AppCompatActivity() {
 
     private fun makeToast(text: String) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun displayGooglePayButton(value: Boolean) {
+        googlePayButtonFirst.visibility = if (value) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
     }
 
     companion object {

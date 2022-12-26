@@ -1,6 +1,7 @@
 package net.payrdr.mobile.payment.sdk.api
 
 import net.payrdr.mobile.payment.sdk.LogDebug
+import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.api.entity.FinishedPaymentInfoResponse
 import net.payrdr.mobile.payment.sdk.api.entity.GPaySettings
 import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormGPayResponse
@@ -29,7 +30,10 @@ class PaymentApiImpl(
     override suspend fun getSessionStatus(mdOrder: String): SessionStatusResponse =
         startRunCatching {
             val body = mapOf("MDORDER" to mdOrder)
-            val connection = URL("$baseUrl/rest/getSessionStatus.do").executePostParams(body)
+            val connection = URL("$baseUrl/rest/getSessionStatus.do").executePostParams(
+                paramBody = body,
+                sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
+            )
             SessionStatusResponse.fromJson(connection.responseBodyToJsonObject())
         }
 
@@ -44,7 +48,10 @@ class PaymentApiImpl(
             "bindingNotNeeded" to "${(!cryptogramApiData.saveCard)}",
             "threeDSSDK" to "$threeDSSDK"
         )
-        val connection = URL("$baseUrl/rest/processform.do").executePostParams(body)
+        val connection = URL("$baseUrl/rest/processform.do").executePostParams(
+            paramBody = body,
+            sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
+        )
         val res = connection.responseBodyToJsonObject()
         LogDebug.logIfDebug(res.toString())
         ProcessFormResponse.fromJson(res)
@@ -60,7 +67,10 @@ class PaymentApiImpl(
             "TEXT" to cryptogramApiData.holder,
             "threeDSSDK" to "$threeDSSDK"
         )
-        val connection = URL("$baseUrl/rest/processBindingForm.do").executePostParams(body)
+        val connection = URL("$baseUrl/rest/processBindingForm.do").executePostParams(
+            paramBody = body,
+            sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
+        )
         val res = connection.responseBodyToJsonObject()
         LogDebug.logIfDebug(res.toString())
         ProcessFormResponse.fromJson(res)
@@ -83,7 +93,10 @@ class PaymentApiImpl(
             "threeDSSDKTransId" to threeDSParams.threeDSSDKTransId,
             "threeDSSDKReferenceNumber" to threeDSParams.threeDSSDKReferenceNumber
         )
-        val connection = URL("$baseUrl/rest/processform.do").executePostParams(body)
+        val connection = URL("$baseUrl/rest/processform.do").executePostParams(
+            paramBody = body,
+            sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
+        )
         val res = connection.responseBodyToJsonObject()
         LogDebug.logIfDebug(res.toString())
         ProcessFormSecondResponse.fromJson(res)
@@ -105,7 +118,10 @@ class PaymentApiImpl(
             "threeDSSDKTransId" to threeDSParams.threeDSSDKTransId,
             "threeDSSDKReferenceNumber" to threeDSParams.threeDSSDKReferenceNumber
         )
-        val connection = URL("$baseUrl/rest/processBindingForm.do").executePostParams(body)
+        val connection = URL("$baseUrl/rest/processBindingForm.do").executePostParams(
+            paramBody = body,
+            sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
+        )
         val res = connection.responseBodyToJsonObject()
         LogDebug.logIfDebug(res.toString())
         ProcessFormSecondResponse.fromJson(res)
@@ -118,7 +134,10 @@ class PaymentApiImpl(
             "{\"paymentToken\":\"${cryptogramGPayApiData.paymentToken}\"," +
                 "\"mdOrder\":\"${cryptogramGPayApiData.mdOrder}\"}"
         LogDebug.logIfDebug(jsonBody)
-        val connection = URL("$baseUrl/google/paymentOrder.do").executePostJson(jsonBody)
+        val connection = URL("$baseUrl/google/paymentOrder.do").executePostJson(
+            jsonBody = jsonBody,
+            sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
+        )
         val res = connection.responseBodyToJsonObject()
         LogDebug.logIfDebug(res.toString())
         ProcessFormGPayResponse.fromJson(res)
@@ -144,10 +163,9 @@ class PaymentApiImpl(
             FinishedPaymentInfoResponse.fromJson(res)
         }
 
-    override suspend fun getPaymentSettings(): GPaySettings =
+    override suspend fun getPaymentSettings(login: String): GPaySettings =
         startRunCatching {
-            val connection = URL("$baseUrl/rest/getPaymentSettings.do?login=3ds2_dev")
-                .executeGet()
+            val connection = URL("$baseUrl/rest/getPaymentSettings.do?login=$login").executeGet()
             val res = connection.responseBodyToJsonObject()
             LogDebug.logIfDebug(res.toString())
             GPaySettings.fromJson(res)

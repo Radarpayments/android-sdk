@@ -1,6 +1,7 @@
 package net.payrdr.mobile.payment.sdk.api.entity
 
 import net.payrdr.mobile.payment.sdk.form.utils.asList
+import net.payrdr.mobile.payment.sdk.form.utils.asStringList
 import net.payrdr.mobile.payment.sdk.utils.optValue
 import org.json.JSONObject
 
@@ -24,6 +25,7 @@ import org.json.JSONObject
  * @param merchantInfo information about merchant.
  * @param expirationDateCustomValidation is own validation enabled for card expiration.
  * @param bindingDeactivationEnabled allows unbinding the card.
+ * @param merchantOptions list of available payment methods.
  */
 data class SessionStatusResponse(
     val redirect: String? = null,
@@ -41,7 +43,8 @@ data class SessionStatusResponse(
     val expirationDateCustomValidation: Boolean,
     val bindingDeactivationEnabled: Boolean = false,
     val currencyAlphaCode: String? = null,
-    val merchantInfo: MerchantInfo
+    val merchantInfo: MerchantInfo,
+    val merchantOptions: List<String>,
 ) {
 
     companion object {
@@ -70,7 +73,9 @@ data class SessionStatusResponse(
                 expirationDateCustomValidation = getBoolean("expirationDateCustomValidation"),
                 currencyAlphaCode = optValue("currencyAlphaCode"),
                 merchantInfo = MerchantInfo.fromJson(getJSONObject("merchantInfo")),
-                bindingDeactivationEnabled = getBoolean("bindingDeactivationEnabled")
+                bindingDeactivationEnabled = getBoolean("bindingDeactivationEnabled"),
+                merchantOptions = jsonObject.getJSONArray("merchantOptions")
+                    .asStringList()
             )
         }
     }

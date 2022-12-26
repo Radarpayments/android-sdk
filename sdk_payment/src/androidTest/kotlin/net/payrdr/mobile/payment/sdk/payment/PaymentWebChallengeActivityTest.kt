@@ -141,7 +141,11 @@ class PaymentWebChallengeActivityTest : DocLocScreenshotTestCase(
             .replace("\n", "")
             .trimIndent()
         paymentApi = PaymentApiImpl(baseUrl)
-        paymentConfig = SDKPaymentConfig(baseUrl, dsRoot)
+        paymentConfig = SDKPaymentConfig(
+            baseUrl,
+            dsRoot,
+            "https://dev.bpcbt.com/payment/se/keys.do"
+        )
         SDKForms.init(
             SDKConfigBuilder()
                 .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")

@@ -32,6 +32,7 @@
                 android:id="@+id/googlePayButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_marginHorizontal="@dimen/payrdr_medium_dimen"
                 android:layout_marginBottom="@dimen/payrdr_medium_dimen"
                 app:payrdr_google_pay_button_background_format="outlet"

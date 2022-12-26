@@ -173,8 +173,9 @@ object SDKForms {
             "SDK-Forms: cryptogram($fragment, $config): ",
             null
         )
-        fragment.startActivityForResult(
-            GooglePayActivity.prepareIntent(fragment.requireContext(), config),
+        val activity = fragment.requireActivity()
+        activity.startActivityForResult(
+            GooglePayActivity.prepareIntent(activity, config),
             REQUEST_CODE_CRYPTOGRAM
         )
     }
@@ -191,13 +192,13 @@ object SDKForms {
         manager: FragmentManager,
         tag: String?,
         config: PaymentConfig,
-        googlePayConfig: GooglePayPaymentConfig
+        googlePayConfig: GooglePayPaymentConfig?
     ) {
         checkNotNull(config)
         LocalizationSetting.setLanguage(config.locale)
         ThemeSetting.setTheme(config.theme)
         val paymentBottomSheetFragment = PaymentBottomSheetFragment()
-        paymentBottomSheetFragment.setGooglePayButtonCLickListener(googlePayConfig)
+        paymentBottomSheetFragment.setGooglePayPaymentConfig(googlePayConfig)
         paymentBottomSheetFragment.show(manager, tag, config)
     }
 

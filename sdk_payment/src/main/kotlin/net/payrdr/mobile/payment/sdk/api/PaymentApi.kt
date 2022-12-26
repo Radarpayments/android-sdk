@@ -100,7 +100,7 @@ interface PaymentApi {
      *
      * @return [GPaySettings] settings for GPay payment.
      */
-    suspend fun getPaymentSettings(): GPaySettings
+    suspend fun getPaymentSettings(login: String): GPaySettings
 
     /**
      * API method for unbinding card by id.

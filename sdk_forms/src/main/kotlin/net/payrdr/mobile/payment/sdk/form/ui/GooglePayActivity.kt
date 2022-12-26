@@ -28,7 +28,7 @@ class GooglePayActivity : BaseActivity() {
 
     private var cryptogramProcessor: CryptogramProcessor = SDKForms.cryptogramProcessor
     private val config: GooglePayPaymentConfig by lazy {
-        intent.getParcelableExtra<GooglePayPaymentConfig>(Constants.INTENT_EXTRA_CONFIG)!! as GooglePayPaymentConfig
+        intent.getParcelableExtra<GooglePayPaymentConfig>(Constants.INTENT_EXTRA_CONFIG)!!
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
