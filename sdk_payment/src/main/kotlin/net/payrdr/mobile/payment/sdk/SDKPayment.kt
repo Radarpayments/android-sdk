@@ -49,17 +49,13 @@ object SDKPayment {
 
         val sdkConfigBuilder = SDKConfigBuilder()
 
-        val keyProvider = if (sdkPaymentConfig.sslContextConfig != null) {
-            RemoteKeyProvider(
-                sdkPaymentConfig.keyProviderUrl,
-                sdkPaymentConfig.sslContextConfig.sslContext
-            )
-        } else {
-            RemoteKeyProvider(
-                sdkPaymentConfig.keyProviderUrl,
-            )
+        val keyProvider = RemoteKeyProvider(
+            sdkPaymentConfig.keyProviderUrl,
+            SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext,
+        )
+        sdkConfigBuilder.apply {
+            keyProvider(keyProvider)
         }
-        sdkConfigBuilder.keyProvider(keyProvider)
 
         SDKForms.init(
             sdkConfigBuilder.build()

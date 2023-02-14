@@ -1,5 +1,6 @@
 package net.payrdr.mobile.payment.sdk.form
 
+import javax.net.ssl.SSLContext
 import net.payrdr.mobile.payment.sdk.core.Logger
 import net.payrdr.mobile.payment.sdk.form.component.CardInfoProvider
 import net.payrdr.mobile.payment.sdk.form.component.KeyProvider
@@ -16,7 +17,7 @@ class SDKConfigBuilder {
 
     private var cardInfoProvider: CardInfoProvider = RemoteCardInfoProvider(
         url = "https://mrbin.io/bins/display",
-        urlBin = "https://mrbin.io/bins/"
+        urlBin = "https://mrbin.io/bins/",
     )
 
     /**
@@ -24,7 +25,7 @@ class SDKConfigBuilder {
      *
      * @param providerUrl url address for receiving encryption keys
      */
-    fun keyProviderUrl(providerUrl: String): SDKConfigBuilder = apply {
+    fun keyProviderUrl(providerUrl: String, sslContext: SSLContext?): SDKConfigBuilder = apply {
         Logger.log(
             this.javaClass,
             Constants.TAG,
@@ -40,7 +41,7 @@ class SDKConfigBuilder {
             )
             throw SDKException("You should use only one key provider build-method")
         }
-        this.keyProvider = RemoteKeyProvider(providerUrl)
+        this.keyProvider = RemoteKeyProvider(providerUrl, sslContext)
     }
 
     /**
@@ -83,6 +84,6 @@ class SDKConfigBuilder {
      */
     fun build() = SDKConfig(
         keyProvider = this.keyProvider ?: throw SDKException("You must initialize keyProvider!"),
-        cardInfoProvider = this.cardInfoProvider
+        cardInfoProvider = this.cardInfoProvider,
     )
 }

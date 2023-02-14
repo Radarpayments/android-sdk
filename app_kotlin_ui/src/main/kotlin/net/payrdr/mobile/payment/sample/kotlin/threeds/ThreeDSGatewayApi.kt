@@ -1,22 +1,27 @@
 package net.payrdr.mobile.payment.sample.kotlin.threeds
 
 import io.ktor.client.HttpClient
-import io.ktor.client.features.HttpRedirect
-import io.ktor.client.features.HttpTimeout
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.client.features.logging.DEFAULT
-import io.ktor.client.features.logging.LogLevel
-import io.ktor.client.features.logging.Logger
-import io.ktor.client.features.logging.Logging
-import io.ktor.client.features.timeout
+import io.ktor.client.call.body
+import io.ktor.client.engine.android.Android
+import io.ktor.client.plugins.HttpRedirect
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.Parameters
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import net.payrdr.mobile.payment.sample.kotlin.MarketApplication
 
 /**
  * The class provides the implementation of the necessary methods for making a payment.
@@ -24,7 +29,14 @@ import kotlinx.serialization.Serializable
 class ThreeDSGatewayApi {
 
     private val httpClient by lazy {
-        HttpClient {
+        HttpClient(Android) {
+            MarketApplication.sslContextConfig?.let {
+                engine {
+                    sslManager = { httpsURLConnection ->
+                        httpsURLConnection.sslSocketFactory = it.sslContext.socketFactory
+                    }
+                }
+            }
             install(HttpTimeout) {
                 connectTimeoutMillis = 8_000
                 requestTimeoutMillis = 8_000
@@ -38,20 +50,25 @@ class ThreeDSGatewayApi {
                 logger = Logger.DEFAULT
                 level = LogLevel.ALL
             }
-            install(JsonFeature) {
-                val json = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
-                serializer = KotlinxSerializer(json)
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                })
             }
         }
     }
 
+    /**
+     * register.do method should call at the server.
+     * Here are called from the client for the sake of simplicity of the example.
+     */
     suspend fun executeRegisterOrder(
         url: String,
         request: RegisterRequest
-    ): RegisterOrderResponse {
-        return withContext(Dispatchers.IO) {
-            httpClient.post(url) {
-                body = FormDataContent(
+    ): RegisterOrderResponse = withContext(Dispatchers.IO) {
+        httpClient.post(url) {
+            setBody(
+                FormDataContent(
                     Parameters.build {
                         append("amount", request.amount)
                         append("userName", request.userName)
@@ -61,17 +78,17 @@ class ThreeDSGatewayApi {
                         append("email", request.email)
                     }
                 )
-            }
-        }
+            )
+        }.body()
     }
 
     suspend fun executePaymentOrder(
         url: String,
         request: PaymentOrderRequest
-    ): PaymentOrderResponse {
-        return withContext(Dispatchers.IO) {
-            httpClient.post(url) {
-                body = FormDataContent(
+    ): PaymentOrderResponse = withContext(Dispatchers.IO) {
+        httpClient.post(url) {
+            setBody(
+                FormDataContent(
                     Parameters.build {
                         append("seToken", request.seToken)
                         append("MDORDER", request.mdOrder)
@@ -81,17 +98,17 @@ class ThreeDSGatewayApi {
                         append("threeDSSDK", request.threeDSSDK.toString())
                     }
                 )
-            }
-        }
+            )
+        }.body()
     }
 
     suspend fun executePaymentOrderSecondStep(
         url: String,
         request: PaymentOrderSecondStepRequest
-    ): PaymentOrderSecondStepResponse {
-        return withContext(Dispatchers.IO) {
-            httpClient.post(url) {
-                body = FormDataContent(
+    ): PaymentOrderSecondStepResponse = withContext(Dispatchers.IO) {
+        httpClient.post(url) {
+            setBody(
+                FormDataContent(
                     Parameters.build {
                         append("seToken", request.seToken)
                         append("MDORDER", request.mdOrder)
@@ -107,49 +124,51 @@ class ThreeDSGatewayApi {
                         append("threeDSSDKReferenceNumber", request.threeDSSDKReferenceNumber)
                     }
                 )
-            }
-        }
+            )
+        }.body()
     }
 
+    /**
+     * finish3dsVer2Payment.do method should call at the server.
+     * Here are called from the client for the sake of simplicity of the example.
+     */
     suspend fun executeFinishOrder(
         url: String,
         request: PaymentFinishOrderRequest
-    ): FinishOrderResponse {
-        return withContext(Dispatchers.IO) {
+    ): FinishOrderResponse = withContext(Dispatchers.IO) {
             httpClient.post(url) {
                 timeout {
                     connectTimeoutMillis = 4_000
                     requestTimeoutMillis = 4_000
                     socketTimeoutMillis = 4_000
                 }
-                body = FormDataContent(
-                    Parameters.build {
+                setBody(FormDataContent(Parameters.build {
                         append("threeDSServerTransId", request.tDsTransId)
                         append("userName", request.userName)
                         append("password", request.password)
-                    }
+                    })
                 )
-            }
+            }.body()
         }
-    }
 
     suspend fun executeCheckOrderStatus(
         url: String,
         request: PaymentCheckOrderStatusRequest
-    ): String {
-        return withContext(Dispatchers.IO) {
-            httpClient.post(url) {
-                body = FormDataContent(
+    ): String = withContext(Dispatchers.IO) {
+        httpClient.post(url) {
+            setBody(
+                FormDataContent(
                     Parameters.build {
                         append("orderId", request.orderId)
                         append("userName", request.userName)
                         append("password", request.password)
                     }
                 )
-            }
+            )
         }
-    }
+    }.body()
 
+    @Serializable
     data class RegisterRequest(
         val amount: String,
         val userName: String,
@@ -159,6 +178,7 @@ class ThreeDSGatewayApi {
         val email: String
     )
 
+    @Serializable
     data class PaymentOrderRequest(
         val seToken: String,
         val mdOrder: String,
@@ -168,6 +188,7 @@ class ThreeDSGatewayApi {
         val threeDSSDK: Boolean
     )
 
+    @Serializable
     data class PaymentOrderSecondStepRequest(
         val seToken: String,
         val mdOrder: String,
@@ -183,12 +204,14 @@ class ThreeDSGatewayApi {
         val threeDSSDKReferenceNumber: String
     )
 
+    @Serializable
     data class PaymentFinishOrderRequest(
         val tDsTransId: String,
         val userName: String,
         val password: String
     )
 
+    @Serializable
     data class PaymentCheckOrderStatusRequest(
         val orderId: String,
         val userName: String,

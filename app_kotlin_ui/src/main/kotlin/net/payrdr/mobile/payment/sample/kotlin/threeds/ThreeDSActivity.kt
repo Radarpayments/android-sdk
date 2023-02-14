@@ -21,7 +21,6 @@ import net.payrdr.mobile.payment.sample.kotlin.helpers.log
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSGatewayApi.PaymentCheckOrderStatusRequest
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSGatewayApi.PaymentFinishOrderRequest
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSGatewayApi.PaymentOrderRequest
-import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.form.PaymentConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.ResultCryptogramCallback
 import net.payrdr.mobile.payment.sdk.form.SDKConfigBuilder
@@ -74,7 +73,10 @@ class ThreeDSActivity : AppCompatActivity() {
         setContentView(R.layout.activity_three_d_s)
         SDKForms.init(
             SDKConfigBuilder()
-                .keyProviderUrl("$argBaseUrl/se/keys.do")
+                .keyProviderUrl(
+                    "$argBaseUrl/se/keys.do",
+                    MarketApplication.sslContextConfig?.sslContext,
+                )
                 .build()
         )
 
@@ -87,7 +89,12 @@ class ThreeDSActivity : AppCompatActivity() {
      * Registering an order to start the payment process.
      */
     private fun registerOrder() = launchGlobalScope {
-        // Get the order ID. .
+        /**
+         * register.do method should call at the server.
+         * Here are called from the client for the sake of simplicity of the example.
+         *
+         * Get the order ID.
+         */
         val registerResponse = api.executeRegisterOrder(
             url = "$argBaseUrl/rest/register.do",
             request = ThreeDSGatewayApi.RegisterRequest(
@@ -157,7 +164,9 @@ class ThreeDSActivity : AppCompatActivity() {
             this@ThreeDSActivity,
             configParams,
             "en-US",
-            uiCustomization
+            uiCustomization,
+            MarketApplication.sslContextConfig?.sslContext,
+            MarketApplication.sslContextConfig?.trustManager,
         )
 
         // Start of payment for the order. Getting the transaction ID of the 3DS server.
@@ -274,6 +283,10 @@ class ThreeDSActivity : AppCompatActivity() {
      * @param tDsTransId ID of the transaction on the 3DS server.
      */
     private fun finishOrder(tDsTransId: String) = launchGlobalScope {
+        /**
+         * finish3dsVer2Payment.do method should call at the server.
+         * Here are called from the client for the sake of simplicity of the example.
+         */
         api.executeFinishOrder(
             url = "$argBaseUrl/rest/finish3dsVer2Payment.do",
             request = PaymentFinishOrderRequest(

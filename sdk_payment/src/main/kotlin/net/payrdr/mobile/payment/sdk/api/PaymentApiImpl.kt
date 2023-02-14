@@ -147,7 +147,10 @@ class PaymentApiImpl(
         startRunCatching {
             val body = mapOf("threeDSServerTransId" to threeDSServerTransId)
             val connection = URL("$baseUrl/rest/finish3dsVer2PaymentAnonymous.do")
-                .executePostParams(body)
+                .executePostParams(
+                    paramBody = body,
+                    sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
+                )
             val res = connection.responseBodyToJsonObject()
             LogDebug.logIfDebug(res.toString())
         }
@@ -157,7 +160,10 @@ class PaymentApiImpl(
         startRunCatching {
             val body = mapOf("orderId" to orderId)
             val connection = URL("$baseUrl/rest/getFinishedPaymentInfo.do")
-                .executePostParams(body)
+                .executePostParams(
+                    paramBody = body,
+                    sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
+                )
             val res = connection.responseBodyToJsonObject()
             LogDebug.logIfDebug(res.toString())
             FinishedPaymentInfoResponse.fromJson(res)
@@ -165,7 +171,9 @@ class PaymentApiImpl(
 
     override suspend fun getPaymentSettings(login: String): GPaySettings =
         startRunCatching {
-            val connection = URL("$baseUrl/rest/getPaymentSettings.do?login=$login").executeGet()
+            val connection = URL("$baseUrl/rest/getPaymentSettings.do?login=$login").executeGet(
+                sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
+            )
             val res = connection.responseBodyToJsonObject()
             LogDebug.logIfDebug(res.toString())
             GPaySettings.fromJson(res)
@@ -180,7 +188,10 @@ class PaymentApiImpl(
             "bindingId" to bindingId
         )
         val connection = URL("$baseUrl/rest/unbindcardanon.do")
-            .executePostParams(body)
+            .executePostParams(
+                paramBody = body,
+                sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
+            )
         val res = connection.responseBodyToJsonObject()
         LogDebug.logIfDebug(res.toString())
         UnbindCardResponse.fromJson(res)

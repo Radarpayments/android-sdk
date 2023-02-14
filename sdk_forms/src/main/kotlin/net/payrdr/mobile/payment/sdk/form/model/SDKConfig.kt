@@ -11,5 +11,5 @@ import net.payrdr.mobile.payment.sdk.form.component.KeyProvider
  */
 data class SDKConfig(
     val keyProvider: KeyProvider,
-    val cardInfoProvider: CardInfoProvider
+    val cardInfoProvider: CardInfoProvider,
 )

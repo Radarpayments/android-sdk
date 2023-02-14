@@ -11,7 +11,7 @@ public class MarketApplication extends Application {
     public void onCreate() {
         super.onCreate();
         SDKForms.INSTANCE.init(new SDKConfigBuilder()
-                .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
+                .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do", null)
                 .build()
         );
     }

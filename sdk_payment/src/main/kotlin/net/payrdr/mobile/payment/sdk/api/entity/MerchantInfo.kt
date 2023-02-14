@@ -1,5 +1,6 @@
 package net.payrdr.mobile.payment.sdk.api.entity
 
+import net.payrdr.mobile.payment.sdk.utils.optValue
 import org.json.JSONObject
 
 /**
@@ -15,7 +16,7 @@ import org.json.JSONObject
 data class MerchantInfo(
     val merchantUrl: String,
     val merchantFullName: String,
-    val mcc: String,
+    val mcc: String? = null,
     val merchantLogin: String,
     val captchaMode: String,
     val custom: Boolean
@@ -30,7 +31,7 @@ data class MerchantInfo(
             MerchantInfo(
                 merchantUrl = getString("merchantUrl"),
                 merchantFullName = getString("merchantFullName"),
-                mcc = getString("mcc"),
+                mcc = optValue("mcc"),
                 merchantLogin = getString("merchantLogin"),
                 captchaMode = getString("captchaMode"),
                 custom = getBoolean("custom")
