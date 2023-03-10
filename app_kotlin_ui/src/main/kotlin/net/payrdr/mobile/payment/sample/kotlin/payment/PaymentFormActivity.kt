@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_payment_form.googlePayButtonFirst
 import kotlinx.android.synthetic.main.activity_payment_form.mdOrder
 import kotlinx.android.synthetic.main.activity_payment_form.paymentCheckout
+import net.payrdr.mobile.payment.sample.kotlin.MarketApplication
 import net.payrdr.mobile.payment.sample.kotlin.R
 import net.payrdr.mobile.payment.sample.kotlin.helpers.log
 import net.payrdr.mobile.payment.sdk.SDKPayment
@@ -21,7 +22,6 @@ import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKTransactionException
 import net.payrdr.mobile.payment.sdk.form.ResultPaymentCallback
 import net.payrdr.mobile.payment.sdk.form.SDKException
-import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayUtils
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentData
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
@@ -54,6 +54,7 @@ class PaymentFormActivity: AppCompatActivity() {
 
         val paymentConfig = SDKPaymentConfig(baseUrl, dsRoot,
             keyProviderUrl = "https://dev.bpcbt.com/payment/se/keys.do",
+            sslContextConfig = MarketApplication.sslContextConfig,
         )
         SDKPayment.init(paymentConfig, use3ds2sdk = true)
         paymentCheckout.setOnClickListener {

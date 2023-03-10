@@ -3,11 +3,18 @@ package net.payrdr.mobile.payment.sdk.payment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.net.http.SslError
 import android.os.Bundle
+import android.webkit.SslErrorHandler
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import java.security.cert.CertificateException
+import java.util.Timer
+import java.util.TimerTask
+import java.util.concurrent.TimeoutException
+import javax.net.ssl.X509TrustManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -24,9 +31,6 @@ import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 import net.payrdr.mobile.payment.sdk.payment.model.WebChallengeParam
 import net.payrdr.mobile.payment.sdk.utils.finishWithError
 import net.payrdr.mobile.payment.sdk.utils.finishWithResult
-import java.util.Timer
-import java.util.TimerTask
-import java.util.concurrent.TimeoutException
 
 /**
  *  Activity for web challenge.
@@ -46,6 +50,47 @@ class ActivityWebChallenge : AppCompatActivity() {
      *
      */
     private val webViewClient: WebViewClient = object : WebViewClient() {
+
+        @SuppressLint("WebViewClientOnReceivedSslError")
+        override fun onReceivedSslError(
+            view: WebView?,
+            handler: SslErrorHandler?,
+            error: SslError?
+        ) {
+            var isTrusted = false
+            var message = ""
+            when (error?.primaryError) {
+                SslError.SSL_UNTRUSTED -> {
+                    message = "The certificate authority is not trusted."
+                    val trust = SDKPayment.sdkPaymentConfig.sslContextConfig?.trustManager as X509TrustManager
+                    try {
+                        trust.checkServerTrusted(
+                            arrayOf(SDKPayment.sdkPaymentConfig.sslContextConfig?.customCertificate),
+                            "RSA"
+                        )
+                        isTrusted = true
+                        message = "The certificate authority is trusted."
+                    } catch (e: CertificateException) {
+                        LogDebug.logIfDebug("WebClient onReceivedSslError - get Exception to try check server trusted.")
+                    }
+                }
+                SslError.SSL_EXPIRED -> {
+                    message = "The certificate has expired."
+                }
+                SslError.SSL_IDMISMATCH -> {
+                    message = "The certificate Hostname mismatch."
+                }
+                SslError.SSL_NOTYETVALID -> {
+                    message = "The certificate is not yet valid."
+                }
+            }
+            LogDebug.logIfDebug("WebClient onReceivedSslError - $message")
+            if (isTrusted) {
+                handler?.proceed()
+            } else {
+                handler?.cancel()
+            }
+        }
 
         override fun shouldOverrideUrlLoading(
             view: WebView?,

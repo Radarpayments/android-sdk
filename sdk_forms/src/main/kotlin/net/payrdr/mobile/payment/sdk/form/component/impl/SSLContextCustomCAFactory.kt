@@ -7,6 +7,7 @@ import java.io.InputStream
 import java.security.KeyStore
 import java.security.cert.Certificate
 import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
 import java.util.Enumeration
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
@@ -65,6 +66,7 @@ object SSLContextCustomCAFactory {
     fun fromInputStream(caInput: InputStream): SSLContextConfig {
         val cf: CertificateFactory = CertificateFactory.getInstance("X.509")
         val ca = caInput.use { cf.generateCertificate(it) }
+        val cert = ca as? X509Certificate
         getCustomKeyStore().setCertificateEntry("ca", ca)
         loadSystemCAToCustomKeyStore()
         val tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm()
@@ -75,6 +77,7 @@ object SSLContextCustomCAFactory {
         return SSLContextConfig(
             sslContext = sslContext,
             trustManager = tmf.trustManagers.first(),
+            customCertificate = cert,
         )
     }
 

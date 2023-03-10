@@ -32,7 +32,7 @@ class PaymentApiImpl(
             val body = mapOf("MDORDER" to mdOrder)
             val connection = URL("$baseUrl/rest/getSessionStatus.do").executePostParams(
                 paramBody = body,
-                sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
+                sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext,
             )
             SessionStatusResponse.fromJson(connection.responseBodyToJsonObject())
         }
