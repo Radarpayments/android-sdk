@@ -113,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void log(String message) {
-
         Log.d("LOG_TAG", message);
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
