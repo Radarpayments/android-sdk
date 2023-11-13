@@ -20,7 +20,7 @@ class RSACryptogramCipher : CryptogramCipher {
         val spec = X509EncodedKeySpec(keyBytes)
         val fact = KeyFactory.getInstance("RSA")
 
-        val cipher = Cipher.getInstance("RSA/ECB/PKCS1PADDING")
+        val cipher = Cipher.getInstance("RSA/NONE/PKCS1PADDING")
         cipher.init(Cipher.ENCRYPT_MODE, fact.generatePublic(spec))
         val encoded = cipher.doFinal(data.toByteArray())
 
