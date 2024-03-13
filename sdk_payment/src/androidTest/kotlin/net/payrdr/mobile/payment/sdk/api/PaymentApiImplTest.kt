@@ -67,7 +67,7 @@ class PaymentApiImplTest {
                         "loyaltyServices":[],
                         "bindingDeactivationEnabled":false,
                         "payerNotificationEnabled":false,
-                        "merchantOptions":["AMEX","MASTERCARD","MIR","JCB","VISA","VISA_TDS","SSL","CUP"],
+                        "merchantOptions":["AMEX","MASTERCARD","JCB","VISA","VISA_TDS","SSL","CUP"],
                         "customerDetails":{"email":"test@test.ru"},
                         "backUrl":"..\/merchants\/rbs\/finish.html?orderId=59b1ee2d-8353-7ab9-b3aa-73aa1917ef58&lang=ru",
                         "sessionParams":[],

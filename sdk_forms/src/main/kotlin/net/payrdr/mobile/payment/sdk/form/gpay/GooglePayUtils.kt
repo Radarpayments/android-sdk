@@ -16,7 +16,7 @@ import org.json.JSONObject
 object GooglePayUtils {
     private val allowedCardAuthMethods = JSONArray(listOf("PAN_ONLY", "CRYPTOGRAM_3DS"))
     private val allowedCardNetworks = JSONArray(
-        listOf("AMEX", "DISCOVER", "INTERAC", "JCB", "MASTERCARD", "MIR", "VISA")
+        listOf("AMEX", "DISCOVER", "INTERAC", "JCB", "MASTERCARD", "VISA")
     )
 
     /**

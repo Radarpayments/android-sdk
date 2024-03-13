@@ -99,10 +99,6 @@ class CardListActivityTest : DocLocScreenshotTestCase(
                         pan = "4532559521480115",
                         bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
                     ),
-                    Card( // mir
-                        pan = "221234",
-                        bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
-                    ),
                     Card( // unknown
                         pan = "6281",
                         bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
@@ -135,9 +131,6 @@ class CardListActivityTest : DocLocScreenshotTestCase(
                     swipeUp()
                     allureScreenshot(name = "shouldRunWithLongCardList_swipe_up", quality = 1)
                     bindingCard0115 {
-                        isDisplayed()
-                    }
-                    bindingCard1234 {
                         isDisplayed()
                     }
                     bindingCard6281 {

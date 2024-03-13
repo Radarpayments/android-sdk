@@ -13,10 +13,10 @@ import org.json.JSONObject
  */
 data class GPayData(
     val orderId: String,
-    val is3DSVer2: Boolean,
-    val acsUrl: String,
-    val paReq: String,
-    val termUrl: String,
+    val is3DSVer2: Boolean?,
+    val acsUrl: String?,
+    val paReq: String?,
+    val termUrl: String?,
 ) {
     companion object {
         /**
@@ -26,10 +26,10 @@ data class GPayData(
         fun fromJson(jsonObject: JSONObject): GPayData = with(jsonObject) {
             GPayData(
                 orderId = getString("orderId"),
-                is3DSVer2 = getBoolean("is3DSVer2"),
-                acsUrl = getString("acsUrl"),
-                paReq = getString("paReq"),
-                termUrl = getString("termUrl"),
+                is3DSVer2 = if (has("is3DSVer2")) getBoolean("is3DSVer2") else null,
+                acsUrl = if (has("acsUrl")) getString("acsUrl") else null,
+                paReq = if (has("paReq")) getString("paReq") else null,
+                termUrl = if (has("termUrl")) getString("termUrl") else null,
             )
         }
     }

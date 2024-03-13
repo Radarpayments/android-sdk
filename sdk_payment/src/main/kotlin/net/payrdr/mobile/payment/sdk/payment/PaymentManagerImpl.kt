@@ -233,13 +233,18 @@ class PaymentManagerImpl(
      *
      * @param cryptogramGPayApiData result of the creating a cryptogram by GPay lib.
      */
+
+    @Suppress("ComplexCondition")
     suspend fun gPayProcessForm(cryptogramGPayApiData: CryptogramGPayApiData) {
         val paymentResult = paymentApi.gPayProcessForm(
             cryptogramGPayApiData = cryptogramGPayApiData
         )
         LogDebug.logIfDebug("GPay Payment First Response $paymentResult")
 
-        if (paymentResult.data!!.acsUrl.isNotBlank()) {
+        if (paymentResult.data != null && !paymentResult.data.acsUrl.isNullOrBlank()
+            && !paymentResult.data.paReq.isNullOrBlank()
+            && !paymentResult.data.termUrl.isNullOrBlank()
+        ) {
             val webChallengeParam = WebChallengeParam(
                 mdOrder = paymentResult.data.orderId,
                 acsUrl = paymentResult.data.acsUrl,
@@ -249,6 +254,8 @@ class PaymentManagerImpl(
             threeDSFormDelegate.openWebChallenge(
                 webChallengeParam = webChallengeParam,
             )
+        } else {
+            checkOrderStatus()
         }
     }
 

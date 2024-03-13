@@ -232,24 +232,11 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/verify_system_image_content_description"
             app:layout_constraintBottom_toBottomOf="@+id/imageView"
-            app:layout_constraintEnd_toStartOf="@+id/imageView5"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/imageView3"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_verify_mastercard_tds" />
 
-        <ImageView
-            android:id="@+id/imageView5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
-            android:contentDescription="@string/verify_system_image_content_description"
-            android:scaleType="fitEnd"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/imageView4"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_verify_mir_tds" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>
