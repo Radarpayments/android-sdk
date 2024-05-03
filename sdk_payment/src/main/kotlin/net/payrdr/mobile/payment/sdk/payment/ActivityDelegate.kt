@@ -1,7 +1,6 @@
 package net.payrdr.mobile.payment.sdk.payment
 
-import net.payrdr.mobile.payment.sdk.form.SDKException
-import net.payrdr.mobile.payment.sdk.payment.model.PaymentData
+import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 
 /**
@@ -14,14 +13,7 @@ interface ActivityDelegate {
      *
      * @param paymentData result of payment completion.
      */
-    fun finishActivityWithResult(paymentData: PaymentData)
-
-    /**
-     * Finish activity with any error.
-     *
-     * @param e error.
-     */
-    fun finishActivityWithError(e: SDKException)
+    fun finishActivityWithResult(paymentData: PaymentResult)
 
     /**
      * Getting a configuration object for the Payment SDK.
@@ -30,10 +22,4 @@ interface ActivityDelegate {
      */
     fun getPaymentConfig(): SDKPaymentConfig
 
-    /**
-     * Getting a ThreeDS SDK is version 2.
-     *
-     * @return boolean.
-     */
-    fun get3DSOption(): Boolean
 }

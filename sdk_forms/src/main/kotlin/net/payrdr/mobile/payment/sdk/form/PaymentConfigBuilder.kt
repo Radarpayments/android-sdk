@@ -1,6 +1,7 @@
 package net.payrdr.mobile.payment.sdk.form
 
 import net.payrdr.mobile.payment.sdk.core.Logger
+import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import net.payrdr.mobile.payment.sdk.form.model.CameraScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.Card
 import net.payrdr.mobile.payment.sdk.form.model.CardDeleteOptions
@@ -31,6 +32,7 @@ class PaymentConfigBuilder(private val order: String = "") {
     private var locale: Locale = Locale.getDefault()
     private var bindingCVCRequired: Boolean = true
     private var cardDeleteOptions: CardDeleteOptions = CardDeleteOptions.NO_DELETE
+    private var registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_FORMS
 
     /**
      * Change the text of the payment button.
@@ -249,6 +251,24 @@ class PaymentConfigBuilder(private val order: String = "") {
     }
 
     /**
+     * Option to manage the source.
+     *
+     * Optional, default MSDK_FORMS
+     *
+     * @param registeredFrom setting the source.
+     * @return the current constructor.
+     */
+    fun registeredFrom(registeredFrom: MSDKRegisteredFrom) : PaymentConfigBuilder = apply {
+        Logger.log(
+            this.javaClass,
+            Constants.TAG,
+            "registeredFrom($registeredFrom): Option to manage the source.",
+            null
+        )
+        this.registeredFrom = registeredFrom
+    }
+
+    /**
      * Creates a payment configuration.
      *
      * @return payment configuration.
@@ -266,6 +286,7 @@ class PaymentConfigBuilder(private val order: String = "") {
         buttonText = this.buttonText,
         locale = this.locale,
         bindingCVCRequired = this.bindingCVCRequired,
-        cardDeleteOptions = this.cardDeleteOptions
+        cardDeleteOptions = this.cardDeleteOptions,
+        registeredFrom = this.registeredFrom,
     )
 }

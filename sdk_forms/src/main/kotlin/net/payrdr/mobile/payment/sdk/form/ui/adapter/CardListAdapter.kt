@@ -115,11 +115,11 @@ internal class CardListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
                 if (showDelIcon) {
                     newCardItem.visibility = View.GONE
                 } else {
-                    newCardItem.visibility = View.VISIBLE
-                    newCardText.text = resources.getText(R.string.payrdr_button_card_new)
                     newCardItem.setOnClickListener {
                         newCardSelectListener?.onCardSelected()
                     }
+                    newCardItem.visibility = View.VISIBLE
+                    newCardText.text = resources.getText(R.string.payrdr_button_card_new)
                 }
             }
         }

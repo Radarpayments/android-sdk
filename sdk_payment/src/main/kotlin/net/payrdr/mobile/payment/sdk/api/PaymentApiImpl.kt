@@ -14,8 +14,8 @@ import net.payrdr.mobile.payment.sdk.form.utils.executeGet
 import net.payrdr.mobile.payment.sdk.form.utils.executePostJson
 import net.payrdr.mobile.payment.sdk.form.utils.executePostParams
 import net.payrdr.mobile.payment.sdk.form.utils.responseBodyToJsonObject
-import net.payrdr.mobile.payment.sdk.payment.model.CryptogramApiData
-import net.payrdr.mobile.payment.sdk.payment.model.CryptogramGPayApiData
+import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
+import net.payrdr.mobile.payment.sdk.payment.model.GooglePayProcessFormRequest
 import java.net.URL
 
 /**
@@ -38,7 +38,7 @@ class PaymentApiImpl(
         }
 
     override suspend fun processForm(
-        cryptogramApiData: CryptogramApiData,
+        cryptogramApiData: ProcessFormRequest,
         threeDSSDK: Boolean
     ): ProcessFormResponse = startRunCatching {
         val body = mapOf(
@@ -58,7 +58,7 @@ class PaymentApiImpl(
     }
 
     override suspend fun processBindingForm(
-        cryptogramApiData: CryptogramApiData,
+        cryptogramApiData: ProcessFormRequest,
         threeDSSDK: Boolean
     ): ProcessFormResponse = startRunCatching {
         val body = mapOf(
@@ -77,7 +77,7 @@ class PaymentApiImpl(
     }
 
     override suspend fun processFormSecond(
-        cryptogramApiData: CryptogramApiData,
+        cryptogramApiData: ProcessFormRequest,
         threeDSParams: PaymentThreeDSInfo
     ): ProcessFormSecondResponse = startRunCatching {
         val body = mapOf(
@@ -103,7 +103,7 @@ class PaymentApiImpl(
     }
 
     override suspend fun processBindingFormSecond(
-        cryptogramApiData: CryptogramApiData,
+        cryptogramApiData: ProcessFormRequest,
         threeDSParams: PaymentThreeDSInfo
     ): ProcessFormSecondResponse = startRunCatching {
         val body = mapOf(
@@ -128,7 +128,7 @@ class PaymentApiImpl(
     }
 
     override suspend fun gPayProcessForm(
-        cryptogramGPayApiData: CryptogramGPayApiData
+        cryptogramGPayApiData: GooglePayProcessFormRequest
     ): ProcessFormGPayResponse = startRunCatching {
         val jsonBody =
             "{\"paymentToken\":\"${cryptogramGPayApiData.paymentToken}\"," +

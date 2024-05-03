@@ -1,5 +1,6 @@
 package net.payrdr.mobile.payment.sdk.test
 
+import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import net.payrdr.mobile.payment.sdk.form.model.CameraScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.CardDeleteOptions
 import net.payrdr.mobile.payment.sdk.form.model.CardSaveOptions
@@ -25,6 +26,7 @@ object PaymentConfigTestProvider {
         theme = Theme.SYSTEM,
         nfcScannerOptions = NfcScannerOptions.ENABLED,
         bindingCVCRequired = true,
-        cardDeleteOptions = CardDeleteOptions.NO_DELETE
+        cardDeleteOptions = CardDeleteOptions.NO_DELETE,
+        registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
     )
 }

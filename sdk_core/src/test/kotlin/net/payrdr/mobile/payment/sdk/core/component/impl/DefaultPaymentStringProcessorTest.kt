@@ -8,6 +8,7 @@ import net.payrdr.mobile.payment.sdk.core.model.CardBindingIdIdentifier
 import net.payrdr.mobile.payment.sdk.core.model.CardInfo
 import net.payrdr.mobile.payment.sdk.core.model.CardPanIdentifier
 import net.payrdr.mobile.payment.sdk.core.model.ExpiryDate
+import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import org.junit.Before
 import org.junit.Test
 import java.util.TimeZone
@@ -34,11 +35,13 @@ class DefaultPaymentStringProcessorTest {
             cardInfo = CardInfo(
                 identifier = CardPanIdentifier("4532896701439077"),
                 cvv = "444",
-                expDate = ExpiryDate(2020, 12)
-            )
+                expDate = ExpiryDate(2020, 12),
+                cardHolder = "CardHolderName",
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077/444/202012/7f472085-399e-414e-b51c-a7b538aee497"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077/444/202012/7f472085-399e-414e-b51c-a7b538aee497//CardHolderName/MSDK_CORE"
     }
 
     @Test
@@ -50,11 +53,13 @@ class DefaultPaymentStringProcessorTest {
             uuid = "fd4b1011-727a-41e8-95b4-d7092d729022",
             cardInfo = CardInfo(
                 identifier = CardPanIdentifier("4532896701439077"),
-                expDate = ExpiryDate(2020, 12)
-            )
+                expDate = ExpiryDate(2020, 12),
+                cardHolder = "CardHolderName",
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077//202012/7f472085-399e-414e-b51c-a7b538aee497"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077//202012/7f472085-399e-414e-b51c-a7b538aee497//CardHolderName/MSDK_CORE"
     }
 
     @Test
@@ -66,11 +71,13 @@ class DefaultPaymentStringProcessorTest {
             uuid = "fd4b1011-727a-41e8-95b4-d7092d729022",
             cardInfo = CardInfo(
                 identifier = CardPanIdentifier("4532896701439077"),
-                cvv = "444"
-            )
+                cvv = "444",
+                cardHolder = "CardHolderName",
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077/444//7f472085-399e-414e-b51c-a7b538aee497"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077/444//7f472085-399e-414e-b51c-a7b538aee497//CardHolderName/MSDK_CORE"
     }
 
     @Test
@@ -81,10 +88,12 @@ class DefaultPaymentStringProcessorTest {
             timestamp = 1594009580806L,
             uuid = "fd4b1011-727a-41e8-95b4-d7092d729022",
             cardInfo = CardInfo(
-                identifier = CardPanIdentifier("4532896701439077")
-            )
+                identifier = CardPanIdentifier("4532896701439077"),
+                cardHolder = "CardHolderName",
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077///7f472085-399e-414e-b51c-a7b538aee497"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077///7f472085-399e-414e-b51c-a7b538aee497//CardHolderName/MSDK_CORE"
     }
 
     @Test
@@ -98,10 +107,11 @@ class DefaultPaymentStringProcessorTest {
                 identifier = CardBindingIdIdentifier("47eb0336-5ad9-4e03-8a1e-b9f3656ec768"),
                 cvv = "444",
                 expDate = ExpiryDate(2020, 12)
-            )
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022//444/202012/7f472085-399e-414e-b51c-a7b538aee497/47eb0336-5ad9-4e03-8a1e-b9f3656ec768"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022//444/202012/7f472085-399e-414e-b51c-a7b538aee497/47eb0336-5ad9-4e03-8a1e-b9f3656ec768//MSDK_CORE"
     }
 
     @Test
@@ -113,11 +123,12 @@ class DefaultPaymentStringProcessorTest {
             uuid = "fd4b1011-727a-41e8-95b4-d7092d729022",
             cardInfo = CardInfo(
                 identifier = CardBindingIdIdentifier("47eb0336-5ad9-4e03-8a1e-b9f3656ec768"),
-                expDate = ExpiryDate(2020, 12)
-            )
+                expDate = ExpiryDate(2020, 12),
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022///202012/7f472085-399e-414e-b51c-a7b538aee497/47eb0336-5ad9-4e03-8a1e-b9f3656ec768"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022///202012/7f472085-399e-414e-b51c-a7b538aee497/47eb0336-5ad9-4e03-8a1e-b9f3656ec768//MSDK_CORE"
     }
 
     @Test
@@ -130,10 +141,11 @@ class DefaultPaymentStringProcessorTest {
             cardInfo = CardInfo(
                 identifier = CardBindingIdIdentifier("47eb0336-5ad9-4e03-8a1e-b9f3656ec768"),
                 cvv = "444"
-            )
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022//444//7f472085-399e-414e-b51c-a7b538aee497/47eb0336-5ad9-4e03-8a1e-b9f3656ec768"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022//444//7f472085-399e-414e-b51c-a7b538aee497/47eb0336-5ad9-4e03-8a1e-b9f3656ec768//MSDK_CORE"
     }
 
     @Test
@@ -145,10 +157,11 @@ class DefaultPaymentStringProcessorTest {
             uuid = "fd4b1011-727a-41e8-95b4-d7092d729022",
             cardInfo = CardInfo(
                 identifier = CardBindingIdIdentifier("47eb0336-5ad9-4e03-8a1e-b9f3656ec768")
-            )
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022////7f472085-399e-414e-b51c-a7b538aee497/47eb0336-5ad9-4e03-8a1e-b9f3656ec768"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022////7f472085-399e-414e-b51c-a7b538aee497/47eb0336-5ad9-4e03-8a1e-b9f3656ec768//MSDK_CORE"
     }
 
     @Test
@@ -160,11 +173,13 @@ class DefaultPaymentStringProcessorTest {
             cardInfo = CardInfo(
                 identifier = CardPanIdentifier("4532896701439077"),
                 cvv = "444",
-                expDate = ExpiryDate(2020, 12)
-            )
+                expDate = ExpiryDate(2020, 12),
+                cardHolder = "CardHolderName",
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077/444/202012/"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077/444/202012///CardHolderName/MSDK_CORE"
     }
 
     @Test
@@ -175,11 +190,13 @@ class DefaultPaymentStringProcessorTest {
             uuid = "fd4b1011-727a-41e8-95b4-d7092d729022",
             cardInfo = CardInfo(
                 identifier = CardPanIdentifier("4532896701439077"),
-                expDate = ExpiryDate(2020, 12)
-            )
+                expDate = ExpiryDate(2020, 12),
+                cardHolder = "CardHolderName",
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077//202012/"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077//202012///CardHolderName/MSDK_CORE"
     }
 
     @Test
@@ -190,11 +207,13 @@ class DefaultPaymentStringProcessorTest {
             uuid = "fd4b1011-727a-41e8-95b4-d7092d729022",
             cardInfo = CardInfo(
                 identifier = CardPanIdentifier("4532896701439077"),
-                cvv = "444"
-            )
+                cvv = "444",
+                cardHolder = "CardHolderName",
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077/444//"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077/444////CardHolderName/MSDK_CORE"
     }
 
     @Test
@@ -204,10 +223,12 @@ class DefaultPaymentStringProcessorTest {
             timestamp = 1594009580806L,
             uuid = "fd4b1011-727a-41e8-95b4-d7092d729022",
             cardInfo = CardInfo(
-                identifier = CardPanIdentifier("4532896701439077")
-            )
+                identifier = CardPanIdentifier("4532896701439077"),
+                cardHolder = "CardHolderName",
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077///"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/4532896701439077/////CardHolderName/MSDK_CORE"
     }
 
     @Test
@@ -218,12 +239,14 @@ class DefaultPaymentStringProcessorTest {
             uuid = "fd4b1011-727a-41e8-95b4-d7092d729022",
             cardInfo = CardInfo(
                 identifier = CardBindingIdIdentifier("47eb0336-5ad9-4e03-8a1e-b9f3656ec768"),
+                expDate = ExpiryDate(2020, 12),
                 cvv = "444",
-                expDate = ExpiryDate(2020, 12)
-            )
+                cardHolder = "CardHolderName",
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022//444/202012//47eb0336-5ad9-4e03-8a1e-b9f3656ec768"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022//444/202012//47eb0336-5ad9-4e03-8a1e-b9f3656ec768/CardHolderName/MSDK_CORE"
     }
 
     @Test
@@ -234,11 +257,13 @@ class DefaultPaymentStringProcessorTest {
             uuid = "fd4b1011-727a-41e8-95b4-d7092d729022",
             cardInfo = CardInfo(
                 identifier = CardBindingIdIdentifier("47eb0336-5ad9-4e03-8a1e-b9f3656ec768"),
-                expDate = ExpiryDate(2020, 12)
-            )
+                expDate = ExpiryDate(2020, 12),
+                cardHolder = "CardHolderName",
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022///202012//47eb0336-5ad9-4e03-8a1e-b9f3656ec768"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022///202012//47eb0336-5ad9-4e03-8a1e-b9f3656ec768/CardHolderName/MSDK_CORE"
     }
 
     @Test
@@ -249,11 +274,13 @@ class DefaultPaymentStringProcessorTest {
             uuid = "fd4b1011-727a-41e8-95b4-d7092d729022",
             cardInfo = CardInfo(
                 identifier = CardBindingIdIdentifier("47eb0336-5ad9-4e03-8a1e-b9f3656ec768"),
-                cvv = "444"
-            )
+                cvv = "444",
+                cardHolder = "CardHolderName",
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022//444///47eb0336-5ad9-4e03-8a1e-b9f3656ec768"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022//444///47eb0336-5ad9-4e03-8a1e-b9f3656ec768/CardHolderName/MSDK_CORE"
     }
 
     @Test
@@ -263,10 +290,12 @@ class DefaultPaymentStringProcessorTest {
             timestamp = 1594009580806L,
             uuid = "fd4b1011-727a-41e8-95b4-d7092d729022",
             cardInfo = CardInfo(
-                identifier = CardBindingIdIdentifier("47eb0336-5ad9-4e03-8a1e-b9f3656ec768")
-            )
+                identifier = CardBindingIdIdentifier("47eb0336-5ad9-4e03-8a1e-b9f3656ec768"),
+                cardHolder = "CardHolderName",
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
-        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/////47eb0336-5ad9-4e03-8a1e-b9f3656ec768"
+        template shouldBe "2020-07-06T07:26:20+03:00/fd4b1011-727a-41e8-95b4-d7092d729022/////47eb0336-5ad9-4e03-8a1e-b9f3656ec768/CardHolderName/MSDK_CORE"
     }
 }

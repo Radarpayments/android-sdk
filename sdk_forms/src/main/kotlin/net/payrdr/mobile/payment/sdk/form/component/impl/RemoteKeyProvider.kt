@@ -11,6 +11,7 @@ import net.payrdr.mobile.payment.sdk.form.component.KeyProvider
 import net.payrdr.mobile.payment.sdk.form.component.KeyProviderException
 import net.payrdr.mobile.payment.sdk.form.utils.asList
 import net.payrdr.mobile.payment.sdk.form.utils.executeGet
+import net.payrdr.mobile.payment.sdk.form.utils.requiredField
 import net.payrdr.mobile.payment.sdk.form.utils.responseBodyToJsonObject
 import org.json.JSONObject
 
@@ -27,7 +28,7 @@ class RemoteKeyProvider(
 
     @Suppress("TooGenericExceptionCaught")
     override suspend fun provideKey(): Key = withContext(Dispatchers.IO) {
-        try {
+        val keys = try {
             Logger.log(
                 this.javaClass,
                 Constants.TAG,
@@ -35,8 +36,7 @@ class RemoteKeyProvider(
                 null
             )
             val connection = URL(url).executeGet(sslContext)
-            val keys = ActiveKeysDto.fromJson(connection.responseBodyToJsonObject()).keys
-            keys.first().toKey()
+             ActiveKeysDto.fromJson(connection.responseBodyToJsonObject()).keys.map { it.toKey() }
         } catch (cause: Exception) {
             Logger.log(
                 this.javaClass,
@@ -46,12 +46,24 @@ class RemoteKeyProvider(
             )
             throw KeyProviderException("Error while load active keys", cause)
         }
+
+        if (keys.isEmpty()) {
+            Logger.log(
+                this.javaClass,
+                Constants.TAG,
+                "provideKey(): Error",
+                KeyProviderException("Keys for tokens are not configured on remote server", null)
+            )
+            throw KeyProviderException("Keys for tokens are not configured on remote server", null)
+        } else {
+            keys.first()
+        }
     }
 
     private fun ActiveKeyDto.toKey() = Key(
-        value = this.keyValue,
-        protocol = this.protocolVersion,
-        expiration = this.keyExpiration
+        value = this.keyValue.requiredField("keyValue"),
+        protocol = this.protocolVersion.requiredField("protocolVersion"),
+        expiration = this.keyExpiration.requiredField("keyExpiration")
     )
 
     private data class ActiveKeysDto(

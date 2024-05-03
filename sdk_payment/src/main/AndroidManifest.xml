@@ -10,7 +10,7 @@
             android:theme="@style/Theme.App.Material.Transparent" />
 
         <activity
-            android:name=".payment.ActivityWebChallenge"
+            android:name=".payment.Activity3DS1Challenge"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.App.Material" />
     </application>

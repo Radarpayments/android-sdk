@@ -6,6 +6,7 @@ import kotlinx.coroutines.withContext
 import net.payrdr.mobile.payment.sdk.core.component.CryptogramCipher
 import net.payrdr.mobile.payment.sdk.core.component.PaymentStringProcessor
 import net.payrdr.mobile.payment.sdk.core.model.CardInfo
+import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import net.payrdr.mobile.payment.sdk.form.component.CryptogramProcessor
 import net.payrdr.mobile.payment.sdk.form.component.KeyProvider
 
@@ -25,14 +26,16 @@ class DefaultCryptogramProcessor(
         order: String,
         timestamp: Long,
         uuid: String,
-        cardInfo: CardInfo
+        cardInfo: CardInfo,
+        registeredFrom: MSDKRegisteredFrom,
     ): String = withContext(Dispatchers.IO) {
         val key = keyProvider.provideKey()
         val paymentString = paymentStringProcessor.createPaymentString(
             order = order,
             timestamp = timestamp,
             uuid = uuid,
-            cardInfo = cardInfo
+            cardInfo = cardInfo,
+            registeredFrom = registeredFrom,
         )
         cryptogramCipher.encode(paymentString, key)
     }

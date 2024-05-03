@@ -53,7 +53,7 @@ class RemoteKeyProviderTest {
         val pem = localhostCertificate.certificate.certificatePem()
         val sslContext = SSLContextCustomCAFactory.fromPem(pem)
 
-        keyProvider = RemoteKeyProvider(server.url("/").toString(), sslContext)
+        keyProvider = RemoteKeyProvider(server.url("/").toString(), sslContext.sslContext)
     }
 
     @After

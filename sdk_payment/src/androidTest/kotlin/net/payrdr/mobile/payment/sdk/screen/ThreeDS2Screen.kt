@@ -7,7 +7,7 @@ import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.threeds.impl.activity.TextChallengeFragment
 import net.payrdr.mobile.payment.sdk.threeds.R as threeDSR
 
-object ThreeDSScreen : KScreen<ThreeDSScreen>() {
+object ThreeDS2Screen : KScreen<ThreeDS2Screen>() {
     override val layoutId: Int?
         get() = R.layout.fragment_text_challenge
     override val viewClass: Class<*>?

@@ -7,8 +7,8 @@ import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormResponse
 import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormSecondResponse
 import net.payrdr.mobile.payment.sdk.api.entity.SessionStatusResponse
 import net.payrdr.mobile.payment.sdk.api.entity.UnbindCardResponse
-import net.payrdr.mobile.payment.sdk.payment.model.CryptogramApiData
-import net.payrdr.mobile.payment.sdk.payment.model.CryptogramGPayApiData
+import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
+import net.payrdr.mobile.payment.sdk.payment.model.GooglePayProcessFormRequest
 
 /**
  * Interface for carrying out a full payment cycle.
@@ -31,7 +31,7 @@ interface PaymentApi {
      * @return [ProcessFormResponse] payment status data for first payment try.
      */
     suspend fun processForm(
-        cryptogramApiData: CryptogramApiData,
+        cryptogramApiData: ProcessFormRequest,
         threeDSSDK: Boolean
     ): ProcessFormResponse
 
@@ -42,7 +42,7 @@ interface PaymentApi {
      * @return [ProcessFormResponse] payment status data for first payment try.
      */
     suspend fun processBindingForm(
-        cryptogramApiData: CryptogramApiData,
+        cryptogramApiData: ProcessFormRequest,
         threeDSSDK: Boolean
     ): ProcessFormResponse
 
@@ -55,7 +55,7 @@ interface PaymentApi {
      * try.
      */
     suspend fun processFormSecond(
-        cryptogramApiData: CryptogramApiData,
+        cryptogramApiData: ProcessFormRequest,
         threeDSParams: PaymentApiImpl.PaymentThreeDSInfo
     ): ProcessFormSecondResponse
 
@@ -68,7 +68,7 @@ interface PaymentApi {
      * payment try.
      */
     suspend fun processBindingFormSecond(
-        cryptogramApiData: CryptogramApiData,
+        cryptogramApiData: ProcessFormRequest,
         threeDSParams: PaymentApiImpl.PaymentThreeDSInfo
     ): ProcessFormSecondResponse
 
@@ -78,7 +78,7 @@ interface PaymentApi {
      * @param cryptogramGPayApiData cryptogram created by GPay lib.
      * @return [ProcessFormGPayResponse] payment status data.
      */
-    suspend fun gPayProcessForm(cryptogramGPayApiData: CryptogramGPayApiData): ProcessFormGPayResponse
+    suspend fun gPayProcessForm(cryptogramGPayApiData: GooglePayProcessFormRequest): ProcessFormGPayResponse
 
     /**
      * API method for completing payment.

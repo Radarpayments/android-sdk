@@ -9,9 +9,8 @@ object Constants {
     internal const val TIMEOUT_THREE_DS = 5
     internal const val REQUEST_CODE_CRYPTOGRAM = 60000
     internal const val REQUEST_CODE_PAYMENT = 60003
-    internal const val REQUEST_CODE_3DS = 60004
+    internal const val REQUEST_CODE_3DS1 = 60004
     internal const val INTENT_EXTRA_RESULT = "payment.sdk.result"
-    internal const val INTENT_EXTRA_ERROR = "payment.sdk.error"
     internal const val TAG = "SDK Payment"
     internal const val INTENT_EXTRA_ACS_URL = "acsUrl"
     internal const val INTENT_EXTRA_TERM_URL = "termUrl"

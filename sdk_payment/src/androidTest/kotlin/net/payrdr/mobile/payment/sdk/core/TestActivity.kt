@@ -7,8 +7,7 @@ import net.payrdr.mobile.payment.sdk.test.R
 
 class TestActivity : AppCompatActivity() {
 
-    var onActivityResultListener: ((requestCode: Int, resultCode: Int, data: Intent?) -> Unit)? =
-        null
+    val resultHandlerHelper =  ResultHandlerHelper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,6 +16,7 @@ class TestActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        onActivityResultListener?.invoke(requestCode, resultCode, data)
+        resultHandlerHelper.onActivityResult(requestCode, resultCode, data)
     }
+
 }

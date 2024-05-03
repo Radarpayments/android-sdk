@@ -28,7 +28,7 @@ object Versions {
     const val test_runner = "1.1.0"
     const val javax_api = "2.3.1"
     const val allure_kotlin = "2.4.0"
-    const val kaspresso = "1.4.1"
+    const val kaspresso = "1.5.2"
 }
 
 object Libs {
@@ -87,9 +87,9 @@ object TestLibs {
 }
 
 object BuildVersionsAndroid {
-    const val compileSdkVersion = 31
+    const val compileSdkVersion = 33
     const val minSdkVersion = 21
-    const val targetSdkVersion = 30
+    const val targetSdkVersion = 33
     const val versionCode = 1
 }
 

@@ -21,10 +21,11 @@ import net.payrdr.mobile.payment.sdk.exceptions.SDKDeclinedException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKOrderNotExistException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKTransactionException
-import net.payrdr.mobile.payment.sdk.form.ResultPaymentCallback
+import net.payrdr.mobile.payment.sdk.ResultPaymentCallback
 import net.payrdr.mobile.payment.sdk.form.SDKException
-import net.payrdr.mobile.payment.sdk.payment.model.PaymentData
+import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
+import net.payrdr.mobile.payment.sdk.payment.model.Use3DSConfig
 
 class PaymentFormFragment : Fragment() {
     override fun onCreateView(
@@ -54,8 +55,9 @@ class PaymentFormFragment : Fragment() {
                     /* spellchecker: enable */
                     .replace("\n", "")
                     .trimIndent()
-            val paymentConfig = SDKPaymentConfig("https://dev.bpcbt.com/payment/rest", dsRoot,
-                keyProviderUrl = "https://dev.bpcbt.com/payment/se/keys.do",
+            val paymentConfig = SDKPaymentConfig(
+                "https://dev.bpcbt.com/payment",
+                use3DSConfig = Use3DSConfig.Use3DS2(dsRoot)
             )
             SDKPayment.init(paymentConfig)
             SDKPayment.checkout(this, mdOrder.text.trim().toString())
@@ -70,42 +72,17 @@ class PaymentFormFragment : Fragment() {
 
         // Processing the result of the payment cycle.
         SDKPayment.handleCheckoutResult(requestCode, data, object :
-            ResultPaymentCallback<PaymentData> {
-            override fun onSuccess(result: PaymentData) {
+            ResultPaymentCallback<PaymentResult> {
+            override fun onResult(result: PaymentResult) {
                 // Order payment result.
-                val resData = "PaymentData(${result.mdOrder}, ${result.status})"
+                val resData = "PaymentData(${result.mdOrder}, ${result.isSuccess} ${result.exception})"
                 activity?.log(resData)
                 view?.findViewById<TextView>(R.id.textResult)?.text = resData
-            }
-
-            override fun onFail(e: SDKException) {
-                // An error occurred.
-                when (e) {
-                    is SDKAlreadyPaymentException -> makeToast(ERROR_ALREADY_DEPOSITED_ORDER)
-                    is SDKCryptogramException -> makeToast(ERROR_CRYPTOGRAM_CANCELED)
-                    is SDKDeclinedException -> makeToast(ERROR_DECLINED_ORDER)
-                    is SDKPaymentApiException -> makeToast(ERROR_PAYMENT_API)
-                    is SDKTransactionException -> makeToast(ERROR_WORK_CREATE_TRANSACTION)
-                    is SDKOrderNotExistException -> makeToast(ERROR_ORDER_NOT_EXIT_API)
-                    else -> activity?.log("${e.message} ${e.cause}")
-                }
             }
         })
     }
 
     private fun makeToast(text: String) {
         Toast.makeText(activity, text, Toast.LENGTH_SHORT).show()
-    }
-
-    companion object {
-        private const val ERROR_WORK_CREATE_TRANSACTION: String =
-            "Exception: while create transaction with EC or RSA"
-        private const val ERROR_ALREADY_DEPOSITED_ORDER: String =
-            "Exception: the order has already been deposited"
-        private const val ERROR_DECLINED_ORDER: String = "Exception: the order has been declined"
-        private const val ERROR_CRYPTOGRAM_CANCELED: String =
-            "Exception: the cryptogram creation has been canceled or some error"
-        private const val ERROR_PAYMENT_API: String = "Exception: the api work problem"
-        private const val ERROR_ORDER_NOT_EXIT_API: String = "Exception: the order not exist"
     }
 }

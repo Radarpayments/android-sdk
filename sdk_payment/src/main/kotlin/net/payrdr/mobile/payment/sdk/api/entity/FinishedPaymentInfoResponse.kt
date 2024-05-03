@@ -16,7 +16,7 @@ import org.json.JSONObject
  * @param actionCodeDescription order code description .
  */
 data class FinishedPaymentInfoResponse(
-    val status: String?,
+    val status: String,
     val paymentDate: String?,
     val approvalCode: String?,
     val terminalId: String?,
@@ -34,7 +34,7 @@ data class FinishedPaymentInfoResponse(
          */
         fun fromJson(jsonObject: JSONObject): FinishedPaymentInfoResponse = with(jsonObject) {
             FinishedPaymentInfoResponse(
-                status = optValue("status"),
+                status = getString("status"),
                 paymentDate = optValue("paymentDate"),
                 approvalCode = optValue("approvalCode"),
                 terminalId = optValue("terminalId"),

@@ -2,6 +2,7 @@ package net.payrdr.mobile.payment.sdk.form.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import net.payrdr.mobile.payment.sdk.form.model.Card.Companion.readCards
 import net.payrdr.mobile.payment.sdk.form.model.Card.Companion.writeCards
 import java.util.Locale
@@ -23,6 +24,7 @@ import java.util.Locale
  * @param bindingCVCRequired mandatory entry of CVC paying with a previously saved card.
  * @param cardDeleteOptions the option to remove the card.
  * @param cardsToDelete the list of cards to be removed that the user has selected.
+ * @param registeredFrom source of token generation.
  */
 data class PaymentConfig internal constructor(
     val order: String = "",
@@ -38,7 +40,8 @@ data class PaymentConfig internal constructor(
     val buttonText: String?,
     val bindingCVCRequired: Boolean,
     val cardDeleteOptions: CardDeleteOptions,
-    var cardsToDelete: MutableSet<Card> = mutableSetOf()
+    var cardsToDelete: MutableSet<Card> = mutableSetOf(),
+    val registeredFrom: MSDKRegisteredFrom,
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
@@ -55,7 +58,8 @@ data class PaymentConfig internal constructor(
         source.readString(),
         1 == source.readInt(),
         CardDeleteOptions.values()[source.readInt()],
-        source.readCards().toMutableSet()
+        source.readCards().toMutableSet(),
+        source.readString()?.let {  MSDKRegisteredFrom.valueOf(it) } ?: MSDKRegisteredFrom.MSDK_CORE
     )
 
     override fun describeContents() = 0
@@ -75,6 +79,7 @@ data class PaymentConfig internal constructor(
         writeInt((if (bindingCVCRequired) 1 else 0))
         writeInt(cardDeleteOptions.ordinal)
         writeCards(cardsToDelete, flags)
+        writeString(registeredFrom.registeredFromValue)
     }
 
     companion object {

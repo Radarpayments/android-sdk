@@ -11,17 +11,20 @@ import net.payrdr.mobile.payment.sdk.core.model.CardIdentifier.Companion.writeCa
  * @param identifier card identifier.
  * @param expDate expiration date of the card.
  * @param cvv security code.
+ * @param cardHolder card holder.
  */
 data class CardInfo(
     val identifier: CardIdentifier,
     val expDate: ExpiryDate? = null,
-    val cvv: String? = null
+    val cvv: String? = null,
+    val cardHolder: String? = null,
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
         source.readCardIdentifier(),
         source.readParcelable<ExpiryDate?>(ExpiryDate::class.java.classLoader),
-        source.readString()
+        source.readString(),
+        source.readString(),
     )
 
     override fun describeContents() = 0
@@ -30,6 +33,7 @@ data class CardInfo(
         writeCardIdentifier(identifier, flags)
         writeParcelable(expDate, flags)
         writeValue(cvv)
+        writeValue(cardHolder)
     }
 
     companion object {

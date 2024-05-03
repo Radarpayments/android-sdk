@@ -12,6 +12,7 @@ import net.payrdr.mobile.payment.sdk.core.model.CardInfo
 import net.payrdr.mobile.payment.sdk.core.model.CardPanIdentifier
 import net.payrdr.mobile.payment.sdk.core.model.CardParams
 import net.payrdr.mobile.payment.sdk.core.model.Key
+import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import net.payrdr.mobile.payment.sdk.core.model.ParamField
 import net.payrdr.mobile.payment.sdk.core.utils.toExpDate
 import net.payrdr.mobile.payment.sdk.core.validation.CardBindingIdValidator
@@ -45,12 +46,15 @@ class SDKCore(
      *
      * @param params a new card information.
      * @param timestamp the timestamp used in the generated token.
+     * @param registeredFrom source of token generation.
+     *
      * @return generated token or error.
      */
     @JvmOverloads
     fun generateWithCard(
         params: CardParams,
-        timestamp: Long = System.currentTimeMillis()
+        timestamp: Long = System.currentTimeMillis(),
+        registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_CORE,
     ): TokenResult {
 
         Logger.log(
@@ -106,10 +110,11 @@ class SDKCore(
 
         val cardInfo = CardInfo(
             identifier = CardPanIdentifier(value = params.pan),
+            expDate = params.expiryMMYY.toExpDate(),
+            cardHolder = params.cardHolder,
             cvv = params.cvc,
-            expDate = params.expiryMMYY.toExpDate()
         )
-        return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp)
+        return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp, registeredFrom)
     }
 
     /**
@@ -117,12 +122,15 @@ class SDKCore(
      *
      * @param params a new card information.
      * @param timestamp the timestamp used in the generated token.
+     * @param registeredFrom source of token generation.
+     *
      * @return generated token or error.
      */
     @JvmOverloads
     fun generateInstanceWithCard(
         params: CardParams,
-        timestamp: Long = System.currentTimeMillis()
+        timestamp: Long = System.currentTimeMillis(),
+        registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_CORE,
     ): TokenResult {
 
         val validatorsMap = mapOf(
@@ -155,10 +163,11 @@ class SDKCore(
 
         val cardInfo = CardInfo(
             identifier = CardPanIdentifier(value = params.pan),
+            expDate = params.expiryMMYY.toExpDate(),
             cvv = params.cvc,
-            expDate = params.expiryMMYY.toExpDate()
+            cardHolder = params.cardHolder,
         )
-        return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp)
+        return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp, registeredFrom)
     }
 
     /**
@@ -166,12 +175,15 @@ class SDKCore(
      *
      * @param params information about the linked card.
      * @param timestamp the timestamp used in the generated token.
+     * @param registeredFrom source of token generation.
+     *
      * @return generated token or error.
      */
     @JvmOverloads
     fun generateWithBinding(
         params: BindingParams,
-        timestamp: Long = System.currentTimeMillis()
+        timestamp: Long = System.currentTimeMillis(),
+        registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_CORE,
     ): TokenResult {
 
         Logger.log(
@@ -223,9 +235,10 @@ class SDKCore(
 
         val cardInfo = CardInfo(
             identifier = CardBindingIdIdentifier(value = params.bindingID),
-            cvv = params.cvc
+            cvv = params.cvc,
+            cardHolder = null,
         )
-        return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp)
+        return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp, registeredFrom)
     }
 
     /**
@@ -233,12 +246,15 @@ class SDKCore(
      *
      * @param params information about the linked card.
      * @param timestamp the timestamp used in the generated token.
+     * @param registeredFrom source of token generation.
+     *
      * @return generated token or error.
      */
     @JvmOverloads
     fun generateInstanceWithBinding(
         params: BindingParams,
-        timestamp: Long = System.currentTimeMillis()
+        timestamp: Long = System.currentTimeMillis(),
+        registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_CORE,
     ): TokenResult {
         val validatorsMap = mapOf(
             params.bindingID to cardBindingIdValidator,
@@ -266,9 +282,10 @@ class SDKCore(
 
         val cardInfo = CardInfo(
             identifier = CardBindingIdIdentifier(value = params.bindingID),
-            cvv = params.cvc
+            cvv = params.cvc,
+            cardHolder = null,
         )
-        return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp)
+        return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp, registeredFrom)
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -277,6 +294,7 @@ class SDKCore(
         cardInfo: CardInfo,
         pubKey: String,
         timestamp: Long,
+        registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_CORE,
     ): TokenResult {
 
         Logger.log(this.javaClass, Logger.TAG, "generation method:", null)
@@ -285,7 +303,8 @@ class SDKCore(
             order = mdOrder,
             timestamp = timestamp,
             uuid = UUID.randomUUID().toString(),
-            cardInfo = cardInfo
+            cardInfo = cardInfo,
+            registeredFrom = registeredFrom,
         )
         val key = Key(
             value = pubKey,

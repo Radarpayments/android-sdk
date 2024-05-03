@@ -110,6 +110,7 @@ dependencies {
     testImplementation(TestLibs.kotlinx_coroutines_test)
     testImplementation(TestLibs.test_runner)
 
+    androidTestImplementation(TestLibs.io_kotest_assertion_core)
     androidTestImplementation(TestLibs.kotlinx_coroutines_test)
     androidTestImplementation(TestLibs.androidx_test_ext_junit)
     androidTestImplementation(TestLibs.androidx_test_rules)

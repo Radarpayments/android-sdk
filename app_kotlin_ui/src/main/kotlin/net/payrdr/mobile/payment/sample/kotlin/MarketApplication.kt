@@ -3,6 +3,8 @@
 package net.payrdr.mobile.payment.sample.kotlin
 
 import android.app.Application
+import net.payrdr.mobile.payment.sdk.SDKPayment
+import net.payrdr.mobile.payment.sdk.core.Logger
 import java.io.InputStream
 import net.payrdr.mobile.payment.sdk.form.component.impl.SSLContextConfig
 import net.payrdr.mobile.payment.sdk.form.component.impl.SSLContextCustomCAFactory

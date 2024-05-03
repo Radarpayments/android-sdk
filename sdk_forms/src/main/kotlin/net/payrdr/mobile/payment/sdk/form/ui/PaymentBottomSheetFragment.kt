@@ -50,6 +50,12 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
         super.show(manager, tag)
     }
 
+    internal fun setGooglePayPaymentConfig(googlePayPaymentConfig: GooglePayPaymentConfig?) {
+        googlePayPaymentConfig?.let {
+            this.googlePayPaymentConfig = googlePayPaymentConfig
+        }
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(CONFIG_KEY, config)
@@ -73,13 +79,6 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
             dismiss()
             requireActivity().finishWithUserCancellation()
         }
-
-        cardsAdapter.cards = config.cards.toList()
-        cardList.apply {
-            adapter = cardsAdapter
-            layoutManager = LinearLayoutManager(requireActivity())
-        }
-
         cardsAdapter.cardSelectListener = object : CardListAdapter.CardSelectListener {
             override fun onCardSelected(card: Card) {
                 openSavedCard(card)
@@ -94,17 +93,16 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
                 openNewCard()
             }
         }
+        cardsAdapter.cards = config.cards.toList()
+        cardList.apply {
+            adapter = cardsAdapter
+            layoutManager = LinearLayoutManager(requireActivity())
+        }
     }
 
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
         requireActivity().finishWithUserCancellation()
-    }
-
-    internal fun setGooglePayPaymentConfig(googlePayPaymentConfig: GooglePayPaymentConfig?) {
-        googlePayPaymentConfig?.let {
-            this.googlePayPaymentConfig = googlePayPaymentConfig
-        }
     }
 
     private fun openNewCard() {
@@ -123,14 +121,6 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
         dismiss()
     }
 
-    private fun displayGooglePayButton(value: Boolean) {
-        googlePayButton.visibility = if (value) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
-    }
-
     private fun checkAvailableGPayPayment() {
         if (this::googlePayPaymentConfig.isInitialized) {
             GooglePayUtils.possiblyShowGooglePayButton(
@@ -142,19 +132,21 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
                 ),
                 callback = object : GooglePayUtils.GooglePayCheckCallback {
                     override fun onNoGooglePlayServices() {
-                        displayGooglePayButton(false)
+                        disableGoogleButton()
                         Log.d("PAYRDRSDK", "GPay not supported by device")
                     }
 
                     override fun onNotReadyToRequest() {
-                        displayGooglePayButton(false)
+                        disableGoogleButton()
                         Log.d("PAYRDRSDK", "GPay not supported by device")
                     }
 
                     override fun onReadyToRequest() {
-                        displayGooglePayButton(true)
-                        googlePayButton.setOnClickListener {
-                            SDKForms.cryptogram(this@PaymentBottomSheetFragment, googlePayPaymentConfig)
+                        enableGoogleButton {
+                            SDKForms.cryptogram(
+                                this@PaymentBottomSheetFragment,
+                                googlePayPaymentConfig
+                            )
                             dismiss()
                         }
                     }
@@ -162,7 +154,17 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
             )
         } else {
             Log.d("PAYRDRSDK", "GPay not supported by server")
-            displayGooglePayButton(false)
+            disableGoogleButton()
         }
+    }
+
+    private fun disableGoogleButton() {
+        googlePayButton.setOnClickListener(null)
+        googlePayButton.visibility = View.GONE
+    }
+
+    private fun enableGoogleButton(listener: View.OnClickListener) {
+        googlePayButton.setOnClickListener(listener)
+        googlePayButton.visibility = View.VISIBLE
     }
 }

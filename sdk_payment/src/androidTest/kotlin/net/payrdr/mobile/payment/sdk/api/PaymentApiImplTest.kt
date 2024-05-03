@@ -7,7 +7,7 @@ import io.qameta.allure.android.runners.AllureAndroidJUnit4
 import io.qameta.allure.kotlin.Description
 import kotlinx.coroutines.runBlocking
 import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
-import net.payrdr.mobile.payment.sdk.payment.model.CryptogramApiData
+import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -101,7 +101,7 @@ class PaymentApiImplTest {
                 """.trimIndent()
             )
         )
-        val cryptogramApiData = CryptogramApiData(
+        val cryptogramApiData = ProcessFormRequest(
             seToken = seToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
@@ -132,7 +132,7 @@ class PaymentApiImplTest {
                 """.trimIndent()
             )
         )
-        val cryptogramApiData = CryptogramApiData(
+        val cryptogramApiData = ProcessFormRequest(
             seToken = seToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
@@ -158,7 +158,7 @@ class PaymentApiImplTest {
                 """.trimIndent()
             )
         )
-        val cryptogramApiData = CryptogramApiData(
+        val cryptogramApiData = ProcessFormRequest(
             seToken = seToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
@@ -230,7 +230,7 @@ class PaymentApiImplTest {
                     "Incorrect body response"
                 )
             )
-            val cryptogramApiData = CryptogramApiData(
+            val cryptogramApiData = ProcessFormRequest(
                 seToken = seToken,
                 mdOrder = mdOrder,
                 holder = "CARDHOLDER",
@@ -249,7 +249,7 @@ class PaymentApiImplTest {
                     "Incorrect body response"
                 )
             )
-            val cryptogramApiData = CryptogramApiData(
+            val cryptogramApiData = ProcessFormRequest(
                 seToken = seToken,
                 mdOrder = mdOrder,
                 holder = "CARDHOLDER",

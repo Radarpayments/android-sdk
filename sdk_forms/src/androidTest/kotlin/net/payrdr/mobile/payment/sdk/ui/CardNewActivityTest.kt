@@ -27,8 +27,9 @@ import io.qameta.allure.android.runners.AllureAndroidJUnit4
 import net.payrdr.mobile.payment.sdk.core.model.CardInfo
 import net.payrdr.mobile.payment.sdk.core.model.CardPanIdentifier
 import net.payrdr.mobile.payment.sdk.core.model.ExpiryDate
+import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import net.payrdr.mobile.payment.sdk.form.R
-import net.payrdr.mobile.payment.sdk.form.SDKConfigBuilder
+import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.component.CryptogramProcessor
 import net.payrdr.mobile.payment.sdk.form.component.impl.CachedKeyProvider
@@ -100,7 +101,7 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
     @Before
     fun setUp() {
         SDKForms.init(
-            SDKConfigBuilder()
+            SDKFormsConfigBuilder()
                 .keyProvider(
                     CachedKeyProvider(
                         RemoteKeyProvider("https://dev.bpcbt.com/payment/se/keys.do"),
@@ -417,7 +418,7 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
             activityTestRule.launchActivity(launchIntent)
             step("") {
                 coEvery {
-                    mockCryptogramProcessor.create(any(), any(), any(), any())
+                    mockCryptogramProcessor.create(any(), any(), any(), any(), any())
                 } returns ""
             }
             step("shouldRunWithConfiguredSaveCardHide") {
@@ -465,7 +466,8 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                                 ),
                                 cvv = "012"
                             )
-                        )
+                        ),
+                        registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
                     )
                 }
             }
@@ -487,7 +489,7 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
             activityTestRule.launchActivity(launchIntent)
             step("") {
                 coEvery {
-                    mockCryptogramProcessor.create(any(), any(), any(), any())
+                    mockCryptogramProcessor.create(any(), any(), any(), any(), any())
                 } returns ""
             }
             step("shouldRunWithConfiguredSaveCardHide") {
@@ -534,7 +536,8 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                                 ),
                                 cvv = "012"
                             )
-                        )
+                        ),
+                        registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
                     )
                 }
             }

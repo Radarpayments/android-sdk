@@ -23,7 +23,7 @@ import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSGatewayApi.Payment
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSGatewayApi.PaymentOrderRequest
 import net.payrdr.mobile.payment.sdk.form.PaymentConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.ResultCryptogramCallback
-import net.payrdr.mobile.payment.sdk.form.SDKConfigBuilder
+import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.SDKException
 import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.model.CryptogramData
@@ -72,7 +72,7 @@ class ThreeDSActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_three_d_s)
         SDKForms.init(
-            SDKConfigBuilder()
+            SDKFormsConfigBuilder()
                 .keyProviderUrl(
                     "$argBaseUrl/se/keys.do",
                     MarketApplication.sslContextConfig?.sslContext,

@@ -119,8 +119,10 @@ class CardSelectedActivity : BaseActivity() {
                     timestamp = config.timestamp,
                     cardInfo = CardInfo(
                         identifier = CardBindingIdIdentifier(card.bindingId),
-                        cvv = cardCodeInput.text.toString()
-                    )
+                        cvv = cardCodeInput.text.toString(),
+                        cardHolder = null,
+                    ),
+                    registeredFrom = config.registeredFrom,
                 )
                 finishWithResult(
                     CryptogramData(

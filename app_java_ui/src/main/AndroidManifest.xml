@@ -11,7 +11,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name="net.payrdr.mobile.payment.sample.java.MainActivity">
+        <activity android:name="net.payrdr.mobile.payment.sample.java.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

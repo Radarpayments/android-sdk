@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion(32)
+    compileSdkVersion(33)
 
     defaultConfig {
         applicationId = "net.payrdr.mobile.payment.sample.java"
         minSdkVersion(21)
-        targetSdkVersion(32)
+        targetSdkVersion(33)
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

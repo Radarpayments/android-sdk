@@ -3,23 +3,15 @@ package net.payrdr.mobile.payment.sdk
 import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
-import net.payrdr.mobile.payment.sdk.Constants.INTENT_EXTRA_ERROR
 import net.payrdr.mobile.payment.sdk.Constants.INTENT_EXTRA_RESULT
 import net.payrdr.mobile.payment.sdk.Constants.REQUEST_CODE_PAYMENT
 import net.payrdr.mobile.payment.sdk.core.Logger
-import net.payrdr.mobile.payment.sdk.exceptions.SDKAlreadyPaymentException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKCryptogramException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKDeclinedException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKOrderNotExistException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKTransactionException
-import net.payrdr.mobile.payment.sdk.form.ResultPaymentCallback
-import net.payrdr.mobile.payment.sdk.form.SDKConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.SDKException
 import net.payrdr.mobile.payment.sdk.form.SDKForms
+import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
 import net.payrdr.mobile.payment.sdk.payment.PaymentActivity
-import net.payrdr.mobile.payment.sdk.payment.model.PaymentData
+import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 import net.payrdr.mobile.payment.sdk.core.BuildConfig as BuildConfigCore
 import net.payrdr.mobile.payment.sdk.form.BuildConfig as BuildConfigForms
@@ -34,32 +26,23 @@ object SDKPayment {
         get() = innerSdkPaymentConfig
             ?: throw IllegalStateException("Please call SDKPayment.init() before.")
 
-    private var use3ds2sdkConfig: Boolean = true
-    internal val use3ds2sdk
-        get() = use3ds2sdkConfig
-
     /**
      * Initialization.
      *
-     * @param use3ds2sdk using threeDS version 2 or not,
+     * @param sdkPaymentConfig - sdk configuration.
      */
-    fun init(sdkPaymentConfig: SDKPaymentConfig, use3ds2sdk: Boolean = true) {
+    fun init(sdkPaymentConfig: SDKPaymentConfig) {
         innerSdkPaymentConfig = sdkPaymentConfig
-        use3ds2sdkConfig = use3ds2sdk
 
-        val sdkConfigBuilder = SDKConfigBuilder()
+        val sdkFormsConfig = SDKFormsConfigBuilder()
+            .keyProvider(
+                RemoteKeyProvider(
+                    "${sdkPaymentConfig.baseURL}/se/keys.do",
+                    sdkPaymentConfig.sslContextConfig?.sslContext,
+                )
+            ).build()
 
-        val keyProvider = RemoteKeyProvider(
-            sdkPaymentConfig.keyProviderUrl,
-            SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext,
-        )
-        sdkConfigBuilder.apply {
-            keyProvider(keyProvider)
-        }
-
-        SDKForms.init(
-            sdkConfigBuilder.build()
-        )
+        SDKForms.init(sdkFormsConfig)
     }
 
     /**
@@ -111,7 +94,7 @@ object SDKPayment {
     fun handleCheckoutResult(
         requestCode: Int,
         data: Intent?,
-        paymentCallback: ResultPaymentCallback<PaymentData>
+        paymentCallback: ResultPaymentCallback<PaymentResult>
     ): Boolean = if (data != null && REQUEST_CODE_PAYMENT == requestCode) {
         handleCheckoutResult(data, paymentCallback)
         true
@@ -122,44 +105,26 @@ object SDKPayment {
     @Suppress("indent")
     private fun handleCheckoutResult(
         data: Intent,
-        paymentCallback: ResultPaymentCallback<PaymentData>
+        paymentCallback: ResultPaymentCallback<PaymentResult>
     ) {
-        val paymentData = data.getParcelableExtra(INTENT_EXTRA_RESULT) as PaymentData?
+        val paymentData = data.getParcelableExtra(INTENT_EXTRA_RESULT) as PaymentResult?
         if (paymentData != null) {
             Logger.log(
                 this.javaClass,
                 Constants.TAG,
                 "handleCheckoutResult($data, $paymentCallback): Success " +
-                    "PaymentData(${paymentData.mdOrder},${paymentData.status})",
+                        "PaymentData(${paymentData.mdOrder},${paymentData.isSuccess})",
                 null
             )
-            paymentCallback.onSuccess(paymentData)
+            paymentCallback.onResult(paymentData)
         } else {
-            val exception = data.getSerializableExtra(INTENT_EXTRA_ERROR) as SDKException?
-            Logger.log(
-                this.javaClass,
-                Constants.TAG,
-                "handleCheckoutResult($data, $paymentCallback):" +
-                    " Error: ${getExceptionTypesMessage(exception)}",
-                exception
+            paymentCallback.onResult(
+                PaymentResult(
+                    mdOrder = "",
+                    isSuccess = false,
+                    exception = SDKException("Error handle result"),
+                )
             )
-            paymentCallback.onFail(exception ?: SDKException("Unknown error"))
-        }
-    }
-
-    private fun getExceptionTypesMessage(exception: SDKException?): String? {
-        return if (exception != null) {
-            when (exception) {
-                is SDKAlreadyPaymentException -> "payment of a successfully paid order"
-                is SDKCryptogramException -> "error while creating cryptogram"
-                is SDKDeclinedException -> "order was canceled on previous payment cycle"
-                is SDKPaymentApiException -> "error when working with gateway API methods"
-                is SDKTransactionException -> "error when creating a transaction when paying through 3ds"
-                is SDKOrderNotExistException -> "payment for a non-existent order"
-                else -> null
-            }
-        } else {
-            null
         }
     }
 

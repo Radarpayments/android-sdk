@@ -1,27 +1,15 @@
 package net.payrdr.mobile.payment.sdk.payment
 
-import net.payrdr.mobile.payment.sdk.payment.model.WebChallengeParam
+import android.content.Context
 import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeParameters
 import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeStatusReceiver
-import net.payrdr.mobile.payment.sdk.threeds.spec.Factory
 import net.payrdr.mobile.payment.sdk.threeds.spec.ThreeDS2Service
 import net.payrdr.mobile.payment.sdk.threeds.spec.Transaction
 
 /**
- *  Interface describing the work of the 3DS form.
+ *  Interface describing the work of the 3DS2 form.
  */
-interface ThreeDSFormDelegate {
-
-    /**
-     *  Service initialization .
-     *
-     *  @param threeDS2Service service object.
-     *  @param factory class for managing UI component.
-     */
-    fun initThreeDS2Service(
-        threeDS2Service: ThreeDS2Service,
-        factory: Factory
-    )
+interface ThreeDS2FormDelegate {
 
     /**
      *  Start Challenge Flow screen.
@@ -37,15 +25,6 @@ interface ThreeDSFormDelegate {
     )
 
     /**
-     *  Start Web Challenge screen.
-     *
-     *  @param webChallengeParam parameters for Web Challenge.
-     */
-    fun openWebChallenge(
-        webChallengeParam: WebChallengeParam,
-    )
-
-    /**
      *  Stop transaction and delete data.
      *
      *  @param transaction transaction object.
@@ -55,4 +34,19 @@ interface ThreeDSFormDelegate {
         transaction: Transaction?,
         threeDS2Service: ThreeDS2Service
     )
+
+    /**
+     * Provides application context.
+     *
+     * @return application context.
+     */
+    fun getApplicationContext(): Context
+
+    /**
+     * Provides base context.
+     *
+     * @return base context.
+     */
+    fun getBaseContext(): Context
+
 }

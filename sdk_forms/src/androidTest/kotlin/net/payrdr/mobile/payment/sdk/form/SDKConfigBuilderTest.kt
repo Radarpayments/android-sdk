@@ -16,15 +16,15 @@ class SDKConfigBuilderTest {
     @Test
     @Description("succeedBuildWithKeyProviderUrl")
     fun succeedBuildWithKeyProviderUrl() {
-        SDKConfigBuilder()
-            .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
+        SDKFormsConfigBuilder()
+            .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do", null)
             .build()
     }
 
     @Test
     @Description("succeedBuildWithCustomKeyProvider")
     fun succeedBuildWithCustomKeyProvider() {
-        SDKConfigBuilder()
+        SDKFormsConfigBuilder()
             .keyProvider(
                 CachedKeyProvider(
                     RemoteKeyProvider("https://dev.bpcbt.com/payment/se/keys.do"),
@@ -37,8 +37,8 @@ class SDKConfigBuilderTest {
     @Test
     @Description("succeedBuildWithCustomCardInfoProvider")
     fun succeedBuildWithCustomCardInfoProvider() {
-        SDKConfigBuilder()
-            .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
+        SDKFormsConfigBuilder()
+            .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do", null)
             .cardInfoProvider(
                 RemoteCardInfoProvider(
                     url = "https://mrbin.io/bins/display",
@@ -50,15 +50,15 @@ class SDKConfigBuilderTest {
     @Test(expected = SDKException::class)
     @Description("buildWithoutKeyProviderShouldThrowException")
     fun buildWithoutKeyProviderShouldThrowException() {
-        SDKConfigBuilder()
+        SDKFormsConfigBuilder()
             .build()
     }
 
     @Test(expected = SDKException::class)
     @Description("buildWithTwoDifferentKeyProviderShouldThrowException")
     fun buildWithTwoDifferentKeyProviderShouldThrowException() {
-        SDKConfigBuilder()
-            .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
+        SDKFormsConfigBuilder()
+            .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do", null)
             .keyProvider(RemoteKeyProvider(url = "https://dev.bpcbt.com/payment/se/keys.do"))
             .build()
     }
@@ -66,9 +66,9 @@ class SDKConfigBuilderTest {
     @Test(expected = SDKException::class)
     @Description("buildWithTwoDifferentKeyProviderSwapOrderShouldThrowException")
     fun buildWithTwoDifferentKeyProviderSwapOrderShouldThrowException() {
-        SDKConfigBuilder()
+        SDKFormsConfigBuilder()
             .keyProvider(RemoteKeyProvider(url = "https://dev.bpcbt.com/payment/se/keys.do"))
-            .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
+            .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do", null)
             .build()
     }
 }

@@ -5,11 +5,8 @@ package net.payrdr.mobile.payment.sdk.utils
  *
  * @param keywords list of words.
  */
-fun String.containsAnyOfKeywordIgnoreCase(keywords: List<String>): Boolean {
-    for (keyword in keywords) {
-        if (this.contains(keyword, true)) {
-            return true
-        }
+fun String.containsAnyOfKeywordIgnoreCase(keywords: List<OrderStatus>): Boolean {
+    return keywords.any {
+        it.statusName.equals(this, ignoreCase = true)
     }
-    return false
 }

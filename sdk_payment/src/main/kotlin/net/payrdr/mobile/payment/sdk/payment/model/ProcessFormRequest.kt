@@ -8,9 +8,9 @@ package net.payrdr.mobile.payment.sdk.payment.model
  *  @param holder first and last cardholder name.
  *  @param saveCard should saving a card.
  */
-data class CryptogramApiData(
+data class ProcessFormRequest(
     val seToken: String,
     val mdOrder: String,
     val holder: String,
-    val saveCard: Boolean = false
+    val saveCard: Boolean,
 )

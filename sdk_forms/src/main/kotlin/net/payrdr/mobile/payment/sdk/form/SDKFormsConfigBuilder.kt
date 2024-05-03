@@ -11,7 +11,7 @@ import net.payrdr.mobile.payment.sdk.form.model.SDKConfig
 /**
  * Constructor for forming the SDK configuration.
  */
-class SDKConfigBuilder {
+class SDKFormsConfigBuilder {
 
     private var keyProvider: KeyProvider? = null
 
@@ -25,7 +25,7 @@ class SDKConfigBuilder {
      *
      * @param providerUrl url address for receiving encryption keys
      */
-    fun keyProviderUrl(providerUrl: String, sslContext: SSLContext?): SDKConfigBuilder = apply {
+    fun keyProviderUrl(providerUrl: String, sslContext: SSLContext?): SDKFormsConfigBuilder = apply {
         Logger.log(
             this.javaClass,
             Constants.TAG,
@@ -49,7 +49,7 @@ class SDKConfigBuilder {
      *
      * @param provider the encryption key provider to use.
      */
-    fun keyProvider(provider: KeyProvider): SDKConfigBuilder = apply {
+    fun keyProvider(provider: KeyProvider): SDKFormsConfigBuilder = apply {
         Logger.log(
             this.javaClass,
             Constants.TAG,
@@ -73,7 +73,7 @@ class SDKConfigBuilder {
      *
      * @param provider Provider for getting information about the style and type of the card.
      */
-    fun cardInfoProvider(provider: CardInfoProvider): SDKConfigBuilder = apply {
+    fun cardInfoProvider(provider: CardInfoProvider): SDKFormsConfigBuilder = apply {
         this.cardInfoProvider = provider
     }
 

@@ -27,8 +27,9 @@ import io.qameta.allure.android.allureScreenshot
 import io.qameta.allure.android.runners.AllureAndroidJUnit4
 import net.payrdr.mobile.payment.sdk.core.model.CardBindingIdIdentifier
 import net.payrdr.mobile.payment.sdk.core.model.CardInfo
+import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import net.payrdr.mobile.payment.sdk.form.R
-import net.payrdr.mobile.payment.sdk.form.SDKConfigBuilder
+import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.component.CryptogramProcessor
 import net.payrdr.mobile.payment.sdk.form.component.impl.CachedKeyProvider
@@ -99,7 +100,7 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
     @Before
     fun setUp() {
         SDKForms.innerCryptogramProcessor = mockCryptogramProcessor
-        SDKForms.innerSdkConfig = SDKConfigBuilder()
+        SDKForms.innerSdkConfig = SDKFormsConfigBuilder()
             .keyProvider(
                 CachedKeyProvider(
                     RemoteKeyProvider("https://dev.bpcbt.com/payment/se/keys.do"),
@@ -221,7 +222,7 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
             step("shouldRequireCVC verify") {
                 flakySafely {
                     coVerify {
-                        mockCryptogramProcessor.create(any(), any(), any(), any()) wasNot called
+                        mockCryptogramProcessor.create(any(), any(), any(), any(), any()) wasNot called
                     }
                 }
             }
@@ -233,7 +234,7 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
         run {
             step("shouldProceedValidData init verify") {
                 coEvery {
-                    mockCryptogramProcessor.create(any(), any(), any(), any())
+                    mockCryptogramProcessor.create(any(), any(), any(), any(), any())
                 } returns ""
             }
             val config = defaultConfig().copy(bindingCVCRequired = true)
@@ -276,7 +277,8 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
                                     ),
                                     cvv = "012"
                                 )
-                            )
+                            ),
+                            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
                         )
                     }
                 }
@@ -285,6 +287,7 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
     }
 
     @Test
+    @Suppress("LongMethod")
     fun shouldProceedValidDataWithoutOrder() {
         run {
             step("shouldProceedValidData init verify") {
@@ -292,7 +295,8 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
                     mockCryptogramProcessor.create(
                         timestamp = any(),
                         uuid = any(),
-                        cardInfo = any()
+                        cardInfo = any(),
+                        registeredFrom = any(),
                     )
                 } returns ""
             }
@@ -338,7 +342,8 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
                                     ),
                                     cvv = "012"
                                 )
-                            )
+                            ),
+                            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
                         )
                     }
                 }
@@ -379,7 +384,7 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
             step("shouldHideCVCInput verify") {
                 flakySafely {
                     coVerify {
-                        mockCryptogramProcessor.create(any(), any(), any(), any())
+                        mockCryptogramProcessor.create(any(), any(), any(), any(), any())
                     }
                 }
             }
@@ -391,7 +396,7 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
         run {
             step("shouldNotRequireCVC init verify") {
                 coEvery {
-                    mockCryptogramProcessor.create(any(), any(), any(), any())
+                    mockCryptogramProcessor.create(any(), any(), any(), any(), any())
                 } returns ""
             }
 
@@ -418,7 +423,7 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
             step("shouldNotRequireCVC verify") {
                 flakySafely {
                     coVerify {
-                        mockCryptogramProcessor.create(any(), any(), any(), any())
+                        mockCryptogramProcessor.create(any(), any(), any(), any(), any())
                     }
                 }
             }

@@ -15,13 +15,13 @@ android {
             keyPassword = "123456"
         }
     }
-    compileSdkVersion(32)
+    compileSdkVersion(33)
     buildToolsVersion("30.0.2")
 
     defaultConfig {
         applicationId = "net.payrdr.mobile.payment.sample.kotlin"
         minSdkVersion(21)
-        targetSdkVersion(32)
+        targetSdkVersion(33)
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

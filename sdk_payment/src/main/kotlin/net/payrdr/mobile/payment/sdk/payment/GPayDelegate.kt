@@ -1,4 +1,4 @@
-package net.payrdr.mobile.payment.sdk.payment.model
+package net.payrdr.mobile.payment.sdk.payment
 
 import net.payrdr.mobile.payment.sdk.form.model.GooglePayPaymentConfig
 

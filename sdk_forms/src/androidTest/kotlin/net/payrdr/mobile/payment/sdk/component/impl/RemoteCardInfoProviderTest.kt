@@ -58,7 +58,7 @@ class RemoteCardInfoProviderTest {
         cardInfoProvider = RemoteCardInfoProvider(
             url = url,
             urlBin = urlBin,
-            sslContext = sslContext,
+            sslContext = sslContext.sslContext,
         )
     }
 

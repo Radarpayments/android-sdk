@@ -1,6 +1,7 @@
 package net.payrdr.mobile.payment.sdk.payment
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.http.SslError
@@ -10,41 +11,25 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
-import java.security.cert.CertificateException
-import java.util.Timer
-import java.util.TimerTask
-import java.util.concurrent.TimeoutException
-import javax.net.ssl.X509TrustManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import net.payrdr.mobile.payment.sdk.Constants
 import net.payrdr.mobile.payment.sdk.LogDebug
 import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.SDKPayment
-import net.payrdr.mobile.payment.sdk.api.PaymentApi
-import net.payrdr.mobile.payment.sdk.api.PaymentApiImpl
-import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
-import net.payrdr.mobile.payment.sdk.payment.model.PaymentData
-import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
+import net.payrdr.mobile.payment.sdk.form.SDKException
+import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.WebChallengeParam
-import net.payrdr.mobile.payment.sdk.utils.finishWithError
-import net.payrdr.mobile.payment.sdk.utils.finishWithResult
+import java.security.cert.CertificateException
+import java.util.Timer
+import java.util.TimerTask
+import javax.net.ssl.X509TrustManager
 
 /**
  *  Activity for web challenge.
  */
-class ActivityWebChallenge : AppCompatActivity() {
+class Activity3DS1Challenge : AppCompatActivity() {
 
     private lateinit var mdOrder: String
     private lateinit var timer: Timer
-    private val paymentScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    private val sdkPaymentConfig: SDKPaymentConfig = SDKPayment.sdkPaymentConfig
-    private val paymentApi: PaymentApi = PaymentApiImpl(
-        baseUrl = sdkPaymentConfig.baseURL
-    )
-
     /**
      * web view client for interception loading url.
      *
@@ -62,7 +47,8 @@ class ActivityWebChallenge : AppCompatActivity() {
             when (error?.primaryError) {
                 SslError.SSL_UNTRUSTED -> {
                     message = "The certificate authority is not trusted."
-                    val trust = SDKPayment.sdkPaymentConfig.sslContextConfig?.trustManager as X509TrustManager
+                    val trust =
+                        SDKPayment.sdkPaymentConfig.sslContextConfig?.trustManager as X509TrustManager
                     try {
                         trust.checkServerTrusted(
                             arrayOf(SDKPayment.sdkPaymentConfig.sslContextConfig?.customCertificate),
@@ -74,12 +60,15 @@ class ActivityWebChallenge : AppCompatActivity() {
                         LogDebug.logIfDebug("WebClient onReceivedSslError - get Exception to try check server trusted.")
                     }
                 }
+
                 SslError.SSL_EXPIRED -> {
                     message = "The certificate has expired."
                 }
+
                 SslError.SSL_IDMISMATCH -> {
                     message = "The certificate Hostname mismatch."
                 }
+
                 SslError.SSL_NOTYETVALID -> {
                     message = "The certificate is not yet valid."
                 }
@@ -98,9 +87,16 @@ class ActivityWebChallenge : AppCompatActivity() {
         ): Boolean {
             if (request != null) {
                 when {
-                    request.url.toString().contains("sdk://done") -> {
-                        finishActivityWithStatus()
+                    request.url.toString().startsWith("sdk://done") -> {
+                        finishWithResult(
+                            PaymentResult(
+                                mdOrder = mdOrder,
+                                isSuccess = true,
+                                exception = null,
+                            )
+                        )
                     }
+
                     else -> {
                         view?.loadUrl(request.url.toString())
                     }
@@ -155,8 +151,8 @@ class ActivityWebChallenge : AppCompatActivity() {
             val loadData = getDataHTML(mdOrder, acsUrl, paReq, termUrl)
 
             webView.loadData(loadData, "text/html", "UTF-8")
-        } catch (nullPointerException: NullPointerException) {
-            finishWithError(SDKPaymentApiException(cause = nullPointerException))
+        } catch (ex: Exception) {
+            finish()
         }
     }
 
@@ -175,23 +171,9 @@ class ActivityWebChallenge : AppCompatActivity() {
         return webView
     }
 
-    private fun finishActivityWithStatus() {
-        paymentScope.launch {
-            val orderStatus = paymentApi.getSessionStatus(mdOrder = mdOrder)
-            val paymentFinishedInfo = paymentApi.getFinishedPaymentInfo(mdOrder)
-            val paymentDataResponse =
-                PaymentData(mdOrder = mdOrder, status = paymentFinishedInfo.status)
-
-            LogDebug.logIfDebug("getSessionStatus - Remaining sec ${orderStatus.remainingSecs}")
-
-            finishWithResult(paymentDataResponse)
-        }
-    }
-
     override fun onDestroy() {
         timer.cancel()
         timer.purge()
-        paymentScope.cancel()
         super.onDestroy()
     }
 
@@ -208,7 +190,7 @@ class ActivityWebChallenge : AppCompatActivity() {
         fun prepareIntent(
             context: Context,
             webChallengeParam: WebChallengeParam,
-        ): Intent = Intent(context, ActivityWebChallenge::class.java).apply {
+        ): Intent = Intent(context, Activity3DS1Challenge::class.java).apply {
             putExtra(Constants.MDORDER, webChallengeParam.mdOrder)
             putExtra(Constants.INTENT_EXTRA_ACS_URL, webChallengeParam.acsUrl)
             putExtra(Constants.INTENT_EXTRA_PAREQ, webChallengeParam.paReq)
@@ -218,7 +200,27 @@ class ActivityWebChallenge : AppCompatActivity() {
 
     private inner class WebChallengeTimeoutTask : TimerTask() {
         override fun run() {
-            finishWithError(TimeoutException("Transaction Timed Out."))
+            finishWithResult(
+                PaymentResult(
+                    mdOrder = mdOrder,
+                    isSuccess = false,
+                    exception = SDKException(message = "Transaction Timed Out."),
+                )
+            )
         }
+    }
+
+    /**
+     * Terminates the [Activity] on which this method was called with passing as a result
+     * [Activity] work with value [paymentData].
+     *
+     * @param paymentData - result of [Activity] work.
+     */
+    private fun finishWithResult(paymentData: PaymentResult) {
+        val resultIntent = Intent().apply {
+            putExtra(Constants.INTENT_EXTRA_RESULT, paymentData)
+        }
+        setResult(Activity.RESULT_OK, resultIntent)
+        finish()
     }
 }

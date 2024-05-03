@@ -6,7 +6,7 @@ package net.payrdr.mobile.payment.sdk.payment.model
  *  @param paymentToken cryptogram created by GPay lib.
  *  @param mdOrder order number.
  */
-data class CryptogramGPayApiData(
+data class GooglePayProcessFormRequest(
     val paymentToken: String,
     val mdOrder: String
 )

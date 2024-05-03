@@ -34,3 +34,5 @@ testcase
 testcases
 kakaocup
 Inet
+MSDK
+DSDs

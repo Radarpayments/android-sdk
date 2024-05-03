@@ -1,5 +1,6 @@
 package net.payrdr.mobile.payment.sdk.api.entity
 
+import net.payrdr.mobile.payment.sdk.utils.optValue
 import org.json.JSONObject
 
 /**
@@ -10,6 +11,11 @@ import org.json.JSONObject
  * @param acsUrl automatic configuration server url.
  * @param paReq params request.
  * @param termUrl terminal url.
+ * @param errorTypeName error type.
+ * @param threeDSAcsTransactionId transaction identifier into ACS.
+ * @param threeDSAcsRefNumber identifier ACS.
+ * @param threeDSAcsSignedContent sign content for ACS.
+ * @param threeDSServerTransId server transaction id for ACS.
  */
 data class GPayData(
     val orderId: String,
@@ -17,6 +23,11 @@ data class GPayData(
     val acsUrl: String?,
     val paReq: String?,
     val termUrl: String?,
+    val errorTypeName: String?,
+    val threeDSAcsTransactionId: String?,
+    val threeDSAcsRefNumber: String?,
+    val threeDSAcsSignedContent: String?,
+    val threeDSServerTransId: String?,
 ) {
     companion object {
         /**
@@ -27,9 +38,14 @@ data class GPayData(
             GPayData(
                 orderId = getString("orderId"),
                 is3DSVer2 = if (has("is3DSVer2")) getBoolean("is3DSVer2") else null,
-                acsUrl = if (has("acsUrl")) getString("acsUrl") else null,
-                paReq = if (has("paReq")) getString("paReq") else null,
-                termUrl = if (has("termUrl")) getString("termUrl") else null,
+                acsUrl = optValue("acsUrl"),
+                paReq = optValue("paReq"),
+                termUrl = optValue("termUrl"),
+                errorTypeName = optValue("errorTypeName"),
+                threeDSAcsTransactionId = optValue("threeDSAcsTransactionId"),
+                threeDSAcsRefNumber = optValue("threeDSAcsRefNumber"),
+                threeDSAcsSignedContent = optValue("threeDSAcsSignedContent"),
+                threeDSServerTransId = optValue("threeDSServerTransId") ?: optValue("threeDSDsTransID")
             )
         }
     }

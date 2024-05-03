@@ -1,6 +1,7 @@
 package net.payrdr.mobile.payment.sdk.form.component
 
 import net.payrdr.mobile.payment.sdk.core.model.CardInfo
+import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 
 /**
  * Interface for the processor which create a cryptogram based on the transferred payment data.
@@ -14,13 +15,16 @@ interface CryptogramProcessor {
      * @param timestamp payment data.
      * @param uuid unique identifier.
      * @param cardInfo card data for debiting funds.
+     * @param registeredFrom source of token generation.
+     *
      * @return cryptogram for the transferred payment data.
      */
     suspend fun create(
         order: String = "",
         timestamp: Long,
         uuid: String,
-        cardInfo: CardInfo
+        cardInfo: CardInfo,
+        registeredFrom: MSDKRegisteredFrom,
     ): String
 
     /**

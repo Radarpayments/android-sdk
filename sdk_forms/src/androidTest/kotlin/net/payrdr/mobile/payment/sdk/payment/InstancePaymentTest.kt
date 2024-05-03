@@ -8,8 +8,9 @@ import io.qameta.allure.kotlin.Description
 import kotlinx.coroutines.runBlocking
 import net.payrdr.mobile.payment.sdk.core.model.CardInfo
 import net.payrdr.mobile.payment.sdk.core.model.CardPanIdentifier
+import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import net.payrdr.mobile.payment.sdk.core.utils.toExpDate
-import net.payrdr.mobile.payment.sdk.form.SDKConfigBuilder
+import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.SDKForms.cryptogramProcessor
 import net.payrdr.mobile.payment.sdk.form.utils.executePostParams
@@ -34,8 +35,8 @@ class InstancePaymentTest {
     @Before
     fun setUp() {
         SDKForms.init(
-            SDKConfigBuilder()
-                .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
+            SDKFormsConfigBuilder()
+                .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do", null)
                 .build()
         )
     }
@@ -53,7 +54,8 @@ class InstancePaymentTest {
                 ),
                 expDate = "12/30".toExpDate(),
                 cvv = "123"
-            )
+            ),
+            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
         )
 
         val response = makeInstancePayment(seToken)

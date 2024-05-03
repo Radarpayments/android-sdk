@@ -13,6 +13,7 @@ import net.payrdr.mobile.payment.sdk.core.component.PaymentStringProcessor
 import net.payrdr.mobile.payment.sdk.core.model.CardInfo
 import net.payrdr.mobile.payment.sdk.core.model.CardPanIdentifier
 import net.payrdr.mobile.payment.sdk.core.model.Key
+import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import net.payrdr.mobile.payment.sdk.form.component.KeyProvider
 import net.payrdr.mobile.payment.sdk.form.component.impl.DefaultCryptogramProcessor
 import org.junit.Before
@@ -62,7 +63,8 @@ class DefaultCryptogramProcessorTest {
                         identifier = CardPanIdentifier(
                             value = "123456789012"
                         )
-                    )
+                    ),
+                    registeredFrom = MSDKRegisteredFrom.MSDK_FORMS,
                 )
             } returns "paymentStringValue"
             coEvery {
@@ -77,7 +79,8 @@ class DefaultCryptogramProcessorTest {
                     identifier = CardPanIdentifier(
                         value = "123456789012"
                     )
-                )
+                ),
+                registeredFrom = MSDKRegisteredFrom.MSDK_FORMS,
             )
 
             cryptogram shouldBe "cryptogramValue"
@@ -102,7 +105,8 @@ class DefaultCryptogramProcessorTest {
                         identifier = CardPanIdentifier(
                             value = "123456789012"
                         )
-                    )
+                    ),
+                    registeredFrom = MSDKRegisteredFrom.MSDK_FORMS,
                 )
             } returns "paymentStringValue"
             coEvery {
@@ -116,7 +120,8 @@ class DefaultCryptogramProcessorTest {
                     identifier = CardPanIdentifier(
                         value = "123456789012"
                     )
-                )
+                ),
+                registeredFrom = MSDKRegisteredFrom.MSDK_FORMS,
             )
 
             cryptogram shouldBe "cryptogramValue"

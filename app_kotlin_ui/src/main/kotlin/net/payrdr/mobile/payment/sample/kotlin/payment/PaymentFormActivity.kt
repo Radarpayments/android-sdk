@@ -12,19 +12,12 @@ import kotlinx.android.synthetic.main.activity_payment_form.paymentCheckout
 import net.payrdr.mobile.payment.sample.kotlin.MarketApplication
 import net.payrdr.mobile.payment.sample.kotlin.R
 import net.payrdr.mobile.payment.sample.kotlin.helpers.log
+import net.payrdr.mobile.payment.sdk.ResultPaymentCallback
 import net.payrdr.mobile.payment.sdk.SDKPayment
-import net.payrdr.mobile.payment.sdk.exceptions.SDKAlreadyPaymentException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKCryptogramException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKDeclinedException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKNotConfigureException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKOrderNotExistException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKTransactionException
-import net.payrdr.mobile.payment.sdk.form.ResultPaymentCallback
-import net.payrdr.mobile.payment.sdk.form.SDKException
 import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayUtils
-import net.payrdr.mobile.payment.sdk.payment.model.PaymentData
+import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
+import net.payrdr.mobile.payment.sdk.payment.model.Use3DSConfig
 
 class PaymentFormActivity: AppCompatActivity() {
 
@@ -52,11 +45,11 @@ class PaymentFormActivity: AppCompatActivity() {
             .replace("\n", "")
             .trimIndent()
 
-        val paymentConfig = SDKPaymentConfig(baseUrl, dsRoot,
-            keyProviderUrl = "https://dev.bpcbt.com/payment/se/keys.do",
+        val paymentConfig = SDKPaymentConfig(baseUrl,
+            use3DSConfig = Use3DSConfig.Use3DS2(dsRoot),
             sslContextConfig = MarketApplication.sslContextConfig,
         )
-        SDKPayment.init(paymentConfig, use3ds2sdk = true)
+        SDKPayment.init(paymentConfig)
         paymentCheckout.setOnClickListener {
             SDKPayment.checkout(this, mdOrder.text.trim().toString())
         }
@@ -98,24 +91,10 @@ class PaymentFormActivity: AppCompatActivity() {
         }
 
         SDKPayment.handleCheckoutResult(requestCode, data, object :
-            ResultPaymentCallback<PaymentData> {
-            override fun onSuccess(result: PaymentData) {
+            ResultPaymentCallback<PaymentResult> {
+            override fun onResult(result: PaymentResult) {
                 // Order payment result.
-                log("PaymentData(${result.mdOrder}, ${result.status})")
-            }
-
-            override fun onFail(e: SDKException) {
-                // An error occurred.
-                when (e) {
-                    is SDKAlreadyPaymentException -> makeToast(ERROR_ALREADY_DEPOSITED_ORDER)
-                    is SDKCryptogramException -> makeToast(ERROR_CRYPTOGRAM_CANCELED)
-                    is SDKDeclinedException -> makeToast(ERROR_DECLINED_ORDER)
-                    is SDKPaymentApiException -> makeToast(ERROR_PAYMENT_API)
-                    is SDKTransactionException -> makeToast(ERROR_WORK_CREATE_TRANSACTION)
-                    is SDKOrderNotExistException -> makeToast(ERROR_ORDER_NOT_EXIT_API)
-                    is SDKNotConfigureException -> makeToast(ERROR_NOT_CONFIGURE_EXCEPTION)
-                    else -> log("${e.message} ${e.cause}")
-                }
+                log("PaymentData(${result.mdOrder}, ${result.isSuccess} {${result.exception})")
             }
         })
     }
@@ -130,16 +109,5 @@ class PaymentFormActivity: AppCompatActivity() {
         } else {
             View.GONE
         }
-    }
-
-    companion object {
-        private const val ERROR_WORK_CREATE_TRANSACTION: String = "Exception: while create transaction with EC or RSA"
-        private const val ERROR_ALREADY_DEPOSITED_ORDER: String = "Exception: the order has already been deposited"
-        private const val ERROR_DECLINED_ORDER: String = "Exception: the order has been declined"
-        private const val ERROR_CRYPTOGRAM_CANCELED: String = "Exception: the cryptogram creation has been canceled or some error"
-        private const val ERROR_PAYMENT_API: String = "Exception: the api work problem"
-        private const val ERROR_ORDER_NOT_EXIT_API: String = "Exception: the order not exist"
-        private const val ERROR_NOT_CONFIGURE_EXCEPTION: String =
-            "Merchant is not configured to be used without 3DS2SDK"
     }
 }

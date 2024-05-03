@@ -10,10 +10,6 @@ interface PaymentManager {
      *
      * @param order order number.
      */
-    suspend fun checkout(order: String, gPayClicked: Boolean)
+    fun checkout(order: String, gPayClicked: Boolean)
 
-    /**
-     * Stop the payment process.
-     */
-    suspend fun checkOrderStatus()
 }

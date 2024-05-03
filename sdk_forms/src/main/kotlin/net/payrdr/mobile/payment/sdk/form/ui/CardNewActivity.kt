@@ -305,8 +305,10 @@ class CardNewActivity : BaseActivity() {
                             cardNumberInput.text.toString().digitsOnly()
                         ),
                         expDate = cardExpiryInput.text.toString().toExpDate(),
-                        cvv = cardCodeInput.text.toString()
-                    )
+                        cvv = cardCodeInput.text.toString(),
+                        cardHolder = cardHolderInput.text.toString()
+                    ),
+                    registeredFrom = config.registeredFrom,
                 )
                 finishWithResult(
                     CryptogramData(

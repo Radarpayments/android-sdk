@@ -18,7 +18,7 @@ import io.mockk.mockk
 import io.qameta.allure.android.allureScreenshot
 import io.qameta.allure.android.runners.AllureAndroidJUnit4
 import net.payrdr.mobile.payment.sdk.core.model.ExpiryDate
-import net.payrdr.mobile.payment.sdk.form.SDKConfigBuilder
+import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.component.impl.CachedKeyProvider
 import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
@@ -91,7 +91,7 @@ class PaymentBottomSheetFragmentTest : DocLocScreenshotTestCase(
     @Before
     fun setUp() {
         SDKForms.init(
-            SDKConfigBuilder()
+            SDKFormsConfigBuilder()
                 .keyProvider(
                     CachedKeyProvider(
                         RemoteKeyProvider("https://dev.bpcbt.com/payment/se/keys.do"),
