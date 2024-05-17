@@ -26,7 +26,7 @@ import javax.net.ssl.X509TrustManager
 /**
  *  Activity for web challenge.
  */
-class Activity3DS1Challenge : AppCompatActivity() {
+class Activity3DS2WebChallenge : AppCompatActivity() {
 
     private lateinit var mdOrder: String
     private lateinit var timer: Timer
@@ -190,7 +190,7 @@ class Activity3DS1Challenge : AppCompatActivity() {
         fun prepareIntent(
             context: Context,
             webChallengeParam: WebChallengeParam,
-        ): Intent = Intent(context, Activity3DS1Challenge::class.java).apply {
+        ): Intent = Intent(context, Activity3DS2WebChallenge::class.java).apply {
             putExtra(Constants.MDORDER, webChallengeParam.mdOrder)
             putExtra(Constants.INTENT_EXTRA_ACS_URL, webChallengeParam.acsUrl)
             putExtra(Constants.INTENT_EXTRA_PAREQ, webChallengeParam.paReq)

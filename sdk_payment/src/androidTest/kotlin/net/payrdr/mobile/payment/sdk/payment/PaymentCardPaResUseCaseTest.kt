@@ -21,7 +21,7 @@ class PaymentCardPaResUseCaseTest: BaseTestCase() {
 
     @ScreenShooterTest
     @Test
-    fun shouldReturnSuccessPaymentDataWithNewCardPaResWithUse3DS1() {
+    fun shouldReturnSuccessPaymentDataWithNewCardPaResWithNoUse3DS2SDKSDK() {
         val mdOrder: String = testOrderHelper.registerOrder()
         run {
             step("Start checkout") {
@@ -55,7 +55,7 @@ class PaymentCardPaResUseCaseTest: BaseTestCase() {
     @ScreenShooterTest
     @Test
     @Ignore
-    fun shouldReturnErrorPaymentDataWithNewCardPaResWithUse3DS1WithInvalidVerificationCode() {
+    fun shouldReturnErrorPaymentDataWithNewCardPaResWithNoUse3DS2SDKSDKWithInvalidVerificationCode() {
         val mdOrder: String = testOrderHelper.registerOrder()
         run {
             step("Start checkout") {
@@ -102,7 +102,7 @@ class PaymentCardPaResUseCaseTest: BaseTestCase() {
     @ScreenShooterTest
     @Test
     @Ignore
-    fun shouldReturnErrorPaymentDataWithNewCardPaResWithUse3DS1WhenUserClickCancel() {
+    fun shouldReturnErrorPaymentDataWithNewCardPaResWithNoUse3DS2SDKSDKWhenUserClickCancel() {
         val mdOrder: String = testOrderHelper.registerOrder()
         run {
             step("Start checkout") {

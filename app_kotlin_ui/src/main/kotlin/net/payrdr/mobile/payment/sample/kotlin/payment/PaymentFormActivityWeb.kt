@@ -28,7 +28,7 @@ class PaymentFormActivityWeb : AppCompatActivity() {
         val baseUrl = "https://dev.bpcbt.com/payment"
         val paymentConfig = SDKPaymentConfig(
             baseUrl,
-            use3DSConfig = Use3DSConfig.Use3DS1,
+            use3DSConfig = Use3DSConfig.NoUse3ds2sdk,
             sslContextConfig = MarketApplication.sslContextConfig,
         )
         SDKPayment.init(paymentConfig)

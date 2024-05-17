@@ -46,7 +46,7 @@ class PaymentFormActivity: AppCompatActivity() {
             .trimIndent()
 
         val paymentConfig = SDKPaymentConfig(baseUrl,
-            use3DSConfig = Use3DSConfig.Use3DS2(dsRoot),
+            use3DSConfig = Use3DSConfig.Use3ds2sdk(dsRoot),
             sslContextConfig = MarketApplication.sslContextConfig,
         )
         SDKPayment.init(paymentConfig)

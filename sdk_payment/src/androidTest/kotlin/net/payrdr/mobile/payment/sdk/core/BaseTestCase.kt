@@ -73,7 +73,7 @@ open class BaseTestCase : DocLocScreenshotTestCase(
     protected lateinit var testClientIdHelper: TestClientIdHelper
     protected val testActivity get() = activityTestRule.activity
     protected lateinit var testPaymentConfig: SDKPaymentConfig
-    protected val testConfigForUse3DS2 = Use3DSConfig.Use3DS2(
+    protected val testConfigForUse3DS2sdk = Use3DSConfig.Use3ds2sdk(
         /* spellchecker: disable */
         dsRoot = """
         MIICDTCCAbOgAwIBAgIUOO3a573khC9kCsQJGKj/PpKOSl8wCgYIKoZIzj0EA
@@ -113,7 +113,7 @@ open class BaseTestCase : DocLocScreenshotTestCase(
         val baseUrl = "https://dev.bpcbt.com/payment"
         testPaymentConfig = SDKPaymentConfig(
             baseUrl,
-            use3DSConfig = Use3DSConfig.Use3DS1,
+            use3DSConfig = Use3DSConfig.NoUse3ds2sdk,
         )
         SDKPayment.getSDKVersion()
         activityTestRule.launchActivity(null)

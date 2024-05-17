@@ -57,7 +57,7 @@ class PaymentFormFragment : Fragment() {
                     .trimIndent()
             val paymentConfig = SDKPaymentConfig(
                 "https://dev.bpcbt.com/payment",
-                use3DSConfig = Use3DSConfig.Use3DS2(dsRoot)
+                use3DSConfig = Use3DSConfig.Use3ds2sdk(dsRoot)
             )
             SDKPayment.init(paymentConfig)
             SDKPayment.checkout(this, mdOrder.text.trim().toString())

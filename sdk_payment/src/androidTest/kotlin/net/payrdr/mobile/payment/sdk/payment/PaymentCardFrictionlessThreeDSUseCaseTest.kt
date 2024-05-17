@@ -21,11 +21,11 @@ class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
 
     @ScreenShooterTest
     @Test
-    fun shouldReturnSuccessPaymentWithNewCardFrictionlessThreeDSUse3DS2() {
+    fun shouldReturnSuccessPaymentWithNewCardFrictionlessThreeDSUse3DS2SDK() {
         val mdOrder: String = testOrderHelper.registerOrder()
         run {
             step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2))
+                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
                 SDKPayment.checkout(testActivity, mdOrder)
             }
             step("Click on new card button") {
@@ -48,11 +48,11 @@ class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
 
     @ScreenShooterTest
     @Test
-    fun shouldReturnErrorPaymentWithNewCardFrictionlessThreeDSUse3DS2WithInvalidCVC() {
+    fun shouldReturnErrorPaymentWithNewCardFrictionlessThreeDSUse3DS2SDKWithInvalidCVC() {
         val mdOrder: String = testOrderHelper.registerOrder()
         run {
             step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2))
+                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
                 SDKPayment.checkout(testActivity, mdOrder)
             }
             step("Click on new card button") {
@@ -76,11 +76,11 @@ class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
 
     @ScreenShooterTest
     @Test
-    fun shouldReturnErrorPaymentWithNewCardFrictionlessThreeDSUse3DS2WithInvalidExpiry() {
+    fun shouldReturnErrorPaymentWithNewCardFrictionlessThreeDSUse3DS2SDKWithInvalidExpiry() {
         val mdOrder: String = testOrderHelper.registerOrder()
         run {
             step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2))
+                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
                 SDKPayment.checkout(testActivity, mdOrder)
             }
             step("Click on new card button") {
@@ -104,7 +104,7 @@ class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
 
     @ScreenShooterTest
     @Test
-    fun shouldReturnSuccessPaymentWithNewCardFrictionlessThreeDSUse3DS1() {
+    fun shouldReturnSuccessPaymentWithNewCardFrictionlessThreeDSNoUse3DS2SDKSDK() {
         val mdOrder: String = testOrderHelper.registerOrder()
         run {
             step("Start checkout") {
@@ -131,7 +131,7 @@ class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
 
     @ScreenShooterTest
     @Test
-    fun shouldReturnErrorPaymentWithNewCardFrictionlessThreeDSUse3DS1WithInvalidCVC() {
+    fun shouldReturnErrorPaymentWithNewCardFrictionlessThreeDSNoUse3DS2SDKSDKWithInvalidCVC() {
         val mdOrder: String = testOrderHelper.registerOrder()
         run {
             step("Start checkout") {
@@ -158,7 +158,7 @@ class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
 
     @ScreenShooterTest
     @Test
-    fun shouldReturnErrorPaymentWithNewCardFrictionlessThreeDSUse3DS1WithInvalidExpiry() {
+    fun shouldReturnErrorPaymentWithNewCardFrictionlessThreeDSNoUse3DS2SDKSDKWithInvalidExpiry() {
         val mdOrder: String = testOrderHelper.registerOrder()
         run {
             step("Start checkout") {
@@ -185,11 +185,11 @@ class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
 
     @ScreenShooterTest
     @Test
-    fun shouldReturnErrorPaymentWithNewCardFrictionlessFailThreeDSUse3DS2() {
+    fun shouldReturnErrorPaymentWithNewCardFrictionlessFailThreeDSUse3DS2SDK() {
         val mdOrder: String = testOrderHelper.registerOrder()
         run {
             step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2))
+                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
                 SDKPayment.checkout(testActivity, mdOrder)
             }
             step("Click on new card button") {
@@ -213,7 +213,7 @@ class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
 
     @ScreenShooterTest
     @Test
-    fun shouldReturnErrorPaymentWithNewCardFrictionlessFailThreeDSUse3DS1() {
+    fun shouldReturnErrorPaymentWithNewCardFrictionlessFailThreeDSNoUse3DS2SDKSDK() {
         val mdOrder: String = testOrderHelper.registerOrder()
         run {
             step("Start checkout") {
@@ -240,7 +240,7 @@ class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
 
     @ScreenShooterTest
     @Test
-    fun shouldSaveNewCardFrictionlessThreeDSUse3DS1() {
+    fun shouldSaveNewCardFrictionlessThreeDSNoUse3DS2SDKSDK() {
         val clientId = testClientIdHelper.getNewTestClientId()
         val mdOrder: String = testOrderHelper.registerOrder(clientId = clientId)
         run {
@@ -278,12 +278,12 @@ class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
 
     @ScreenShooterTest
     @Test
-    fun shouldSaveNewCardFrictionlessThreeDSUse3DS2() {
+    fun shouldSaveNewCardFrictionlessThreeDSUse3DS2SDK() {
         val clientId = testClientIdHelper.getNewTestClientId()
         val mdOrder: String = testOrderHelper.registerOrder(clientId = clientId)
         run {
             step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2))
+                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
                 SDKPayment.checkout(testActivity, mdOrder)
             }
             step("Click on new card button") {

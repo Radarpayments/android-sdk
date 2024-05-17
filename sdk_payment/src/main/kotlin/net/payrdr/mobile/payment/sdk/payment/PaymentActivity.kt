@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import net.payrdr.mobile.payment.sdk.Constants.INTENT_EXTRA_RESULT
 import net.payrdr.mobile.payment.sdk.Constants.IS_GOOGLE_PAY
 import net.payrdr.mobile.payment.sdk.Constants.MDORDER
-import net.payrdr.mobile.payment.sdk.Constants.REQUEST_CODE_3DS1
+import net.payrdr.mobile.payment.sdk.Constants.REQUEST_CODE_3DS2_WEB
 import net.payrdr.mobile.payment.sdk.Constants.REQUEST_CODE_CRYPTOGRAM
 import net.payrdr.mobile.payment.sdk.Constants.TIMEOUT_THREE_DS
 import net.payrdr.mobile.payment.sdk.LogDebug
@@ -115,18 +115,18 @@ class PaymentActivity : AppCompatActivity() {
     }
 
     /**
-     *  Property for initializing the 3DS1 web form, calling the Challenge Flow window, and completing the transaction.
+     *  Property for initializing the 3DS2 web form, calling the Challenge Flow window, and completing the transaction.
      */
 
-    private val threeDS1FormDelegate = object : ThreeDS1FormDelegate {
+    private val threeDS1FormDelegate = object : ThreeDS2WebFormDelegate {
 
         override fun openWebChallenge(webChallengeParam: WebChallengeParam) {
             this@PaymentActivity.startActivityForResult(
-                Activity3DS1Challenge.prepareIntent(
+                Activity3DS2WebChallenge.prepareIntent(
                     this@PaymentActivity,
                     webChallengeParam,
                 ),
-                REQUEST_CODE_3DS1
+                REQUEST_CODE_3DS2_WEB
             )
         }
     }
@@ -134,7 +134,7 @@ class PaymentActivity : AppCompatActivity() {
     /**
      *  Property for initializing the 3DS2 service, calling the Challenge Flow window, and completing the transaction.
      */
-    private val threeDS2FormDelegate = object : ThreeDS2FormDelegate {
+    private val threeDS2FormDelegate = object : ThreeDS2SDKFormDelegate {
 
         override fun openChallengeFlow(
             transaction: Transaction?,
@@ -218,8 +218,8 @@ class PaymentActivity : AppCompatActivity() {
         resultForHandle?.let {
             val (requestCode, resultCode, data) = it
             resultForHandle = null
-            if (requestCode == REQUEST_CODE_3DS1) {
-                // Processing the result of the 3DS1 flow challenge.
+            if (requestCode == REQUEST_CODE_3DS2_WEB) {
+                // Processing the result of the 3DS2 web flow challenge.
                 val paymentData = data?.getParcelableExtra(INTENT_EXTRA_RESULT) as PaymentResult?
                 if (paymentData?.exception != null) {
                     paymentManager.finishWithError(paymentData.exception)

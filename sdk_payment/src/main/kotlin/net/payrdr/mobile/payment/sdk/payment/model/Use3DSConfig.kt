@@ -6,16 +6,16 @@ package net.payrdr.mobile.payment.sdk.payment.model
 sealed class Use3DSConfig {
 
     /**
-     * Use only 3DS1 with web challenge flow.
+     * Do not use 3DS2 sdk.
      */
-    object Use3DS1: Use3DSConfig()
+    object NoUse3ds2sdk: Use3DSConfig()
 
     /**
-     * Use 3DS2.
+     * Use 3DS2 sdk.
      *
      * @param dsRoot root certificate in base64 format. Used to validate the chain of certificates.
      */
-    data class Use3DS2(
+    data class Use3ds2sdk(
         val dsRoot: String,
     ): Use3DSConfig()
 }

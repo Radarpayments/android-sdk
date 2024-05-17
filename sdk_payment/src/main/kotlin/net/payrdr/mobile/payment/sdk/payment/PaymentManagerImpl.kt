@@ -64,8 +64,8 @@ import java.math.BigDecimal
 @Suppress("TooGenericExceptionCaught", "TooManyFunctions")
 class PaymentManagerImpl(
     private val cardFormDelegate: CardFormDelegate,
-    private val threeDS1FormDelegate: ThreeDS1FormDelegate,
-    private val threeDS2FormDelegate: ThreeDS2FormDelegate,
+    private val threeDS1FormDelegate: ThreeDS2WebFormDelegate,
+    private val threeDS2FormDelegate: ThreeDS2SDKFormDelegate,
     private val activityDelegate: ActivityDelegate,
     private val gPayDelegate: GPayDelegate,
 ) : PaymentManager {
@@ -223,7 +223,7 @@ class PaymentManagerImpl(
      */
     private fun processFormData(processFormRequest: ProcessFormRequest, isBinding: Boolean) {
         paymentScope.launchSafe {
-            val threeDSSDK = paymentConfig.use3DSConfig is Use3DSConfig.Use3DS2
+            val threeDSSDK = paymentConfig.use3DSConfig is Use3DSConfig.Use3ds2sdk
             val paymentResult: ProcessFormResponse = if (isBinding) {
                 paymentApi.processBindingForm(
                     cryptogramApiData = processFormRequest,
@@ -412,11 +412,11 @@ class PaymentManagerImpl(
         isBinding: Boolean
     ) {
         val dsRoot = when (val use3DSConfig = paymentConfig.use3DSConfig) {
-            Use3DSConfig.Use3DS1 -> throw SDKException(
-                "Please configure Use3DSConfig.Use3DS2 with SDKPaymentConfig to use 3DS2."
+            Use3DSConfig.NoUse3ds2sdk -> throw SDKException(
+                "Please configure Use3DSConfig.Use3ds2sdk with SDKPaymentConfig to use 3DS2 SDK."
             )
 
-            is Use3DSConfig.Use3DS2 -> use3DSConfig.dsRoot
+            is Use3DSConfig.Use3ds2sdk -> use3DSConfig.dsRoot
         }
 
         transaction?.close() // Close the previous transaction if there was one.

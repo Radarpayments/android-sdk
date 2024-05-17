@@ -12,6 +12,6 @@ import net.payrdr.mobile.payment.sdk.form.component.impl.SSLContextConfig
  */
 data class SDKPaymentConfig(
     val baseURL: String,
-    val use3DSConfig: Use3DSConfig,
+    val use3DSConfig: Use3DSConfig = Use3DSConfig.NoUse3ds2sdk,
     val sslContextConfig: SSLContextConfig? = null,
 )

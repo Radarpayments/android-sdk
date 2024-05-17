@@ -9,7 +9,7 @@ import net.payrdr.mobile.payment.sdk.threeds.spec.Transaction
 /**
  *  Interface describing the work of the 3DS2 form.
  */
-interface ThreeDS2FormDelegate {
+interface ThreeDS2SDKFormDelegate {
 
     /**
      *  Start Challenge Flow screen.
