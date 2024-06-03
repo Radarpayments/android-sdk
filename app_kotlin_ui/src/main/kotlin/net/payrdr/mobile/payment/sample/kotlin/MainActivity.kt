@@ -94,6 +94,9 @@ import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.russian
 import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.spanish
 import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.ukrainian
 import net.payrdr.mobile.payment.sdk.threeds.ThreeDSLogger
+import net.payrdr.mobile.payment.sdk.threeds.logs.LogUploaderConfig
+import net.payrdr.mobile.payment.sdk.threeds.logs.LogUploaderConfigProvider
+import net.payrdr.mobile.payment.sdk.threeds.logs.sentry.SentryLogUploaderConfig
 import org.json.JSONObject
 import java.math.BigDecimal
 import java.util.Locale
@@ -116,16 +119,26 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        ThreeDSLogger.INSTANCE.addLogInterface(object : net.payrdr.mobile.payment.sdk.threeds.LogInterface {
-            override fun log(
-                classMethod: Class<*>,
-                tag: String,
-                message: String,
-                exception: Throwable?
-            ) {
-                Log.i(tag, "$classMethod: $message", exception)
-            }
-        })
+//        Example: Setup provider for logs uploading
+//        ThreeDSLogger.INSTANCE.setupLogUploaderConfigProvider(object : LogUploaderConfigProvider {
+//            override fun provideConfig(p0: String?): LogUploaderConfig {
+//                return SentryLogUploaderConfig.Builder()
+//                    .withUrl("SentryURL")
+//                    .withKey("SentryKey")
+//                    .build()
+//            }
+//        })
+//
+//        ThreeDSLogger.INSTANCE.addLogInterface(object : net.payrdr.mobile.payment.sdk.threeds.LogInterface {
+//            override fun log(
+//                classMethod: Class<*>,
+//                tag: String,
+//                message: String,
+//                exception: Throwable?
+//            ) {
+//                Log.i(tag, "$classMethod: $message", exception)
+//            }
+//        })
 
         setContentView(R.layout.activity_main)
         bottomSheetButton.setOnClickListener {
