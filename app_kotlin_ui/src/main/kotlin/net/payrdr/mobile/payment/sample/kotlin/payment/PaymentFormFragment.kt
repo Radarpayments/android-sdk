@@ -15,14 +15,8 @@ import kotlinx.android.synthetic.main.activity_payment_form.mdOrder
 import net.payrdr.mobile.payment.sample.kotlin.R
 import net.payrdr.mobile.payment.sample.kotlin.helpers.log
 import net.payrdr.mobile.payment.sdk.SDKPayment
-import net.payrdr.mobile.payment.sdk.exceptions.SDKAlreadyPaymentException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKCryptogramException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKDeclinedException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKOrderNotExistException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKTransactionException
 import net.payrdr.mobile.payment.sdk.ResultPaymentCallback
-import net.payrdr.mobile.payment.sdk.form.SDKException
+import net.payrdr.mobile.payment.sdk.payment.model.CheckoutConfig
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 import net.payrdr.mobile.payment.sdk.payment.model.Use3DSConfig
@@ -60,7 +54,7 @@ class PaymentFormFragment : Fragment() {
                 use3DSConfig = Use3DSConfig.Use3ds2sdk(dsRoot)
             )
             SDKPayment.init(paymentConfig)
-            SDKPayment.checkout(this, mdOrder.text.trim().toString())
+            SDKPayment.checkout(this, CheckoutConfig.MdOrder(mdOrder.text.trim().toString()))
         }
         return view
     }
@@ -75,7 +69,8 @@ class PaymentFormFragment : Fragment() {
             ResultPaymentCallback<PaymentResult> {
             override fun onResult(result: PaymentResult) {
                 // Order payment result.
-                val resData = "PaymentData(${result.mdOrder}, ${result.isSuccess} ${result.exception})"
+                val resData =
+                    "PaymentData(${result.sessionId}, ${result.isSuccess} ${result.exception})"
                 activity?.log(resData)
                 view?.findViewById<TextView>(R.id.textResult)?.text = resData
             }

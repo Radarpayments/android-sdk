@@ -51,7 +51,19 @@ internal fun ThreeDS1Screen.clickCancel() {
     }
 }
 
-private fun safeWebElementInteraction(action: () -> Unit) {
+internal fun ThreeDS1Screen.clickOnReturnToMerchant() {
+    safeWebElementInteraction {
+        webView {
+            withElement(
+                Locator.XPATH, "/html/body/div[2]/div/main/section[1]/a"
+            ) {
+                click()
+            }
+        }
+    }
+}
+
+internal fun safeWebElementInteraction(action: () -> Unit) {
     var leftAttempt = 10
     while (leftAttempt-- > 0) {
         try {

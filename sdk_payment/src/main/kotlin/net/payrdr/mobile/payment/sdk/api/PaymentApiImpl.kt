@@ -42,7 +42,7 @@ class PaymentApiImpl(
         threeDSSDK: Boolean
     ): ProcessFormResponse = startRunCatching {
         val body = mapOf(
-            "seToken" to cryptogramApiData.seToken,
+            "seToken" to cryptogramApiData.paymentToken,
             "MDORDER" to cryptogramApiData.mdOrder,
             "TEXT" to cryptogramApiData.holder,
             "bindingNotNeeded" to "${(!cryptogramApiData.saveCard)}",
@@ -62,7 +62,7 @@ class PaymentApiImpl(
         threeDSSDK: Boolean
     ): ProcessFormResponse = startRunCatching {
         val body = mapOf(
-            "seToken" to cryptogramApiData.seToken,
+            "seToken" to cryptogramApiData.paymentToken,
             "MDORDER" to cryptogramApiData.mdOrder,
             "TEXT" to cryptogramApiData.holder,
             "threeDSSDK" to "$threeDSSDK"
@@ -81,7 +81,7 @@ class PaymentApiImpl(
         threeDSParams: PaymentThreeDSInfo
     ): ProcessFormSecondResponse = startRunCatching {
         val body = mapOf(
-            "seToken" to cryptogramApiData.seToken,
+            "seToken" to cryptogramApiData.paymentToken,
             "MDORDER" to cryptogramApiData.mdOrder,
             "TEXT" to cryptogramApiData.holder,
             "bindingNotNeeded" to "${(!cryptogramApiData.saveCard)}",
@@ -107,7 +107,7 @@ class PaymentApiImpl(
         threeDSParams: PaymentThreeDSInfo
     ): ProcessFormSecondResponse = startRunCatching {
         val body = mapOf(
-            "seToken" to cryptogramApiData.seToken,
+            "seToken" to cryptogramApiData.paymentToken,
             "MDORDER" to cryptogramApiData.mdOrder,
             "TEXT" to cryptogramApiData.holder,
             "threeDSSDK" to threeDSParams.threeDSSDK.toString(),

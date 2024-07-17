@@ -1,18 +1,15 @@
 package net.payrdr.mobile.payment.sdk.core.model
 
 /**
- *  Information about card for payment with old method.
+ *  Information about card for instant payment with old method.
  *
- *  @param mdOrder order number.
  *  @param pan card number.
  *  @param cvc secret crd code.
  *  @param expiryMMYY expiry date for card.
  *  @param cardHolder first and last name of cardholder.
  *  @param pubKey public key.
  * */
-
-data class CardParams(
-    val mdOrder: String = "",
+data class CardInstantParams(
     override val pan: String,
     override val cvc: String,
     override val expiryMMYY: String,

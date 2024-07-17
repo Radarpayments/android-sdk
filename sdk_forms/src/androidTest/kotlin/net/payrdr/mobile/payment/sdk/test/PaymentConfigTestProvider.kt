@@ -25,7 +25,7 @@ object PaymentConfigTestProvider {
         cameraScannerOptions = CameraScannerOptions.ENABLED,
         theme = Theme.SYSTEM,
         nfcScannerOptions = NfcScannerOptions.ENABLED,
-        bindingCVCRequired = true,
+        storedPaymentMethodCVCRequired = true,
         cardDeleteOptions = CardDeleteOptions.NO_DELETE,
         registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
     )

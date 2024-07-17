@@ -7,10 +7,13 @@ import net.payrdr.mobile.payment.sdk.api.PaymentApiImpl
 import net.payrdr.mobile.payment.sdk.api.entity.SessionStatusResponse
 import net.payrdr.mobile.payment.sdk.core.SDKCore
 import net.payrdr.mobile.payment.sdk.core.model.CardParams
+import net.payrdr.mobile.payment.sdk.core.model.SDKCoreConfig
 import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
 import net.payrdr.mobile.payment.sdk.form.utils.executePostParams
 import net.payrdr.mobile.payment.sdk.form.utils.responseBodyToJsonObject
 import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
+import net.payrdr.mobile.payment.sdk.utils.executePostJsonForSessionId
+import org.json.JSONObject
 import java.net.URL
 
 class TestOrderHelper(
@@ -28,20 +31,20 @@ class TestOrderHelper(
         val pubKey = RemoteKeyProvider(url = "${baseUrl}/se/keys.do")
             .provideKey().value
 
-        val seToken =
-            SDKCore(context).generateWithCard(
-                params = CardParams(
-                    mdOrder = orderId,
-                    pan = card.pan,
-                    cvc = card.cvc,
-                    cardHolder = card.holder,
-                    expiryMMYY = card.expiry,
-                    pubKey = pubKey
-                )
-            ).token ?: throw IllegalStateException()
+        val params = CardParams(
+            mdOrder = orderId,
+            pan = card.pan,
+            cvc = card.cvc,
+            cardHolder = card.holder,
+            expiryMMYY = card.expiry,
+            pubKey = pubKey
+        )
+
+        val paymentToken = SDKCore(context).generateWithConfig(SDKCoreConfig(params)).token
+            ?: throw IllegalStateException()
 
         val cryptogramApiData = ProcessFormRequest(
-            seToken = seToken,
+            paymentToken = paymentToken,
             mdOrder = orderId,
             holder = card.holder,
             saveCard = false,
@@ -78,6 +81,28 @@ class TestOrderHelper(
             val connection = URL(url).executePostParams(body.toMap())
             connection.responseBodyToJsonObject().getString("orderId")
         }.getOrNull() ?: throw IllegalStateException("Could not register order")
+    }
+
+    fun registerSession(
+        amount: Int = 100,
+        currency: String = "USD",
+        resultUrl: String = "sdk://done",
+        apiKey: String = "9yVrffWNAiHUUVUCQoX4NFHMxmRHYA2yB",
+        version: String = "2023-10-31"
+
+    ): String {
+        val apiUrl = "https://dev.bpcbt.com/api2/sessions"
+        val body = mutableMapOf<String, Any>()
+        body["amount"] = amount
+        body["currency"] = currency
+        body["successUrl"] = resultUrl
+        body["failureUrl"] = resultUrl
+        val json = JSONObject(body.toMap())
+
+        return runCatching {
+            val connection = URL(apiUrl).executePostJsonForSessionId(json.toString(), apiKey, version)
+            connection.responseBodyToJsonObject().getString("id")
+        }.getOrNull() ?: throw IllegalStateException("Could not register session")
     }
 
     suspend fun getSessionStatus(mdOrder: String): SessionStatusResponse {

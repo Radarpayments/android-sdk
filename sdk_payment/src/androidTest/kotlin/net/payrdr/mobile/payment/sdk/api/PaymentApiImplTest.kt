@@ -29,7 +29,7 @@ class PaymentApiImplTest {
 
     private val server: MockWebServer = MockWebServer()
     private lateinit var paymentApiImpl: PaymentApi
-    private lateinit var seToken: String
+    private lateinit var paymentToken: String
     private lateinit var mdOrder: String
 
     @Before
@@ -38,7 +38,7 @@ class PaymentApiImplTest {
         paymentApiImpl = PaymentApiImpl(
             server.url("/").toString()
         )
-        seToken = ""
+        paymentToken = ""
         mdOrder = "59b1ee2d-8353-7ab9-b3aa-73aa1917ef58"
     }
 
@@ -102,7 +102,7 @@ class PaymentApiImplTest {
             )
         )
         val cryptogramApiData = ProcessFormRequest(
-            seToken = seToken,
+            paymentToken = paymentToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
             saveCard = false
@@ -133,7 +133,7 @@ class PaymentApiImplTest {
             )
         )
         val cryptogramApiData = ProcessFormRequest(
-            seToken = seToken,
+            paymentToken = paymentToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
             saveCard = false
@@ -159,7 +159,7 @@ class PaymentApiImplTest {
             )
         )
         val cryptogramApiData = ProcessFormRequest(
-            seToken = seToken,
+            paymentToken = paymentToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
             saveCard = true
@@ -231,7 +231,7 @@ class PaymentApiImplTest {
                 )
             )
             val cryptogramApiData = ProcessFormRequest(
-                seToken = seToken,
+                paymentToken = paymentToken,
                 mdOrder = mdOrder,
                 holder = "CARDHOLDER",
                 saveCard = false
@@ -250,7 +250,7 @@ class PaymentApiImplTest {
                 )
             )
             val cryptogramApiData = ProcessFormRequest(
-                seToken = seToken,
+                paymentToken = paymentToken,
                 mdOrder = mdOrder,
                 holder = "CARDHOLDER",
                 saveCard = false

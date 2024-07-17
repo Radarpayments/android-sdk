@@ -61,7 +61,7 @@ class CardSelectedActivity : BaseActivity() {
         }
         setStartLogoPaymentSystem()
         cardResolver.resolve(card.pan)
-        config.bindingCVCRequired.let { cvcRequired ->
+        config.storedPaymentMethodCVCRequired.let { cvcRequired ->
             cardCodeInput.isEnabled = cvcRequired
         }
         cardCodeInput onDisplayError { message ->
@@ -88,7 +88,7 @@ class CardSelectedActivity : BaseActivity() {
     }
 
     private fun onDone() {
-        if (!config.bindingCVCRequired) {
+        if (!config.storedPaymentMethodCVCRequired) {
             preparePaymentData()
         } else if (cardCodeInput.errorMessage != null) {
             cardCodeInput.showError = true

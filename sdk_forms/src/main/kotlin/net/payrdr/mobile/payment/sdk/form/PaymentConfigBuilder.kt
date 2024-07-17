@@ -30,7 +30,7 @@ class PaymentConfigBuilder(private val order: String = "") {
     private var uuid: String = UUID.randomUUID().toString()
     private var timestamp: Long = System.currentTimeMillis()
     private var locale: Locale = Locale.getDefault()
-    private var bindingCVCRequired: Boolean = true
+    private var storedPaymentMethodCVCRequired: Boolean = true
     private var cardDeleteOptions: CardDeleteOptions = CardDeleteOptions.NO_DELETE
     private var registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_FORMS
 
@@ -222,14 +222,14 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @param required CVC filling requirement.
      * @return the current constructor.
      */
-    fun bindingCVCRequired(required: Boolean): PaymentConfigBuilder = apply {
+    fun storedPaymentMethodCVCRequired(required: Boolean): PaymentConfigBuilder = apply {
         Logger.log(
             this.javaClass,
             Constants.TAG,
-            "bindingCVCRequired($required):",
+            "storedPaymentMethodCVCRequired($required):",
             null
         )
-        this.bindingCVCRequired = required
+        this.storedPaymentMethodCVCRequired = required
     }
 
     /**
@@ -285,7 +285,7 @@ class PaymentConfigBuilder(private val order: String = "") {
         timestamp = this.timestamp,
         buttonText = this.buttonText,
         locale = this.locale,
-        bindingCVCRequired = this.bindingCVCRequired,
+        storedPaymentMethodCVCRequired = this.storedPaymentMethodCVCRequired,
         cardDeleteOptions = this.cardDeleteOptions,
         registeredFrom = this.registeredFrom,
     )

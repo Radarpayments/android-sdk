@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.activity_card_new.cardCodeInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.cardExpiryInput
 import kotlinx.android.synthetic.main.activity_card_new.cardExpiryInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.cardHolderInput
+import kotlinx.android.synthetic.main.activity_card_new.cardHolderInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.cardNumberInput
 import kotlinx.android.synthetic.main.activity_card_new.cardNumberInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.doneButton
@@ -55,6 +56,7 @@ import net.payrdr.mobile.payment.sdk.form.component.CryptogramProcessor
 import net.payrdr.mobile.payment.sdk.form.model.CameraScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.CardSaveOptions
 import net.payrdr.mobile.payment.sdk.form.model.CryptogramData
+import net.payrdr.mobile.payment.sdk.form.model.HolderInputOptions
 import net.payrdr.mobile.payment.sdk.form.model.NfcScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.PaymentConfig
 import net.payrdr.mobile.payment.sdk.form.model.PaymentDataStatus
@@ -158,6 +160,7 @@ class CardNewActivity : BaseActivity() {
         cardExpiryInput onInputStatusChanged jumpToNextInput
         cardCodeInput onInputStatusChanged jumpToNextInput
         cardNumberInput onDisplayError { cardNumberInputLayout.error = it }
+        cardHolderInput onDisplayError {cardHolderInputLayout.error = it }
         cardExpiryInput onDisplayError { cardExpiryInputLayout.error = it }
         cardCodeInput onDisplayError { cardCodeInputLayout.error = it }
         cardNumberInput afterTextChanged { number ->
@@ -181,6 +184,14 @@ class CardNewActivity : BaseActivity() {
                 switchBox.visibility = VISIBLE
                 switchBoxText.visibility = VISIBLE
                 switchBox.isChecked = false
+            }
+        }
+        when (config.holderInputOptions) {
+            HolderInputOptions.HIDE -> {
+                cardHolderInputLayout.visibility = GONE
+            }
+            HolderInputOptions.VISIBLE -> {
+                cardHolderInputLayout.visibility = VISIBLE
             }
         }
         val buttons: MutableList<Pair<Int, () -> Unit>> = mutableListOf()
@@ -289,6 +300,9 @@ class CardNewActivity : BaseActivity() {
 
     private fun activeInputFields(): MutableList<BaseTextInputEditText> {
         val fields = mutableListOf(cardNumberInput, cardExpiryInput, cardCodeInput)
+        if (config.holderInputOptions == HolderInputOptions.VISIBLE) {
+            fields.add(cardHolderInput)
+        }
         return fields
     }
 

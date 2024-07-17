@@ -183,24 +183,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/payrdr_medium_dimen"
-                android:layout_marginTop="@dimen/payrdr_large_dimen"
+                android:layout_marginTop="@dimen/payrdr_small_dimen"
                 android:text="@string/payrdr_switch_view_title"
-                app:layout_constraintBottom_toBottomOf="@id/switchBox"
                 app:layout_constraintEnd_toStartOf="@+id/switchBox"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/barrier" />
+                app:layout_constraintTop_toBottomOf="@id/cardHolderInputLayout" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/payrdr_large_dimen"
                 android:layout_marginEnd="@dimen/payrdr_medium_dimen"
-                android:layout_marginBottom="@dimen/payrdr_very_large_dimen"
                 android:theme="@style/PAYRDRSwitchBoxStyle"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/barrier" />
+                app:layout_constraintTop_toTopOf="@+id/switchBoxText"
+                app:layout_constraintBottom_toBottomOf="@id/switchBoxText"/>
 
             <net.payrdr.mobile.payment.sdk.form.ui.widget.GeneralButton
                 android:id="@+id/doneButton"

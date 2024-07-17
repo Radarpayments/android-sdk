@@ -15,6 +15,7 @@ import net.payrdr.mobile.payment.sample.kotlin.helpers.log
 import net.payrdr.mobile.payment.sdk.ResultPaymentCallback
 import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayUtils
+import net.payrdr.mobile.payment.sdk.payment.model.CheckoutConfig
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 import net.payrdr.mobile.payment.sdk.payment.model.Use3DSConfig
@@ -33,10 +34,10 @@ class PaymentFormActivityWeb : AppCompatActivity() {
         )
         SDKPayment.init(paymentConfig)
         paymentCheckout.setOnClickListener {
-            SDKPayment.checkout(this, mdOrder.text.trim().toString())
+            SDKPayment.checkout(this, CheckoutConfig.MdOrder(mdOrder.text.trim().toString()))
         }
         googlePayButtonFirst.setOnClickListener {
-            SDKPayment.checkout(this, mdOrder.text.trim().toString(), true)
+            SDKPayment.checkout(this, CheckoutConfig.MdOrder(mdOrder.text.trim().toString()), true)
         }
 
         GooglePayUtils.possiblyShowGooglePayButton(
@@ -60,7 +61,7 @@ class PaymentFormActivityWeb : AppCompatActivity() {
                     googlePayButtonFirst.setOnClickListener {
                         SDKPayment.checkout(
                             this@PaymentFormActivityWeb,
-                            mdOrder.text.trim().toString(),
+                            CheckoutConfig.MdOrder(mdOrder.text.trim().toString()),
                             true
                         )
                     }
@@ -80,7 +81,7 @@ class PaymentFormActivityWeb : AppCompatActivity() {
             ResultPaymentCallback<PaymentResult> {
             override fun onResult(result: PaymentResult) {
                 // Order payment result.
-                log("PaymentData(${result.mdOrder}, ${result.isSuccess}) ${result.exception}")
+                log("PaymentData(${result.sessionId}, ${result.isSuccess}) ${result.exception}")
             }
         })
     }

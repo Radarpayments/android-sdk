@@ -190,7 +190,7 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
     @Ignore
     fun shouldRequireCVC() {
         run {
-            val config = defaultConfig().copy(bindingCVCRequired = true)
+            val config = defaultConfig().copy(storedPaymentMethodCVCRequired = true)
 
             val launchIntent = CardSelectedActivity.prepareIntent(
                 InstrumentationRegistry.getInstrumentation().targetContext,
@@ -237,7 +237,7 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
                     mockCryptogramProcessor.create(any(), any(), any(), any(), any())
                 } returns ""
             }
-            val config = defaultConfig().copy(bindingCVCRequired = true)
+            val config = defaultConfig().copy(storedPaymentMethodCVCRequired = true)
 
             val launchIntent = CardSelectedActivity.prepareIntent(
                 InstrumentationRegistry.getInstrumentation().targetContext,
@@ -302,7 +302,7 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
             }
             val config = defaultConfig().copy(
                 order = "",
-                bindingCVCRequired = true
+                storedPaymentMethodCVCRequired = true
             )
 
             val launchIntent = CardSelectedActivity.prepareIntent(
@@ -355,7 +355,7 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
     @Ignore
     fun shouldHideCVCInput() {
         run {
-            val config = defaultConfig().copy(bindingCVCRequired = false)
+            val config = defaultConfig().copy(storedPaymentMethodCVCRequired = false)
 
             val launchIntent = CardSelectedActivity.prepareIntent(
                 InstrumentationRegistry.getInstrumentation().targetContext,
@@ -400,7 +400,7 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
                 } returns ""
             }
 
-            val config = defaultConfig().copy(bindingCVCRequired = false)
+            val config = defaultConfig().copy(storedPaymentMethodCVCRequired = false)
 
             val launchIntent = CardSelectedActivity.prepareIntent(
                 InstrumentationRegistry.getInstrumentation().targetContext,

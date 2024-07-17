@@ -370,6 +370,7 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                             quality = 1
                         )
                     }
+                    cardHolderInput.isDisplayed()
                 }
             }
         }
@@ -443,6 +444,11 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                     cardCodeInput {
                         typeText("012")
                     }
+                    pressKey(KeyEvent.KEYCODE_ENTER)
+                    cardHolderInput {
+                        typeText("MASHA")
+                    }
+                    closeSoftKeyboard()
                     allureScreenshot(name = "shouldRunWithConfiguredSaveCardHide_1", quality = 1)
                     doneButton {
                         click()
@@ -464,7 +470,8 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                                     expYear = 2025,
                                     expMonth = 12
                                 ),
-                                cvv = "012"
+                                cvv = "012",
+                                cardHolder = "MASHA"
                             )
                         ),
                         registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
@@ -514,6 +521,11 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                     cardCodeInput {
                         typeText("012")
                     }
+                    pressKey(KeyEvent.KEYCODE_ENTER)
+                    cardHolderInput {
+                        typeText("MASHA")
+                    }
+                    closeSoftKeyboard()
                     allureScreenshot(name = "shouldRunWithConfiguredSaveCardHide_1", quality = 1)
                     doneButton {
                         click()
@@ -534,7 +546,8 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                                     expYear = 2025,
                                     expMonth = 12
                                 ),
-                                cvv = "012"
+                                cvv = "012",
+                                cardHolder = "MASHA"
                             )
                         ),
                         registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
@@ -639,7 +652,7 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
     @Test
     fun shouldDisplayAllErrors() {
         run {
-            val config = defaultConfig()
+            val config = defaultConfig().copy(holderInputOptions = HolderInputOptions.VISIBLE)
             val launchIntent = CardNewActivity.prepareIntent(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 config
@@ -682,6 +695,11 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                     cardExpiryInputLayout {
                         hasTextInputLayoutHintText(
                             getString(R.string.payrdr_card_incorrect_expiry)
+                        )
+                    }
+                    cardHolderInput {
+                        hasTextInputLayoutHintText(
+                            getString(R.string.payrdr_card_incorrect_card_holder)
                         )
                     }
                 }

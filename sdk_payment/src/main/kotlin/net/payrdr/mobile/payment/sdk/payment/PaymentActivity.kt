@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import net.payrdr.mobile.payment.sdk.Constants.INTENT_EXTRA_RESULT
 import net.payrdr.mobile.payment.sdk.Constants.IS_GOOGLE_PAY
 import net.payrdr.mobile.payment.sdk.Constants.MDORDER
+import net.payrdr.mobile.payment.sdk.Constants.PAYMENT_API_VERSION
 import net.payrdr.mobile.payment.sdk.Constants.REQUEST_CODE_3DS2_WEB
 import net.payrdr.mobile.payment.sdk.Constants.REQUEST_CODE_CRYPTOGRAM
 import net.payrdr.mobile.payment.sdk.Constants.TIMEOUT_THREE_DS
@@ -35,6 +36,7 @@ import net.payrdr.mobile.payment.sdk.form.ui.GooglePayActivity
 import net.payrdr.mobile.payment.sdk.form.ui.helper.LocalizationSetting
 import net.payrdr.mobile.payment.sdk.form.ui.helper.ThemeSetting
 import net.payrdr.mobile.payment.sdk.payment.model.GooglePayProcessFormRequest
+import net.payrdr.mobile.payment.sdk.payment.model.PaymentApiVersion
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 import net.payrdr.mobile.payment.sdk.payment.model.WebChallengeParam
@@ -69,7 +71,7 @@ class PaymentActivity : AppCompatActivity() {
                 tag = null,
                 config = PaymentConfigBuilder(mdOrder)
                     .cards(bindingCards.toCards())
-                    .bindingCVCRequired(!cvcNotRequired)
+                    .storedPaymentMethodCVCRequired(!cvcNotRequired)
                     .cardSaveOptions(savedFunctionByConfig(bindingEnabled))
                     .cardDeleteOptions(
                         if (bindingDeactivationEnabled) CardDeleteOptions.YES_DELETE
@@ -210,7 +212,8 @@ class PaymentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
         val mdOrder = intent.getStringExtra(MDORDER)
-        paymentManager.checkout(mdOrder!!, intent.getBooleanExtra(IS_GOOGLE_PAY, false))
+        val versionApi = intent.getSerializableExtra(PAYMENT_API_VERSION) as PaymentApiVersion
+        paymentManager.checkout(mdOrder!!, intent.getBooleanExtra(IS_GOOGLE_PAY, false), versionApi)
     }
 
     override fun onResume() {
@@ -357,10 +360,12 @@ class PaymentActivity : AppCompatActivity() {
         fun prepareIntent(
             context: Context,
             mdOrder: String,
-            gPayClicked: Boolean
+            gPayClicked: Boolean,
+            paymentApiVersion: PaymentApiVersion
         ): Intent = Intent(context, PaymentActivity::class.java).apply {
             putExtra(MDORDER, mdOrder)
             putExtra(IS_GOOGLE_PAY, gPayClicked)
+            putExtra(PAYMENT_API_VERSION, paymentApiVersion)
         }
     }
 }
