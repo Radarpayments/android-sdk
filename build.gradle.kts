@@ -3,9 +3,7 @@
 buildscript {
     val kotlin_version by extra("1.7.10")
     repositories {
-        dependencies {
-            classpath("io.qameta.allure:allure-gradle:2.8.1")
-        }
+        gradlePluginPortal()
         google()
         jcenter()
         maven(uri("https://oss.jfrog.org/artifactory/oss-snapshot-local/"))
@@ -13,6 +11,7 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.1.3")
+        classpath("io.qameta.allure:allure-gradle:2.8.1")
         classpath(kotlin("gradle-plugin", version = kotlin_version))
         classpath(kotlin("serialization", version = kotlin_version))
 
