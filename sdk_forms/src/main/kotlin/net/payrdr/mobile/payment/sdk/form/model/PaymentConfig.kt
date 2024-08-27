@@ -25,6 +25,8 @@ import java.util.Locale
  * @param cardDeleteOptions the option to remove the card.
  * @param cardsToDelete the list of cards to be removed that the user has selected.
  * @param registeredFrom source of token generation.
+ * @param fieldsNeedToBeFilledForMastercard the list of additional fields about payer to fill when pay by MASTERCARD.
+ * @param fieldsNeedToBeFilledForVisa the list of additional fields about payer to fill when pay by VISA.
  */
 data class PaymentConfig internal constructor(
     val order: String = "",
@@ -42,6 +44,8 @@ data class PaymentConfig internal constructor(
     val cardDeleteOptions: CardDeleteOptions,
     var cardsToDelete: MutableSet<Card> = mutableSetOf(),
     val registeredFrom: MSDKRegisteredFrom,
+    val fieldsNeedToBeFilledForMastercard: List<AdditionalField>,
+    val fieldsNeedToBeFilledForVisa:List<AdditionalField>
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
@@ -59,7 +63,9 @@ data class PaymentConfig internal constructor(
         1 == source.readInt(),
         CardDeleteOptions.values()[source.readInt()],
         source.readCards().toMutableSet(),
-        source.readString()?.let {  MSDKRegisteredFrom.valueOf(it) } ?: MSDKRegisteredFrom.MSDK_CORE
+        source.readString()?.let {  MSDKRegisteredFrom.valueOf(it) } ?: MSDKRegisteredFrom.MSDK_CORE,
+        source.createTypedArrayList(AdditionalField.CREATOR) ?: emptyList(),
+        source.createTypedArrayList(AdditionalField.CREATOR) ?: emptyList()
     )
 
     override fun describeContents() = 0
@@ -80,6 +86,8 @@ data class PaymentConfig internal constructor(
         writeInt(cardDeleteOptions.ordinal)
         writeCards(cardsToDelete, flags)
         writeString(registeredFrom.registeredFromValue)
+        writeTypedList(fieldsNeedToBeFilledForMastercard)
+        writeTypedList(fieldsNeedToBeFilledForVisa)
     }
 
     companion object {

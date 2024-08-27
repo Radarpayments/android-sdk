@@ -19,25 +19,21 @@ import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.params.ScreenshotParams
 import com.kaspersky.kaspresso.testcases.api.testcase.DocLocScreenshotTestCase
 import com.kaspersky.kaspresso.testcases.models.info.TestInfo
-import io.mockk.called
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
 import io.qameta.allure.android.allureScreenshot
 import io.qameta.allure.android.runners.AllureAndroidJUnit4
-import net.payrdr.mobile.payment.sdk.core.model.CardBindingIdIdentifier
-import net.payrdr.mobile.payment.sdk.core.model.CardInfo
-import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import net.payrdr.mobile.payment.sdk.form.R
-import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.SDKForms
-import net.payrdr.mobile.payment.sdk.form.component.CryptogramProcessor
+import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.component.impl.CachedKeyProvider
 import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
+import net.payrdr.mobile.payment.sdk.form.model.AdditionalField
 import net.payrdr.mobile.payment.sdk.form.model.Card
 import net.payrdr.mobile.payment.sdk.form.ui.CardSelectedActivity
+import net.payrdr.mobile.payment.sdk.test.PaymentConfigTestProvider.configWithAllAdditionalCardParams
 import net.payrdr.mobile.payment.sdk.test.PaymentConfigTestProvider.defaultConfig
+import net.payrdr.mobile.payment.sdk.test.core.getString
 import net.payrdr.mobile.payment.sdk.test.core.targetContext
+import net.payrdr.mobile.payment.sdk.test.espresso.TextInputLayoutErrorTextMatcher.Companion.hasTextInputLayoutHintText
 import net.payrdr.mobile.payment.sdk.test.junit.ConfigurationRule
 import net.payrdr.mobile.payment.sdk.ui.screen.SelectedCardScreen
 import org.hamcrest.core.IsNot.not
@@ -77,7 +73,6 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
     locales = "en",
 ) {
 
-    private val mockCryptogramProcessor: CryptogramProcessor = mockk()
 
     @get:Rule
     val runtimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
@@ -99,7 +94,6 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
 
     @Before
     fun setUp() {
-        SDKForms.innerCryptogramProcessor = mockCryptogramProcessor
         SDKForms.innerSdkConfig = SDKFormsConfigBuilder()
             .keyProvider(
                 CachedKeyProvider(
@@ -219,24 +213,12 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
                     .inRoot(withDecorView(not(activityTestRule.activity.window.decorView)))
                     .check(matches(isDisplayed()))
             }
-            step("shouldRequireCVC verify") {
-                flakySafely {
-                    coVerify {
-                        mockCryptogramProcessor.create(any(), any(), any(), any(), any()) wasNot called
-                    }
-                }
-            }
         }
     }
 
     @Test
     fun shouldProceedValidData() {
         run {
-            step("shouldProceedValidData init verify") {
-                coEvery {
-                    mockCryptogramProcessor.create(any(), any(), any(), any(), any())
-                } returns ""
-            }
             val config = defaultConfig().copy(storedPaymentMethodCVCRequired = true)
 
             val launchIntent = CardSelectedActivity.prepareIntent(
@@ -263,26 +245,6 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
                     }
                 }
             }
-            step("shouldProceedValidData verify") {
-                flakySafely {
-                    coVerify {
-                        mockCryptogramProcessor.create(
-                            order = eq(config.order),
-                            timestamp = eq(config.timestamp),
-                            uuid = eq(config.uuid),
-                            cardInfo = eq(
-                                CardInfo(
-                                    identifier = CardBindingIdIdentifier(
-                                        value = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
-                                    ),
-                                    cvv = "012"
-                                )
-                            ),
-                            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
-                        )
-                    }
-                }
-            }
         }
     }
 
@@ -290,16 +252,6 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
     @Suppress("LongMethod")
     fun shouldProceedValidDataWithoutOrder() {
         run {
-            step("shouldProceedValidData init verify") {
-                coEvery {
-                    mockCryptogramProcessor.create(
-                        timestamp = any(),
-                        uuid = any(),
-                        cardInfo = any(),
-                        registeredFrom = any(),
-                    )
-                } returns ""
-            }
             val config = defaultConfig().copy(
                 order = "",
                 storedPaymentMethodCVCRequired = true
@@ -326,25 +278,6 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
                         isVisible()
                         allureScreenshot(name = "shouldProceedValidData_1", quality = 1)
                         click()
-                    }
-                }
-            }
-            step("shouldProceedValidData verify") {
-                flakySafely {
-                    coVerify {
-                        mockCryptogramProcessor.create(
-                            timestamp = eq(config.timestamp),
-                            uuid = eq(config.uuid),
-                            cardInfo = eq(
-                                CardInfo(
-                                    identifier = CardBindingIdIdentifier(
-                                        value = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
-                                    ),
-                                    cvv = "012"
-                                )
-                            ),
-                            registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
-                        )
                     }
                 }
             }
@@ -381,24 +314,12 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
                     }
                 }
             }
-            step("shouldHideCVCInput verify") {
-                flakySafely {
-                    coVerify {
-                        mockCryptogramProcessor.create(any(), any(), any(), any(), any())
-                    }
-                }
-            }
         }
     }
 
     @Test
     fun shouldNotRequireCVC() {
         run {
-            step("shouldNotRequireCVC init verify") {
-                coEvery {
-                    mockCryptogramProcessor.create(any(), any(), any(), any(), any())
-                } returns ""
-            }
 
             val config = defaultConfig().copy(storedPaymentMethodCVCRequired = false)
 
@@ -420,10 +341,179 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
                     }
                 }
             }
-            step("shouldNotRequireCVC verify") {
-                flakySafely {
-                    coVerify {
-                        mockCryptogramProcessor.create(any(), any(), any(), any(), any())
+        }
+    }
+
+    @Test
+    fun shouldShowAllAdditionalCardParamsWithHintForSavedCard() {
+        run {
+            val config = configWithAllAdditionalCardParams()
+            val launchIntent = CardSelectedActivity.prepareIntent(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                config,
+                Card( // visa
+                    pan = "492980xxxxxx7724",
+                    bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+                )
+            )
+            activityTestRule.launchActivity(launchIntent)
+            step("shouldShowAllAdditionalCardParamsWithHintForSavedCard") {
+                SelectedCardScreen {
+                    phoneNumberInput {
+                        isVisible()
+                        hasHint(R.string.payrdr_phone_number)
+                    }
+                    emailInput {
+                        isVisible()
+                        hasHint(R.string.payrdr_email)
+                    }
+                    cityInput {
+                        isVisible()
+                        hasHint(R.string.payrdr_city)
+                    }
+                    countryInput {
+                        isVisible()
+                        hasHint(R.string.payrdr_country)
+                    }
+                    postalCodeInput {
+                        isVisible()
+                        hasHint(R.string.payrdr_postal_code)
+                    }
+                    stateInput {
+                        isVisible()
+                        hasHint(R.string.payrdr_state)
+                    }
+                    addressLine1Input {
+                        isVisible()
+                        hasHint(R.string.payrdr_address_line_1)
+                    }
+                    addressLine2Input {
+                        isVisible()
+                        hasHint(R.string.payrdr_address_line_2)
+                    }
+                    addressLine3Input {
+                        isVisible()
+                        hasHint(R.string.payrdr_address_line_3)
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun shouldShowErrorOnlyForMandatoryAdditionalCardParamsForSavedCard() {
+        run {
+            val config = defaultConfig().copy(
+                fieldsNeedToBeFilledForVisa = listOf(
+                    AdditionalField(
+                        fieldName = "MOBILE_PHONE",
+                        isMandatory = true,
+                        prefilledValue = null
+                    ),
+                    AdditionalField(fieldName = "EMAIL", isMandatory = true, prefilledValue = null),
+                    AdditionalField(
+                        fieldName = "BILLING_CITY",
+                        isMandatory = false,
+                        prefilledValue = null
+                    ),
+                    AdditionalField(
+                        fieldName = "BILLING_COUNTRY",
+                        isMandatory = true,
+                        prefilledValue = null
+                    ),
+                )
+            )
+            val launchIntent = CardSelectedActivity.prepareIntent(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                config,
+                Card( // visa
+                    pan = "492980xxxxxx7724",
+                    bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+                )
+            )
+            activityTestRule.launchActivity(launchIntent)
+            step("shouldShowErrorOnlyForMandatoryAdditionalCardParamsForSavedCard") {
+                SelectedCardScreen {
+                    cardCodeInput {
+                        typeText("235")
+                    }
+                    closeSoftKeyboard()
+                    doneButton {
+                        scrollTo()
+                        click()
+                    }
+                    phoneNumberInputLayout {
+                        hasTextInputLayoutHintText(getString(R.string.payrdr_not_empty_required))
+                    }
+                    emailInputLayout {
+                        hasTextInputLayoutHintText(getString(R.string.payrdr_not_empty_required))
+                    }
+                    cityInputLayout {
+                        hasNoError()
+                    }
+                    countryInputLayout {
+                        hasTextInputLayoutHintText(getString(R.string.payrdr_not_empty_required))
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun shouldShowAdditionalCardParamsWithPrefilledValuesForSavedCard() {
+        run {
+            val config = defaultConfig().copy(
+                fieldsNeedToBeFilledForVisa = listOf(
+                    AdditionalField(
+                        fieldName = "MOBILE_PHONE",
+                        isMandatory = true,
+                        prefilledValue = "88005553535"
+                    ),
+                    AdditionalField(
+                        fieldName = "BILLING_ADDRESS_LINE1",
+                        isMandatory = false,
+                        prefilledValue = "Baker street"
+                    )
+                )
+            )
+            val launchIntent = CardSelectedActivity.prepareIntent(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                config,
+                Card( // visa
+                    pan = "492980xxxxxx7724",
+                    bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+                )
+            )
+            activityTestRule.launchActivity(launchIntent)
+            step("shouldShowAdditionalCardParamsWithPrefilledValuesForSavedCard") {
+                SelectedCardScreen {
+                    phoneNumberInput {
+                        isVisible()
+                        hasText("88005553535")
+                    }
+                    emailInput {
+                        isNotDisplayed()
+                    }
+                    cityInput {
+                        isNotDisplayed()
+                    }
+                    countryInput {
+                        isNotDisplayed()
+                    }
+                    postalCodeInput {
+                        isNotDisplayed()
+                    }
+                    stateInput {
+                        isNotDisplayed()
+                    }
+                    addressLine1Input {
+                        hasText("Baker street")
+                    }
+                    addressLine2Input {
+                        isNotDisplayed()
+                    }
+                    addressLine3Input {
+                        isNotDisplayed()
                     }
                 }
             }

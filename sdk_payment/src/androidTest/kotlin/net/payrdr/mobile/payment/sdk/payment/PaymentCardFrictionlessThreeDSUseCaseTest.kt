@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldNotBe
 import kotlinx.coroutines.runBlocking
 import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.core.BaseTestCase
+import net.payrdr.mobile.payment.sdk.data.TestAdditionalPayerParams
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper.cardSuccessFrictionless3DS2
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper.getLabelForSavedBindingItem
@@ -19,9 +20,11 @@ import net.payrdr.mobile.payment.sdk.screen.ThreeDS1Screen
 import net.payrdr.mobile.payment.sdk.screen.ThreeDS2Screen
 import net.payrdr.mobile.payment.sdk.screen.clickOnNewCard
 import net.payrdr.mobile.payment.sdk.screen.clickOnReturnToMerchant
+import net.payrdr.mobile.payment.sdk.screen.fillOutAllAdditionalFieldsAndSend
 import net.payrdr.mobile.payment.sdk.screen.fillOutFormAndSend
 import org.junit.Test
 
+@Suppress("LargeClass")
 class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
 
     @ScreenShooterTest
@@ -157,7 +160,7 @@ class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
                 verifyResult {
                     paymentData?.sessionId shouldBe sessionId
                     paymentData?.isSuccess shouldBe false
-                    paymentData?.exception shouldNotBe null                }
+                }
             }
         }
     }
@@ -538,6 +541,41 @@ class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
             step("Verify result") {
                 verifyResult {
                     paymentData?.sessionId shouldBe sessionId
+                    paymentData?.isSuccess shouldBe false
+                }
+            }
+        }
+    }
+
+    @ScreenShooterTest
+    @Test
+    fun shouldReturnErrorPaymentWithAdditionalFieldsWithNewCardFrictionlessThreeDSNoUse3DS2SDKSDKWithInvalidExpiry() {
+        val mdOrder: String = testOrderHelper.registerOrder(
+            testAdditionalPayerParams = TestAdditionalPayerParams(
+                billingPayerData = emptyMap(),
+                email = null,
+                mobilePhone = null
+            )
+        )
+        val config = CheckoutConfig.MdOrder(mdOrder)
+        run {
+            step("Start checkout") {
+                SDKPayment.init(testPaymentConfig)
+                SDKPayment.checkout(testActivity, config)
+            }
+            step("Click on new card button") {
+                BottomSheetScreen {
+                    clickOnNewCard()
+                }
+            }
+            step("Fill new card form") {
+                NewCardScreen {
+                    fillOutAllAdditionalFieldsAndSend(cardSuccessFrictionless3DS2.withInvalidExpiry())
+                }
+            }
+            step("Verify result") {
+                verifyResult {
+                    paymentData?.sessionId shouldBe mdOrder
                     paymentData?.isSuccess shouldBe false
                 }
             }

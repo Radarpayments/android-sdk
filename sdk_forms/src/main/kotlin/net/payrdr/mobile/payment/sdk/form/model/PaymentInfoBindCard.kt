@@ -8,15 +8,21 @@ import android.os.Parcelable
  *
  * @param order identifier of the paid order.
  * @param bindingId ID of the associated card used for payment.
+ * @param cvc payment card cvc.
+ * @param filledAdditionalPayerParams filled additional information about payer.
  */
 data class PaymentInfoBindCard(
     val order: String = "",
-    val bindingId: String
+    val bindingId: String,
+    val cvc: String,
+    val filledAdditionalPayerParams: FilledAdditionalPayerParams
 ) : PaymentInfo {
 
     constructor(source: Parcel) : this(
         source.readString()!!,
-        source.readString()!!
+        source.readString()!!,
+        source.readString()!!,
+        source.readParcelable(FilledAdditionalPayerParams::class.java.classLoader)!!
     )
 
     override fun describeContents() = 0
@@ -24,6 +30,8 @@ data class PaymentInfoBindCard(
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeString(order)
         writeString(bindingId)
+        writeString(cvc)
+        writeParcelable(filledAdditionalPayerParams, flags)
     }
 
     companion object {

@@ -13,6 +13,7 @@ import net.payrdr.mobile.payment.sdk.form.utils.executePostParams
 import net.payrdr.mobile.payment.sdk.form.utils.responseBodyToJsonObject
 import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
 import net.payrdr.mobile.payment.sdk.utils.executePostJsonForSessionId
+import net.payrdr.mobile.payment.sdk.utils.mapToJsonString
 import org.json.JSONObject
 import java.net.URL
 
@@ -48,6 +49,9 @@ class TestOrderHelper(
             mdOrder = orderId,
             holder = card.holder,
             saveCard = false,
+            email = null,
+            mobilePhone = "+73259856734",
+            additionalPayerData = emptyMap()
         )
         paymentApi.processForm(
             cryptogramApiData = cryptogramApiData,
@@ -60,12 +64,14 @@ class TestOrderHelper(
         return orderId
     }
 
+    @Suppress("LongParameterList")
     fun registerOrder(
         amount: Int = 20000,
         returnUrl: String = "sdk://done",
         userName: String = "mobile-sdk-api",
         password: String = "vkyvbG0",
         clientId: String? = null,
+        testAdditionalPayerParams: TestAdditionalPayerParams = TestAdditionalPayerParams.DEFAULT
     ): String {
         val url = "${baseUrl}/rest/register.do"
         val body = mutableMapOf<String, String>()
@@ -73,16 +79,28 @@ class TestOrderHelper(
         body["userName"] = userName
         body["password"] = password
         body["returnUrl"] = returnUrl
+        if (testAdditionalPayerParams.email != null) {
+            body["email"] = testAdditionalPayerParams.email
+        }
+        if (testAdditionalPayerParams.mobilePhone != null) {
+            val orderPayerData =
+                mapOf("mobilePhone" to testAdditionalPayerParams.mobilePhone).mapToJsonString()
+            body["orderPayerData"] = orderPayerData
+        }
+        if (testAdditionalPayerParams.billingPayerData.isEmpty().not()) {
+            body["billingPayerData"] = testAdditionalPayerParams.billingPayerData.mapToJsonString()
+        }
         if (clientId != null) {
             body["clientId"] = clientId
         }
-
+        body["billingPayerData"] = testAdditionalPayerParams.billingPayerData.mapToJsonString()
         return runCatching {
             val connection = URL(url).executePostParams(body.toMap())
             connection.responseBodyToJsonObject().getString("orderId")
         }.getOrNull() ?: throw IllegalStateException("Could not register order")
     }
 
+    @Suppress("LongParameterList")
     fun registerSession(
         amount: Int = 100,
         currency: String = "USD",

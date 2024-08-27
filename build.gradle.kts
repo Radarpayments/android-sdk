@@ -5,6 +5,7 @@ buildscript {
     repositories {
         gradlePluginPortal()
         google()
+        mavenCentral()
         jcenter()
         maven(uri("https://oss.jfrog.org/artifactory/oss-snapshot-local/"))
         maven(uri("https://oss.sonatype.org/content/repositories/snapshots"))
@@ -28,6 +29,7 @@ allprojects {
     }
     repositories {
         google()
+        mavenCentral()
         jcenter()
         maven(uri("https://oss.sonatype.org/content/repositories/snapshots"))
         flatDir {

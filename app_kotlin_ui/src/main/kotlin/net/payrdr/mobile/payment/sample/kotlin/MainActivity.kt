@@ -575,7 +575,7 @@ class MainActivity : AppCompatActivity() {
                             log("Saved card ${info.bindingId}")
                         } else if (info is PaymentInfoGooglePay) {
                             log("Google Pay ${info.order}")
-                            googlePayCryptogram.text = result.seToken
+                            googlePayCryptogram.text = info.paymentToken
                         }
                         log("$result")
                         log("Deleted cards ${result.deletedCardsList}")

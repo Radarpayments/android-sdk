@@ -4,6 +4,7 @@ import com.kaspersky.kaspresso.annotations.ScreenShooterTest
 import io.kotest.matchers.shouldBe
 import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.core.BaseTestCase
+import net.payrdr.mobile.payment.sdk.data.TestAdditionalPayerParams
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper.cardSuccessAttempt3DS2
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper.invalidVerificationCode
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper.validVerificationCode
@@ -697,5 +698,93 @@ class PaymentCardAttemptThreeDSUseCaseTest : BaseTestCase() {
                 }
             }
         }
+    }
+
+    @Test
+    @ScreenShooterTest
+    @Suppress("LongMethod")
+    fun shouldReturnSuccessPaymentWithNewCardAttemptWithAdditionalFieldsThreeDSUse3DS2SDK() {
+        val mdOrder: String = testOrderHelper.registerOrder(
+            testAdditionalPayerParams = TestAdditionalPayerParams(
+                billingPayerData = mapOf(
+                    "billingCity" to "Berlin",
+                    "billingPostalCode" to "123567"
+                ),
+                email = "test@test.mail.com",
+                mobilePhone = null
+            )
+        )
+        val config = CheckoutConfig.MdOrder(mdOrder)
+        run {
+            step("Start checkout") {
+                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
+                SDKPayment.checkout(testActivity, config)
+            }
+            step("Click on new card button") {
+                BottomSheetScreen {
+                    clickOnNewCard()
+                }
+            }
+            step("Fill card number with VISA system") {
+                NewCardScreen {
+                    cardNumberInput {
+                        typeText("4000001111111118")
+                    }
+                    cardExpiryInput {
+                        isVisible()
+                        typeText("1230")
+                    }
+                    cardCodeInput {
+                        isVisible()
+                        typeText("123")
+                    }
+                }
+            }
+            step("Additional params should be visible with prefilled values") {
+                NewCardScreen {
+                    emailInput {
+                        isVisible()
+                        hasText("test@test.mail.com")
+                    }
+                    phoneNumberInput {
+                        isVisible()
+                        typeText("35799902871")
+                    }
+                    cityInput {
+                        isVisible()
+                        hasText("Berlin")
+                    }
+                    countryInput {
+                        isVisible()
+                        typeText("USA")
+                    }
+                    stateInput {
+                        isVisible()
+                        typeText("LA")
+                    }
+                    postalCodeInput {
+                        isVisible()
+                        hasText("123567")
+                    }
+                    doneButton {
+                        scrollTo()
+                        click()
+                    }
+                }
+            }
+            step("Input verification code") {
+                ThreeDS2Screen {
+                    fillOutFormAndSend(validVerificationCode)
+                }
+            }
+            step("Verify result") {
+                verifyResult {
+                    paymentData?.sessionId shouldBe mdOrder
+                    paymentData?.isSuccess shouldBe true
+                    paymentData?.exception shouldBe null
+                }
+            }
+        }
+
     }
 }

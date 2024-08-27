@@ -34,6 +34,7 @@ import net.payrdr.mobile.payment.sdk.form.gpay.PaymentMethodParameters
 import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecification
 import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecificationParameters
 import net.payrdr.mobile.payment.sdk.form.gpay.TransactionInfo
+import net.payrdr.mobile.payment.sdk.form.model.FilledAdditionalPayerParams
 import net.payrdr.mobile.payment.sdk.form.model.GooglePayPaymentConfig
 import net.payrdr.mobile.payment.sdk.form.utils.requiredField
 import net.payrdr.mobile.payment.sdk.payment.model.GooglePayProcessFormRequest
@@ -51,6 +52,7 @@ import net.payrdr.mobile.payment.sdk.threeds.spec.ProtocolErrorEvent
 import net.payrdr.mobile.payment.sdk.threeds.spec.RuntimeErrorEvent
 import net.payrdr.mobile.payment.sdk.threeds.spec.ThreeDS2Service
 import net.payrdr.mobile.payment.sdk.threeds.spec.Transaction
+import net.payrdr.mobile.payment.sdk.utils.AdditionalFieldsAssembler
 import net.payrdr.mobile.payment.sdk.utils.OrderStatuses
 import net.payrdr.mobile.payment.sdk.utils.SessionIdConverter
 import net.payrdr.mobile.payment.sdk.utils.containsAnyOfKeywordIgnoreCase
@@ -125,7 +127,7 @@ class PaymentManagerImpl(
             // 4 - Completion with the result of the payment (return to the payment start screen).
 
             mdOrder = order
-            sessionId = when(versionApi) {
+            sessionId = when (versionApi) {
                 PaymentApiVersion.V1 -> {
                     mdOrder
                 }
@@ -183,7 +185,15 @@ class PaymentManagerImpl(
                             bindingCards = emptyList<BindingItem>(),
                             cvcNotRequired = sessionStatusResponse.cvcNotRequired,
                             bindingDeactivationEnabled = sessionStatusResponse.bindingDeactivationEnabled,
-                            googlePayConfig = gPayConfig
+                            googlePayConfig = gPayConfig,
+                            additionalCardParamForPayments =
+                            AdditionalFieldsAssembler.assembleAdditionalFieldsForPayments(
+                                sessionStatusResponse.payerDataParamsNeedToBeFilled.visa,
+                                sessionStatusResponse.payerDataParamsNeedToBeFilled.mastercard,
+                                customerDetails = sessionStatusResponse.customerDetails,
+                                orderPayerData = sessionStatusResponse.orderPayerData,
+                                sessionStatusResponse.billingPayerData
+                            )
                         )
                         LogDebug.logIfDebug("Creating cryptogram with New Card")
                     }
@@ -195,7 +205,15 @@ class PaymentManagerImpl(
                             bindingCards = sessionStatusResponse.bindingItems,
                             cvcNotRequired = sessionStatusResponse.cvcNotRequired,
                             bindingDeactivationEnabled = sessionStatusResponse.bindingDeactivationEnabled,
-                            googlePayConfig = gPayConfig
+                            googlePayConfig = gPayConfig,
+                            additionalCardParamForPayments =
+                            AdditionalFieldsAssembler.assembleAdditionalFieldsForPayments(
+                                sessionStatusResponse.payerDataParamsNeedToBeFilled.visa,
+                                sessionStatusResponse.payerDataParamsNeedToBeFilled.mastercard,
+                                customerDetails = sessionStatusResponse.customerDetails,
+                                orderPayerData = sessionStatusResponse.orderPayerData,
+                                sessionStatusResponse.billingPayerData
+                            )
                         )
                         LogDebug.logIfDebug("Creating cryptogram with Binding Card")
                     }
@@ -208,7 +226,8 @@ class PaymentManagerImpl(
         seToken: String,
         mdOrder: String,
         holder: String,
-        saveCard: Boolean
+        saveCard: Boolean,
+        filledAdditionalPayerParams: FilledAdditionalPayerParams
     ) {
         processFormData(
             processFormRequest = ProcessFormRequest(
@@ -216,20 +235,34 @@ class PaymentManagerImpl(
                 mdOrder = mdOrder,
                 holder = holder.ifBlank { DEFAULT_VALUE_CARDHOLDER },
                 saveCard = saveCard,
+                additionalPayerData = AdditionalFieldsAssembler.assembleFilledParams(
+                    filledAdditionalPayerParams
+                ),
+                email = filledAdditionalPayerParams.email,
+                mobilePhone = filledAdditionalPayerParams.phone
             ),
-            isBinding = false,
+            isBinding = false
         )
     }
 
-    internal fun processBindingCard(seToken: String, mdOrder: String) {
+    internal fun processBindingCard(
+        seToken: String,
+        mdOrder: String,
+        filledAdditionalPayerParams: FilledAdditionalPayerParams
+    ) {
         processFormData(
             processFormRequest = ProcessFormRequest(
                 paymentToken = seToken,
                 mdOrder = mdOrder,
                 holder = DEFAULT_VALUE_CARDHOLDER,
                 saveCard = false,
+                additionalPayerData = AdditionalFieldsAssembler.assembleFilledParams(
+                    filledAdditionalPayerParams
+                ),
+                email = filledAdditionalPayerParams.email,
+                mobilePhone = filledAdditionalPayerParams.phone
             ),
-            isBinding = true,
+            isBinding = true
         )
     }
 

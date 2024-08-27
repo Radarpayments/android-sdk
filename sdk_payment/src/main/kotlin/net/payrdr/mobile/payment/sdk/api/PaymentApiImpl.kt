@@ -14,8 +14,9 @@ import net.payrdr.mobile.payment.sdk.form.utils.executeGet
 import net.payrdr.mobile.payment.sdk.form.utils.executePostJson
 import net.payrdr.mobile.payment.sdk.form.utils.executePostParams
 import net.payrdr.mobile.payment.sdk.form.utils.responseBodyToJsonObject
-import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
 import net.payrdr.mobile.payment.sdk.payment.model.GooglePayProcessFormRequest
+import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
+import net.payrdr.mobile.payment.sdk.utils.mapToJsonString
 import java.net.URL
 
 /**
@@ -41,13 +42,22 @@ class PaymentApiImpl(
         cryptogramApiData: ProcessFormRequest,
         threeDSSDK: Boolean
     ): ProcessFormResponse = startRunCatching {
-        val body = mapOf(
+        val body = mutableMapOf(
             "seToken" to cryptogramApiData.paymentToken,
             "MDORDER" to cryptogramApiData.mdOrder,
             "TEXT" to cryptogramApiData.holder,
             "bindingNotNeeded" to "${(!cryptogramApiData.saveCard)}",
-            "threeDSSDK" to "$threeDSSDK"
+            "threeDSSDK" to "$threeDSSDK",
         )
+        if (cryptogramApiData.additionalPayerData.isEmpty().not()) {
+            body["billingPayerData"] = cryptogramApiData.additionalPayerData.mapToJsonString()
+        }
+        if (cryptogramApiData.mobilePhone != null) {
+            body["mobilePhone"] = cryptogramApiData.mobilePhone
+        }
+        if (cryptogramApiData.email != null) {
+            body["email"] = cryptogramApiData.email
+        }
         val connection = URL("$baseUrl/rest/processform.do").executePostParams(
             paramBody = body,
             sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
@@ -61,12 +71,21 @@ class PaymentApiImpl(
         cryptogramApiData: ProcessFormRequest,
         threeDSSDK: Boolean
     ): ProcessFormResponse = startRunCatching {
-        val body = mapOf(
+        val body = mutableMapOf(
             "seToken" to cryptogramApiData.paymentToken,
             "MDORDER" to cryptogramApiData.mdOrder,
             "TEXT" to cryptogramApiData.holder,
             "threeDSSDK" to "$threeDSSDK"
         )
+        if (cryptogramApiData.additionalPayerData.isEmpty().not()) {
+            body["billingPayerData"] = cryptogramApiData.additionalPayerData.mapToJsonString()
+        }
+        if (cryptogramApiData.mobilePhone != null) {
+            body["mobilePhone"] = cryptogramApiData.mobilePhone
+        }
+        if (cryptogramApiData.email != null) {
+            body["email"] = cryptogramApiData.email
+        }
         val connection = URL("$baseUrl/rest/processBindingForm.do").executePostParams(
             paramBody = body,
             sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
@@ -80,7 +99,7 @@ class PaymentApiImpl(
         cryptogramApiData: ProcessFormRequest,
         threeDSParams: PaymentThreeDSInfo
     ): ProcessFormSecondResponse = startRunCatching {
-        val body = mapOf(
+        val body = mutableMapOf(
             "seToken" to cryptogramApiData.paymentToken,
             "MDORDER" to cryptogramApiData.mdOrder,
             "TEXT" to cryptogramApiData.holder,
@@ -93,6 +112,15 @@ class PaymentApiImpl(
             "threeDSSDKTransId" to threeDSParams.threeDSSDKTransId,
             "threeDSSDKReferenceNumber" to threeDSParams.threeDSSDKReferenceNumber
         )
+        if (cryptogramApiData.additionalPayerData.isEmpty().not()) {
+            body["billingPayerData"] = cryptogramApiData.additionalPayerData.mapToJsonString()
+        }
+        if (cryptogramApiData.mobilePhone != null) {
+            body["mobilePhone"] = cryptogramApiData.mobilePhone
+        }
+        if (cryptogramApiData.email != null) {
+            body["email"] = cryptogramApiData.email
+        }
         val connection = URL("$baseUrl/rest/processform.do").executePostParams(
             paramBody = body,
             sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
@@ -106,7 +134,7 @@ class PaymentApiImpl(
         cryptogramApiData: ProcessFormRequest,
         threeDSParams: PaymentThreeDSInfo
     ): ProcessFormSecondResponse = startRunCatching {
-        val body = mapOf(
+        val body = mutableMapOf(
             "seToken" to cryptogramApiData.paymentToken,
             "MDORDER" to cryptogramApiData.mdOrder,
             "TEXT" to cryptogramApiData.holder,
@@ -118,6 +146,15 @@ class PaymentApiImpl(
             "threeDSSDKTransId" to threeDSParams.threeDSSDKTransId,
             "threeDSSDKReferenceNumber" to threeDSParams.threeDSSDKReferenceNumber
         )
+        if (cryptogramApiData.additionalPayerData.isEmpty().not()) {
+            body["billingPayerData"] = cryptogramApiData.additionalPayerData.mapToJsonString()
+        }
+        if (cryptogramApiData.mobilePhone != null) {
+            body["mobilePhone"] = cryptogramApiData.mobilePhone
+        }
+        if (cryptogramApiData.email != null) {
+            body["email"] = cryptogramApiData.email
+        }
         val connection = URL("$baseUrl/rest/processBindingForm.do").executePostParams(
             paramBody = body,
             sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
@@ -201,7 +238,7 @@ class PaymentApiImpl(
         return try {
             block()
         } catch (e: Exception) {
-            throw SDKPaymentApiException(cause = e.cause)
+            throw SDKPaymentApiException(cause = e.cause, message = e.message.toString())
         }
     }
 

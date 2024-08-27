@@ -105,7 +105,10 @@ class PaymentApiImplTest {
             paymentToken = paymentToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
-            saveCard = false
+            saveCard = false,
+            email = null,
+            mobilePhone = null,
+            additionalPayerData = emptyMap()
         )
         val processForm = paymentApiImpl.processForm(cryptogramApiData, true)
 
@@ -136,7 +139,10 @@ class PaymentApiImplTest {
             paymentToken = paymentToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
-            saveCard = false
+            saveCard = false,
+            email = null,
+            mobilePhone = null,
+            additionalPayerData = emptyMap()
         )
         val processForm = paymentApiImpl.processForm(cryptogramApiData, true)
 
@@ -162,7 +168,10 @@ class PaymentApiImplTest {
             paymentToken = paymentToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
-            saveCard = true
+            saveCard = true,
+            email = null,
+            mobilePhone = null,
+            additionalPayerData = emptyMap()
         )
         val processBindingForm = paymentApiImpl.processBindingForm(cryptogramApiData, true)
 
@@ -234,7 +243,10 @@ class PaymentApiImplTest {
                 paymentToken = paymentToken,
                 mdOrder = mdOrder,
                 holder = "CARDHOLDER",
-                saveCard = false
+                saveCard = false,
+                email = null,
+                mobilePhone = null,
+                additionalPayerData = emptyMap()
             )
             paymentApiImpl.processForm(cryptogramApiData, true)
         }
@@ -253,7 +265,10 @@ class PaymentApiImplTest {
                 paymentToken = paymentToken,
                 mdOrder = mdOrder,
                 holder = "CARDHOLDER",
-                saveCard = false
+                saveCard = false,
+                email = null,
+                mobilePhone = null,
+                additionalPayerData = emptyMap()
             )
             paymentApiImpl.processBindingForm(cryptogramApiData, true)
         }

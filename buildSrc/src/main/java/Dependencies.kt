@@ -19,7 +19,7 @@ object Versions {
     const val androidx_test_rules = "1.2.0"
     const val androidx_test_espresso_core = "3.2.0"
     const val androidx_test_core = "1.2.0"
-    const val io_mockk = "1.10.0"
+    const val io_mockk = "1.13.2"
     const val kotlinx_coroutines_test = "1.3.7"
     const val com_squareup_spoon = "2.0.0-SNAPSHOT"
     const val com_squareup_mockwebserver = "4.7.2"
