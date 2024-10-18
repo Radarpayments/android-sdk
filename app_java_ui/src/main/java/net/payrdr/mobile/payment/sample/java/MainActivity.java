@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 // Optional, default HIDE.
                 .holderInputOptions(HolderInputOptions.VISIBLE)
                 // Optional, default true.
-                .storedPaymentMethodCVCRequired(false)
+                .bindingCVCRequired(false)
                 // Optional, default ENABLED.
                 .cameraScannerOptions(CameraScannerOptions.ENABLED)
                 // Optionally, the locale of the payment form is determined automatically.

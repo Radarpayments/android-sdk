@@ -25,13 +25,4 @@
     <string name="payrdr_alert_dialog_text">Якщо ви захочете скористатися цією карткою, вам доведеться знову додати її.</string>
     <string name="payrdr_alert_dialog_cancel">Скасувати</string>
     <string name="payrdr_alert_dialog_delete">Вилучити</string>
-    <string name="payrdr_email">Електронна пошта</string>
-    <string name="payrdr_phone_number">Номер телефону</string>
-    <string name="payrdr_country">Країна</string>
-    <string name="payrdr_state">Область</string>
-    <string name="payrdr_city">Місто</string>
-    <string name="payrdr_postal_code">Поштовий індекс</string>
-    <string name="payrdr_address_line_1">Адреса, рядок 1</string>
-    <string name="payrdr_address_line_2">Адреса, рядок 2</string>
-    <string name="payrdr_address_line_3">Адреса, рядок 3</string>
 </resources>

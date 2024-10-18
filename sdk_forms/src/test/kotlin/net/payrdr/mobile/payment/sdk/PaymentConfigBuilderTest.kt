@@ -283,14 +283,14 @@ class PaymentConfigBuilderTest {
     @Description("should return binding cvc required")
     fun `should return binding cvc required`() {
         PaymentConfigBuilder("5eec2dec-b86a-48b3-b296-a772eb5ff77f")
-            .storedPaymentMethodCVCRequired(true)
+            .bindingCVCRequired(true)
             .build()
-            .storedPaymentMethodCVCRequired shouldBe true
+            .bindingCVCRequired shouldBe true
 
         PaymentConfigBuilder("5eec2dec-b86a-48b3-b296-a772eb5ff77f")
-            .storedPaymentMethodCVCRequired(false)
+            .bindingCVCRequired(false)
             .build()
-            .storedPaymentMethodCVCRequired shouldBe false
+            .bindingCVCRequired shouldBe false
     }
 
     @Test
@@ -298,7 +298,7 @@ class PaymentConfigBuilderTest {
     fun `should return binding cvc required by default`() {
         PaymentConfigBuilder("5eec2dec-b86a-48b3-b296-a772eb5ff77f")
             .build()
-            .storedPaymentMethodCVCRequired shouldBe true
+            .bindingCVCRequired shouldBe true
     }
 
     @Test

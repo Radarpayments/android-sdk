@@ -34,7 +34,7 @@ data class MerchantInfo(
                 mcc = optValue("mcc"),
                 merchantLogin = getString("merchantLogin"),
                 captchaMode = getString("captchaMode"),
-                custom = getBoolean("custom")
+                custom = optBoolean("custom")
             )
         }
     }

@@ -4,13 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Base64
 import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.WalletConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.payrdr.mobile.payment.sdk.form.Constants
+import net.payrdr.mobile.payment.sdk.form.SDKForms
+import net.payrdr.mobile.payment.sdk.form.component.CryptogramProcessor
 import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayUtils
 import net.payrdr.mobile.payment.sdk.form.model.CryptogramData
 import net.payrdr.mobile.payment.sdk.form.model.GooglePayPaymentConfig
@@ -25,6 +26,7 @@ import com.google.android.gms.wallet.PaymentData as GPaymentData
  */
 class GooglePayActivity : BaseActivity() {
 
+    private var cryptogramProcessor: CryptogramProcessor = SDKForms.cryptogramProcessor
     private val config: GooglePayPaymentConfig by lazy {
         intent.getParcelableExtra<GooglePayPaymentConfig>(Constants.INTENT_EXTRA_CONFIG)!!
     }
@@ -73,30 +75,27 @@ class GooglePayActivity : BaseActivity() {
                             handlePaymentData(paymentToken)
                         }
                     }
-
                     Activity.RESULT_CANCELED -> {
                         finish()
                     }
-
                     AutoResolveHelper.RESULT_ERROR -> {
                         finish()
                     }
                 }
             }
-
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
     }
 
     private fun handlePaymentData(token: String) {
         workScope.launch(Dispatchers.Main) {
-            val paymentToken = Base64.encodeToString(token.toByteArray(), Base64.NO_WRAP)
+            val seToken = cryptogramProcessor.create(token)
             finishWithResult(
                 CryptogramData(
                     status = PaymentDataStatus.SUCCEEDED,
+                    seToken = seToken,
                     info = PaymentInfoGooglePay(
-                        order = config.order,
-                        paymentToken = paymentToken
+                        order = config.order
                     )
                 )
             )

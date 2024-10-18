@@ -14,10 +14,6 @@ import kotlinx.android.synthetic.main.activity_three_d_s.returnUrl
 import kotlinx.android.synthetic.main.activity_three_d_s.text
 import kotlinx.android.synthetic.main.activity_three_d_s.threeDSCheckout
 import kotlinx.android.synthetic.main.activity_three_d_s.userName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import net.payrdr.mobile.payment.sample.kotlin.MarketApplication
 import net.payrdr.mobile.payment.sample.kotlin.R
 import net.payrdr.mobile.payment.sample.kotlin.helpers.launchGlobalScope
@@ -25,16 +21,11 @@ import net.payrdr.mobile.payment.sample.kotlin.helpers.log
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSGatewayApi.PaymentCheckOrderStatusRequest
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSGatewayApi.PaymentFinishOrderRequest
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSGatewayApi.PaymentOrderRequest
-import net.payrdr.mobile.payment.sdk.core.SDKCore
-import net.payrdr.mobile.payment.sdk.core.model.CardParams
-import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
-import net.payrdr.mobile.payment.sdk.core.model.SDKCoreConfig
 import net.payrdr.mobile.payment.sdk.form.PaymentConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.ResultCryptogramCallback
 import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.SDKException
 import net.payrdr.mobile.payment.sdk.form.SDKForms
-import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
 import net.payrdr.mobile.payment.sdk.form.model.CryptogramData
 import net.payrdr.mobile.payment.sdk.form.model.PaymentInfoNewCard
 import net.payrdr.mobile.payment.sdk.threeds.impl.Factory
@@ -49,7 +40,6 @@ class ThreeDSActivity : AppCompatActivity() {
 
     // Api for test payment.
     private val api = ThreeDSGatewayApi()
-    private val workScope = CoroutineScope(Job() + Dispatchers.IO)
 
     // The fields are required to create and run the 3DS Challenge Flow.
     private val factory = Factory()
@@ -135,33 +125,15 @@ class ThreeDSActivity : AppCompatActivity() {
                 // The result of the formation of seToken (cryptogram).
                 when {
                     result.status.isSucceeded() -> {
-                        workScope.launch {
-                            val keyProvider = RemoteKeyProvider("$argBaseUrl/rest/register.do")
-                            val pubKey = keyProvider.provideKey().value
-                            val info = result.info
-                            if (info is PaymentInfoNewCard) {
-                                val config = SDKCoreConfig(
-                                    registeredFrom = MSDKRegisteredFrom.MSDK_PAYMENT,
-                                    paymentCardParams = CardParams(
-                                        pan = info.pan,
-                                        cvc = info.cvc,
-                                        expiryMMYY = info.expiryDate,
-                                        cardHolder = info.holder,
-                                        mdOrder = info.order,
-                                        pubKey = pubKey
-                                    )
-                                )
-                                val paymentToken =
-                                    SDKCore(this@ThreeDSActivity).generateWithConfig(config)
-                                executeThreeDSChallengeFlow(
-                                    seToken = paymentToken.token ?: "",
-                                    mdOrder = info.order
-                                )
-                            }
-                            log("$result")
+                        val info = result.info
+                        if (info is PaymentInfoNewCard) {
+                            executeThreeDSChallengeFlow(
+                                seToken = result.seToken,
+                                mdOrder = info.order
+                            )
                         }
+                        log("$result")
                     }
-
                     result.status.isCanceled() -> {
                         log("canceled")
                     }

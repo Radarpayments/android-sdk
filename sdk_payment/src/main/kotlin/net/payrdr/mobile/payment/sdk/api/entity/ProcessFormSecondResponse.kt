@@ -34,7 +34,7 @@ data class ProcessFormSecondResponse(
         fun fromJson(jsonObject: JSONObject): ProcessFormSecondResponse = with(jsonObject) {
             ProcessFormSecondResponse(
                 errorCode = getInt("errorCode"),
-                is3DSVer2 = getBoolean("is3DSVer2"),
+                is3DSVer2 = optBoolean("is3DSVer2"),
                 redirect = optValue("redirect"),
                 errorTypeName = optValue("errorTypeName"),
                 threeDSAcsTransactionId = optValue("threeDSAcsTransactionId"),

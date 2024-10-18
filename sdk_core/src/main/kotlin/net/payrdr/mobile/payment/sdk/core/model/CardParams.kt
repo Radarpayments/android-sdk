@@ -1,7 +1,7 @@
 package net.payrdr.mobile.payment.sdk.core.model
 
 /**
- *  Information about card for payment with old method.
+ *  Card information.
  *
  *  @param mdOrder order number.
  *  @param pan card number.
@@ -13,15 +13,9 @@ package net.payrdr.mobile.payment.sdk.core.model
 
 data class CardParams(
     val mdOrder: String = "",
-    override val pan: String,
-    override val cvc: String,
-    override val expiryMMYY: String,
-    override val cardHolder: String?,
-    override val pubKey: String
-) : PaymentCardParams.NewCardPaymentParams(
-    pan = pan,
-    cvc = cvc,
-    expiryMMYY = expiryMMYY,
-    cardHolder = cardHolder,
-    pubKey = pubKey
+    val pan: String,
+    val cvc: String,
+    val expiryMMYY: String,
+    val cardHolder: String?,
+    val pubKey: String
 )

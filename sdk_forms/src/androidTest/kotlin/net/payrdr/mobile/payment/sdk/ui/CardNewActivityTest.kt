@@ -29,16 +29,14 @@ import net.payrdr.mobile.payment.sdk.core.model.CardPanIdentifier
 import net.payrdr.mobile.payment.sdk.core.model.ExpiryDate
 import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import net.payrdr.mobile.payment.sdk.form.R
-import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
+import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.component.CryptogramProcessor
 import net.payrdr.mobile.payment.sdk.form.component.impl.CachedKeyProvider
 import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
-import net.payrdr.mobile.payment.sdk.form.model.AdditionalField
 import net.payrdr.mobile.payment.sdk.form.model.CardSaveOptions
 import net.payrdr.mobile.payment.sdk.form.model.HolderInputOptions
 import net.payrdr.mobile.payment.sdk.form.ui.CardNewActivity
-import net.payrdr.mobile.payment.sdk.test.PaymentConfigTestProvider.configWithAllAdditionalCardParams
 import net.payrdr.mobile.payment.sdk.test.PaymentConfigTestProvider.defaultConfig
 import net.payrdr.mobile.payment.sdk.test.core.getString
 import net.payrdr.mobile.payment.sdk.test.core.targetContext
@@ -111,6 +109,7 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                     )
                 ).build()
         )
+        SDKForms.innerCryptogramProcessor = mockCryptogramProcessor
     }
 
     @Test
@@ -186,14 +185,7 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
         run {
             val config = defaultConfig().copy(
                 holderInputOptions = HolderInputOptions.VISIBLE,
-                cardSaveOptions = CardSaveOptions.NO_BY_DEFAULT,
-                fieldsNeedToBeFilledForVisa = listOf(
-                    AdditionalField(
-                        fieldName = "MOBILE_PHONE",
-                        isMandatory = true,
-                        prefilledValue = null
-                    )
-                )
+                cardSaveOptions = CardSaveOptions.NO_BY_DEFAULT
             )
             val launchIntent = CardNewActivity.prepareIntent(
                 InstrumentationRegistry.getInstrumentation().targetContext,
@@ -212,9 +204,6 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                     cardExpiryInput {
                         hasFocus()
                         typeText("12/27")
-                    }
-                    phoneNumberInput {
-                        isVisible()
                     }
                     cardCodeInput {
                         hasFocus()
@@ -381,7 +370,6 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                             quality = 1
                         )
                     }
-                    cardHolderInput.isDisplayed()
                 }
             }
         }
@@ -455,11 +443,6 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                     cardCodeInput {
                         typeText("012")
                     }
-                    pressKey(KeyEvent.KEYCODE_ENTER)
-                    cardHolderInput {
-                        typeText("MASHA")
-                    }
-                    closeSoftKeyboard()
                     allureScreenshot(name = "shouldRunWithConfiguredSaveCardHide_1", quality = 1)
                     doneButton {
                         click()
@@ -481,8 +464,7 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                                     expYear = 2025,
                                     expMonth = 12
                                 ),
-                                cvv = "012",
-                                cardHolder = "MASHA"
+                                cvv = "012"
                             )
                         ),
                         registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
@@ -532,11 +514,6 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                     cardCodeInput {
                         typeText("012")
                     }
-                    pressKey(KeyEvent.KEYCODE_ENTER)
-                    cardHolderInput {
-                        typeText("MASHA")
-                    }
-                    closeSoftKeyboard()
                     allureScreenshot(name = "shouldRunWithConfiguredSaveCardHide_1", quality = 1)
                     doneButton {
                         click()
@@ -557,8 +534,7 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                                     expYear = 2025,
                                     expMonth = 12
                                 ),
-                                cvv = "012",
-                                cardHolder = "MASHA"
+                                cvv = "012"
                             )
                         ),
                         registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
@@ -663,7 +639,7 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
     @Test
     fun shouldDisplayAllErrors() {
         run {
-            val config = defaultConfig().copy(holderInputOptions = HolderInputOptions.VISIBLE)
+            val config = defaultConfig()
             val launchIntent = CardNewActivity.prepareIntent(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 config
@@ -707,188 +683,6 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                         hasTextInputLayoutHintText(
                             getString(R.string.payrdr_card_incorrect_expiry)
                         )
-                    }
-                    cardHolderInput {
-                        hasTextInputLayoutHintText(
-                            getString(R.string.payrdr_card_incorrect_card_holder)
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    @Test
-    fun shouldShowAllAdditionalCardParamsWithHint() {
-        run {
-            val config = configWithAllAdditionalCardParams()
-            val launchIntent = CardNewActivity.prepareIntent(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                config
-            )
-            activityTestRule.launchActivity(launchIntent)
-            step("shouldShowAllAdditionalCardParamsWithHint") {
-                NewCardScreen {
-                    cardNumberInput {
-                        typeText("4594929153014323")
-                    }
-                    phoneNumberInput {
-                        isVisible()
-                        hasHint(R.string.payrdr_phone_number)
-                    }
-                    emailInput {
-                        isVisible()
-                        hasHint(R.string.payrdr_email)
-                    }
-                    cityInput {
-                        isVisible()
-                        hasHint(R.string.payrdr_city)
-                    }
-                    countryInput {
-                        isVisible()
-                        hasHint(R.string.payrdr_country)
-                    }
-                    postalCodeInput {
-                        isVisible()
-                        hasHint(R.string.payrdr_postal_code)
-                    }
-                    stateInput {
-                        isVisible()
-                        hasHint(R.string.payrdr_state)
-                    }
-                    addressLine1Input {
-                        isVisible()
-                        hasHint(R.string.payrdr_address_line_1)
-                    }
-                    addressLine2Input {
-                        isVisible()
-                        hasHint(R.string.payrdr_address_line_2)
-                    }
-                    addressLine3Input {
-                        isVisible()
-                        hasHint(R.string.payrdr_address_line_3)
-                    }
-                }
-            }
-        }
-    }
-
-    @Test
-    fun shouldShowErrorOnlyForMandatoryAdditionalCardParams() {
-        run {
-            val config = defaultConfig().copy(
-                fieldsNeedToBeFilledForVisa = listOf(
-                    AdditionalField(
-                        fieldName = "MOBILE_PHONE",
-                        isMandatory = true,
-                        prefilledValue = null
-                    ),
-                    AdditionalField(fieldName = "EMAIL", isMandatory = true, prefilledValue = null),
-                    AdditionalField(
-                        fieldName = "BILLING_CITY",
-                        isMandatory = false,
-                        prefilledValue = null
-                    ),
-                    AdditionalField(
-                        fieldName = "BILLING_COUNTRY",
-                        isMandatory = true,
-                        prefilledValue = null
-                    ),
-                )
-            )
-            val launchIntent = CardNewActivity.prepareIntent(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                config
-            )
-            activityTestRule.launchActivity(launchIntent)
-            step("shouldShowErrorOnlyForMandatoryAdditionalCardParams") {
-                NewCardScreen {
-                    cardNumberInput {
-                        typeText("4594929153014323")
-                    }
-                    cardExpiryInput {
-                        typeText("0628")
-                    }
-                    cardCodeInput {
-                        typeText("235")
-                    }
-                    closeSoftKeyboard()
-                    doneButton {
-                        scrollTo()
-                        click()
-                    }
-                    phoneNumberInputLayout {
-                        hasTextInputLayoutHintText(getString(R.string.payrdr_not_empty_required))
-                    }
-                    emailInputLayout {
-                        hasTextInputLayoutHintText(getString(R.string.payrdr_not_empty_required))
-                    }
-                    cityInputLayout {
-                        hasNoError()
-                    }
-                    countryInputLayout {
-                        hasTextInputLayoutHintText(getString(R.string.payrdr_not_empty_required))
-                    }
-                }
-            }
-        }
-    }
-
-    @Test
-    fun shouldShowAdditionalCardParamsWithPrefilledValues() {
-        run {
-            val config = defaultConfig().copy(
-                fieldsNeedToBeFilledForVisa = listOf(
-                    AdditionalField(
-                        fieldName = "MOBILE_PHONE",
-                        isMandatory = true,
-                        prefilledValue = "88005553535"
-                    ),
-                    AdditionalField(
-                        fieldName = "BILLING_ADDRESS_LINE1",
-                        isMandatory = false,
-                        prefilledValue = "Baker street"
-                    )
-                )
-            )
-            val launchIntent = CardNewActivity.prepareIntent(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                config
-            )
-            activityTestRule.launchActivity(launchIntent)
-            step("shouldShowAdditionalCardParamsWithPrefilledValues") {
-                NewCardScreen {
-                    cardNumberInput {
-                        typeText("4594929153014323")
-                    }
-                    closeSoftKeyboard()
-                    phoneNumberInput {
-                        isVisible()
-                        hasText("88005553535")
-                    }
-                    emailInput {
-                        isNotDisplayed()
-                    }
-                    cityInput {
-                        isNotDisplayed()
-                    }
-                    countryInput {
-                        isNotDisplayed()
-                    }
-                    postalCodeInput {
-                        isNotDisplayed()
-                    }
-                    stateInput {
-                        isNotDisplayed()
-                    }
-                    addressLine1Input {
-                        hasText("Baker street")
-                    }
-                    addressLine2Input {
-                        isNotDisplayed()
-                    }
-                    addressLine3Input {
-                        isNotDisplayed()
                     }
                 }
             }

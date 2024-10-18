@@ -25,13 +25,4 @@
     <string name="payrdr_alert_dialog_text">Si vous changez d\`avis plus tard, vous devrez l\`ajouter à nouveau.</string>
     <string name="payrdr_alert_dialog_cancel">Annuler</string>
     <string name="payrdr_alert_dialog_delete">Supprimer</string>
-    <string name="payrdr_email">Email</string>
-    <string name="payrdr_phone_number">Numéro de téléphone</string>
-    <string name="payrdr_country">Pays</string>
-    <string name="payrdr_state">État</string>
-    <string name="payrdr_city">Ville</string>
-    <string name="payrdr_postal_code">Code postal</string>
-    <string name="payrdr_address_line_1">Ligne d\`adresse 1</string>
-    <string name="payrdr_address_line_2">Ligne d\`adresse 2</string>
-    <string name="payrdr_address_line_3">Ligne d\`adresse 3</string>
 </resources>

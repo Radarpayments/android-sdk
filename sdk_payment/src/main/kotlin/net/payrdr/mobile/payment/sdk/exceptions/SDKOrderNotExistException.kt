@@ -8,5 +8,5 @@ import net.payrdr.mobile.payment.sdk.form.SDKException
  * @param message error description text.
  * @param cause error reason.
  */
-class SDKSessionNotExistException(override val message: String = "", override val cause: Throwable?) :
+class SDKOrderNotExistException(override val message: String = "", override val cause: Throwable?) :
     SDKException(message, cause)

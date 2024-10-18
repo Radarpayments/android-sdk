@@ -38,7 +38,7 @@ data class BindingItem(
                 createdDate = getLong("createdDate"),
                 payerEmail = getString("payerEmail"),
                 payerPhone = getString("payerPhone"),
-                isMaestro = getBoolean("isMaestro"),
+                isMaestro = optBoolean("isMaestro"),
             )
         }
     }

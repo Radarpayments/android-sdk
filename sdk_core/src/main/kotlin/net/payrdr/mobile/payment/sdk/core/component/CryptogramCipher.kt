@@ -5,7 +5,7 @@ import net.payrdr.mobile.payment.sdk.core.model.Key
 /**
  * Interface for cryptogram encryptor.
  */
-internal interface CryptogramCipher {
+interface CryptogramCipher {
 
     /**
      * Encrypt [data] by public key [key].

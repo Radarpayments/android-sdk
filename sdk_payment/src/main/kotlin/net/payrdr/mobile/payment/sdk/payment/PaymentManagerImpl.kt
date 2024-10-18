@@ -16,8 +16,8 @@ import net.payrdr.mobile.payment.sdk.api.entity.SessionStatusResponse
 import net.payrdr.mobile.payment.sdk.exceptions.SDKAlreadyPaymentException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKDeclinedException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKNotConfigureException
+import net.payrdr.mobile.payment.sdk.exceptions.SDKOrderNotExistException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKSessionNotExistException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKTransactionException
 import net.payrdr.mobile.payment.sdk.form.GooglePayConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.SDKException
@@ -34,11 +34,9 @@ import net.payrdr.mobile.payment.sdk.form.gpay.PaymentMethodParameters
 import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecification
 import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecificationParameters
 import net.payrdr.mobile.payment.sdk.form.gpay.TransactionInfo
-import net.payrdr.mobile.payment.sdk.form.model.FilledAdditionalPayerParams
 import net.payrdr.mobile.payment.sdk.form.model.GooglePayPaymentConfig
 import net.payrdr.mobile.payment.sdk.form.utils.requiredField
 import net.payrdr.mobile.payment.sdk.payment.model.GooglePayProcessFormRequest
-import net.payrdr.mobile.payment.sdk.payment.model.PaymentApiVersion
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
@@ -52,9 +50,7 @@ import net.payrdr.mobile.payment.sdk.threeds.spec.ProtocolErrorEvent
 import net.payrdr.mobile.payment.sdk.threeds.spec.RuntimeErrorEvent
 import net.payrdr.mobile.payment.sdk.threeds.spec.ThreeDS2Service
 import net.payrdr.mobile.payment.sdk.threeds.spec.Transaction
-import net.payrdr.mobile.payment.sdk.utils.AdditionalFieldsAssembler
 import net.payrdr.mobile.payment.sdk.utils.OrderStatuses
-import net.payrdr.mobile.payment.sdk.utils.SessionIdConverter
 import net.payrdr.mobile.payment.sdk.utils.containsAnyOfKeywordIgnoreCase
 import java.math.BigDecimal
 
@@ -76,7 +72,6 @@ class PaymentManagerImpl(
 
     private val paymentScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private lateinit var mdOrder: String
-    private lateinit var sessionId: String
 
     private val paymentConfig: SDKPaymentConfig by lazy {
         activityDelegate.getPaymentConfig()
@@ -107,7 +102,7 @@ class PaymentManagerImpl(
     private var transaction: Transaction? = null
 
     @Suppress("LongMethod")
-    override fun checkout(order: String, gPayClicked: Boolean, versionApi: PaymentApiVersion) {
+    override fun checkout(order: String, gPayClicked: Boolean) {
         paymentScope.launchSafe {
             // start PaymentActivity
             // The first step is to call the getSessionStatus method
@@ -127,15 +122,6 @@ class PaymentManagerImpl(
             // 4 - Completion with the result of the payment (return to the payment start screen).
 
             mdOrder = order
-            sessionId = when (versionApi) {
-                PaymentApiVersion.V1 -> {
-                    mdOrder
-                }
-
-                PaymentApiVersion.V2 -> {
-                    SessionIdConverter.mdOrderToSessionId(mdOrder)
-                }
-            }
             val sessionStatusResponse = getSessionStatus()
             val isGPayAccepted = sessionStatusResponse.merchantOptions.contains("GOOGLEPAY")
             var gPayConfig: GooglePayPaymentConfig? = null
@@ -161,7 +147,7 @@ class PaymentManagerImpl(
                         val response = getFinishedPaymentInfo(mdOrder)
                         when {
                             response.status == null -> {
-                                finishWithError(SDKSessionNotExistException(cause = null))
+                                finishWithError(SDKOrderNotExistException(cause = null))
                             }
 
                             response.status.containsAnyOfKeywordIgnoreCase(OrderStatuses.payedStatues) -> {
@@ -185,15 +171,7 @@ class PaymentManagerImpl(
                             bindingCards = emptyList<BindingItem>(),
                             cvcNotRequired = sessionStatusResponse.cvcNotRequired,
                             bindingDeactivationEnabled = sessionStatusResponse.bindingDeactivationEnabled,
-                            googlePayConfig = gPayConfig,
-                            additionalCardParamForPayments =
-                            AdditionalFieldsAssembler.assembleAdditionalFieldsForPayments(
-                                sessionStatusResponse.payerDataParamsNeedToBeFilled.visa,
-                                sessionStatusResponse.payerDataParamsNeedToBeFilled.mastercard,
-                                customerDetails = sessionStatusResponse.customerDetails,
-                                orderPayerData = sessionStatusResponse.orderPayerData,
-                                sessionStatusResponse.billingPayerData
-                            )
+                            googlePayConfig = gPayConfig
                         )
                         LogDebug.logIfDebug("Creating cryptogram with New Card")
                     }
@@ -205,15 +183,7 @@ class PaymentManagerImpl(
                             bindingCards = sessionStatusResponse.bindingItems,
                             cvcNotRequired = sessionStatusResponse.cvcNotRequired,
                             bindingDeactivationEnabled = sessionStatusResponse.bindingDeactivationEnabled,
-                            googlePayConfig = gPayConfig,
-                            additionalCardParamForPayments =
-                            AdditionalFieldsAssembler.assembleAdditionalFieldsForPayments(
-                                sessionStatusResponse.payerDataParamsNeedToBeFilled.visa,
-                                sessionStatusResponse.payerDataParamsNeedToBeFilled.mastercard,
-                                customerDetails = sessionStatusResponse.customerDetails,
-                                orderPayerData = sessionStatusResponse.orderPayerData,
-                                sessionStatusResponse.billingPayerData
-                            )
+                            googlePayConfig = gPayConfig
                         )
                         LogDebug.logIfDebug("Creating cryptogram with Binding Card")
                     }
@@ -222,47 +192,27 @@ class PaymentManagerImpl(
         }
     }
 
-    internal fun processNewCard(
-        seToken: String,
-        mdOrder: String,
-        holder: String,
-        saveCard: Boolean,
-        filledAdditionalPayerParams: FilledAdditionalPayerParams
-    ) {
+    internal fun processNewCard(seToken: String, mdOrder: String, holder: String, saveCard: Boolean) {
         processFormData(
             processFormRequest = ProcessFormRequest(
-                paymentToken = seToken,
+                seToken = seToken,
                 mdOrder = mdOrder,
                 holder = holder.ifBlank { DEFAULT_VALUE_CARDHOLDER },
                 saveCard = saveCard,
-                additionalPayerData = AdditionalFieldsAssembler.assembleFilledParams(
-                    filledAdditionalPayerParams
-                ),
-                email = filledAdditionalPayerParams.email,
-                mobilePhone = filledAdditionalPayerParams.phone
             ),
-            isBinding = false
+            isBinding = false,
         )
     }
 
-    internal fun processBindingCard(
-        seToken: String,
-        mdOrder: String,
-        filledAdditionalPayerParams: FilledAdditionalPayerParams
-    ) {
+    internal fun processBindingCard(seToken: String, mdOrder: String) {
         processFormData(
             processFormRequest = ProcessFormRequest(
-                paymentToken = seToken,
+                seToken = seToken,
                 mdOrder = mdOrder,
                 holder = DEFAULT_VALUE_CARDHOLDER,
                 saveCard = false,
-                additionalPayerData = AdditionalFieldsAssembler.assembleFilledParams(
-                    filledAdditionalPayerParams
-                ),
-                email = filledAdditionalPayerParams.email,
-                mobilePhone = filledAdditionalPayerParams.phone
             ),
-            isBinding = true
+            isBinding = true,
         )
     }
 
@@ -407,7 +357,7 @@ class PaymentManagerImpl(
             val paymentFinishedInfo = getFinishedPaymentInfo(mdOrder)
             LogDebug.logIfDebug("getSessionStatus - Remaining sec ${orderStatus.remainingSecs}")
             val paymentDataResponse = PaymentResult(
-                sessionId = sessionId,
+                mdOrder = mdOrder,
                 isSuccess = paymentFinishedInfo.status.containsAnyOfKeywordIgnoreCase(OrderStatuses.payedStatues),
                 exception = null,
             )
@@ -426,10 +376,8 @@ class PaymentManagerImpl(
                 val paymentFinishedInfo = getFinishedPaymentInfo(mdOrder)
                 LogDebug.logIfDebug("getSessionStatus - Remaining sec ${orderStatus.remainingSecs}")
                 val paymentDataResponse = PaymentResult(
-                    sessionId = sessionId,
-                    isSuccess = paymentFinishedInfo.status.containsAnyOfKeywordIgnoreCase(
-                        OrderStatuses.payedStatues
-                    ),
+                    mdOrder = mdOrder,
+                    isSuccess = paymentFinishedInfo.status.containsAnyOfKeywordIgnoreCase(OrderStatuses.payedStatues),
                     exception = if (ex is SDKException) {
                         ex
                     } else {
@@ -440,7 +388,7 @@ class PaymentManagerImpl(
             } catch (ex: Exception) {
                 activityDelegate.finishActivityWithResult(
                     PaymentResult(
-                        sessionId = sessionId,
+                        mdOrder = mdOrder,
                         isSuccess = false,
                         exception = if (ex is SDKException) {
                             ex
@@ -597,12 +545,7 @@ class PaymentManagerImpl(
 
                 "N" -> {
                     paymentScope.launchSafe {
-                        finishWithError(
-                            SDKTransactionException(
-                                "Transaction not confirmed",
-                                cause = null
-                            )
-                        )
+                        finishWithError(SDKTransactionException("Transaction not confirmed", cause = null))
                     }
                 }
             }

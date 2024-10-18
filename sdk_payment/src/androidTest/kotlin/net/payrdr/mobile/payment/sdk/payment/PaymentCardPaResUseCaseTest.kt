@@ -7,13 +7,11 @@ import net.payrdr.mobile.payment.sdk.core.BaseTestCase
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper.cardWith3DSWithPaRes
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper.invalidVerificationCodePaRes
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper.validVerificationCodePaRes
-import net.payrdr.mobile.payment.sdk.payment.model.CheckoutConfig
 import net.payrdr.mobile.payment.sdk.screen.BottomSheetScreen
 import net.payrdr.mobile.payment.sdk.screen.NewCardScreen
 import net.payrdr.mobile.payment.sdk.screen.ThreeDS1Screen
 import net.payrdr.mobile.payment.sdk.screen.clickCancel
 import net.payrdr.mobile.payment.sdk.screen.clickOnNewCard
-import net.payrdr.mobile.payment.sdk.screen.clickOnReturnToMerchant
 import net.payrdr.mobile.payment.sdk.screen.fillOutAndSend
 import net.payrdr.mobile.payment.sdk.screen.fillOutFormAndSend
 import org.junit.Ignore
@@ -25,11 +23,10 @@ class PaymentCardPaResUseCaseTest: BaseTestCase() {
     @Test
     fun shouldReturnSuccessPaymentDataWithNewCardPaResWithNoUse3DS2SDKSDK() {
         val mdOrder: String = testOrderHelper.registerOrder()
-        val config = CheckoutConfig.MdOrder(mdOrder)
         run {
             step("Start checkout") {
                 SDKPayment.init(testPaymentConfig)
-                SDKPayment.checkout(testActivity, config)
+                SDKPayment.checkout(testActivity, mdOrder)
             }
             step("Click on new card button") {
                 BottomSheetScreen {
@@ -48,46 +45,7 @@ class PaymentCardPaResUseCaseTest: BaseTestCase() {
             }
             step("Verify result") {
                 verifyResult {
-                    paymentData?.sessionId shouldBe mdOrder
-                    paymentData?.isSuccess shouldBe true
-                }
-            }
-        }
-    }
-
-    @ScreenShooterTest
-    @Test
-    fun shouldReturnSuccessPaymentDataWithNewCardPaResWithSessionIdWithNoUse3DS2SDKSDK() {
-        val sessionId: String = testOrderHelper.registerSession()
-        val config = CheckoutConfig.SessionId(sessionId)
-        run {
-            step("Start checkout") {
-                SDKPayment.init(testPaymentConfig)
-                SDKPayment.checkout(testActivity, config)
-            }
-            step("Click on new card button") {
-                BottomSheetScreen {
-                    clickOnNewCard()
-                }
-            }
-            step("Fill new card form") {
-                NewCardScreen {
-                    fillOutFormAndSend(cardWith3DSWithPaRes)
-                }
-            }
-            step("Input verification code") {
-                ThreeDS1Screen {
-                    fillOutAndSend(validVerificationCodePaRes)
-                }
-            }
-            step("Input verification code") {
-                ThreeDS1Screen {
-                    clickOnReturnToMerchant()
-                }
-            }
-            step("Verify result") {
-                verifyResult {
-                    paymentData?.sessionId shouldBe sessionId
+                    paymentData?.mdOrder shouldBe mdOrder
                     paymentData?.isSuccess shouldBe true
                 }
             }
@@ -99,11 +57,10 @@ class PaymentCardPaResUseCaseTest: BaseTestCase() {
     @Ignore
     fun shouldReturnErrorPaymentDataWithNewCardPaResWithNoUse3DS2SDKSDKWithInvalidVerificationCode() {
         val mdOrder: String = testOrderHelper.registerOrder()
-        val config = CheckoutConfig.MdOrder(mdOrder)
         run {
             step("Start checkout") {
                 SDKPayment.init(testPaymentConfig)
-                SDKPayment.checkout(testActivity, config)
+                SDKPayment.checkout(testActivity, mdOrder)
             }
             step("Click on new card button") {
                 BottomSheetScreen {
@@ -135,7 +92,7 @@ class PaymentCardPaResUseCaseTest: BaseTestCase() {
             }
             step("Verify result") {
                 verifyResult {
-                    paymentData?.sessionId shouldBe mdOrder
+                    paymentData?.mdOrder shouldBe mdOrder
                     paymentData?.isSuccess shouldBe false
                 }
             }
@@ -147,11 +104,10 @@ class PaymentCardPaResUseCaseTest: BaseTestCase() {
     @Ignore
     fun shouldReturnErrorPaymentDataWithNewCardPaResWithNoUse3DS2SDKSDKWhenUserClickCancel() {
         val mdOrder: String = testOrderHelper.registerOrder()
-        val config = CheckoutConfig.MdOrder(mdOrder)
         run {
             step("Start checkout") {
                 SDKPayment.init(testPaymentConfig)
-                SDKPayment.checkout(testActivity, config)
+                SDKPayment.checkout(testActivity, mdOrder)
             }
             step("Click on new card button") {
                 BottomSheetScreen {
@@ -170,7 +126,7 @@ class PaymentCardPaResUseCaseTest: BaseTestCase() {
             }
             step("Verify result") {
                 verifyResult {
-                    paymentData?.sessionId shouldBe mdOrder
+                    paymentData?.mdOrder shouldBe mdOrder
                     paymentData?.isSuccess shouldBe false
                 }
             }

@@ -25,13 +25,4 @@
     <string name="payrdr_alert_dialog_text">Чтобы снова использовать эту карту, нужно будет добавить ее еще раз.</string>
     <string name="payrdr_alert_dialog_cancel">Отмена</string>
     <string name="payrdr_alert_dialog_delete">Удалить</string>
-    <string name="payrdr_email">Электронная почта</string>
-    <string name="payrdr_phone_number">Номер телефона</string>
-    <string name="payrdr_country">Страна</string>
-    <string name="payrdr_state">Область</string>
-    <string name="payrdr_city">Город</string>
-    <string name="payrdr_postal_code">Почтовый индекс</string>
-    <string name="payrdr_address_line_1">Адрес, строка 1</string>
-    <string name="payrdr_address_line_2">Адрес, строка 2</string>
-    <string name="payrdr_address_line_3">Адрес, строка 3</string>
 </resources>

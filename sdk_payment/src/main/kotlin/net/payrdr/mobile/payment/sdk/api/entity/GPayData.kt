@@ -19,7 +19,7 @@ import org.json.JSONObject
  */
 data class GPayData(
     val orderId: String,
-    val is3DSVer2: Boolean?,
+    val is3DSVer2: Boolean,
     val acsUrl: String?,
     val paReq: String?,
     val termUrl: String?,
@@ -37,7 +37,7 @@ data class GPayData(
         fun fromJson(jsonObject: JSONObject): GPayData = with(jsonObject) {
             GPayData(
                 orderId = getString("orderId"),
-                is3DSVer2 = if (has("is3DSVer2")) getBoolean("is3DSVer2") else null,
+                is3DSVer2 = optBoolean("is3DSVer2"),
                 acsUrl = optValue("acsUrl"),
                 paReq = optValue("paReq"),
                 termUrl = optValue("termUrl"),

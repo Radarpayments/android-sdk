@@ -30,6 +30,7 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
 
     private lateinit var mdOrder: String
     private lateinit var timer: Timer
+
     /**
      * web view client for interception loading url.
      *
@@ -47,17 +48,27 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
             when (error?.primaryError) {
                 SslError.SSL_UNTRUSTED -> {
                     message = "The certificate authority is not trusted."
-                    val trust =
-                        SDKPayment.sdkPaymentConfig.sslContextConfig?.trustManager as X509TrustManager
-                    try {
-                        trust.checkServerTrusted(
-                            arrayOf(SDKPayment.sdkPaymentConfig.sslContextConfig?.customCertificate),
-                            "RSA"
-                        )
-                        isTrusted = true
-                        message = "The certificate authority is trusted."
-                    } catch (e: CertificateException) {
-                        LogDebug.logIfDebug("WebClient onReceivedSslError - get Exception to try check server trusted.")
+                    val sslContextConfig = SDKPayment.sdkPaymentConfig.sslContextConfig
+                    if (sslContextConfig != null) {
+                        try {
+                            val trust = sslContextConfig.trustManager as X509TrustManager
+                            trust.checkServerTrusted(
+                                arrayOf(SDKPayment.sdkPaymentConfig.sslContextConfig?.customCertificate),
+                                "RSA"
+                            )
+                            isTrusted = true
+                            message = "The certificate authority is trusted."
+                        } catch (e: CertificateException) {
+                            LogDebug.logIfDebug(
+                                "WebClient onReceivedSslError - get Exception to try check server trusted."
+                            )
+                        } catch (e: ClassCastException) {
+                            LogDebug.logIfDebug(
+                                "Cant cast Trust Manager to X509 Trust Manager."
+                            )
+                        }
+                    } else {
+                        message = "Ssl context config must be not null when SSL_UNTRUSTED"
                     }
                 }
 
@@ -90,7 +101,7 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
                     request.url.toString().startsWith("sdk://done") -> {
                         finishWithResult(
                             PaymentResult(
-                                sessionId = mdOrder,
+                                mdOrder = mdOrder,
                                 isSuccess = true,
                                 exception = null,
                             )
@@ -202,7 +213,7 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
         override fun run() {
             finishWithResult(
                 PaymentResult(
-                    sessionId = mdOrder,
+                    mdOrder = mdOrder,
                     isSuccess = false,
                     exception = SDKException(message = "Transaction Timed Out."),
                 )

@@ -26,10 +26,6 @@ import org.json.JSONObject
  * @param expirationDateCustomValidation is own validation enabled for card expiration.
  * @param bindingDeactivationEnabled allows unbinding the card.
  * @param merchantOptions list of available payment methods.
- * @param orderPayerData information about payer personal data.
- * @param customerDetails information about customer.
- * @param billingPayerData information about payer country, city, address and etc.
- * @param payerDataParamsNeedToBeFilled fields to be filled by payer.
  */
 data class SessionStatusResponse(
     val redirect: String? = null,
@@ -49,10 +45,6 @@ data class SessionStatusResponse(
     val currencyAlphaCode: String? = null,
     val merchantInfo: MerchantInfo,
     val merchantOptions: List<String>,
-    val orderPayerData: OrderPayerData,
-    val customerDetails: CustomerDetails,
-    val billingPayerData: BillingPayerData,
-    val payerDataParamsNeedToBeFilled: PayerDataParamsNeedToBeFilled
 ) {
 
     companion object {
@@ -71,24 +63,18 @@ data class SessionStatusResponse(
                     .map {
                         BindingItem.fromJson(it)
                     },
-                cvcNotRequired = getBoolean("cvcNotRequired"),
-                otherWayEnabled = getBoolean("otherWayEnabled"),
-                bindingEnabled = getBoolean("bindingEnabled"),
-                feeEnabled = getBoolean("feeEnabled"),
+                cvcNotRequired = optBoolean("cvcNotRequired"),
+                otherWayEnabled = optBoolean("otherWayEnabled"),
+                bindingEnabled = optBoolean("bindingEnabled"),
+                feeEnabled = optBoolean("feeEnabled"),
                 backUrl = optValue("backUrl"),
-                orderExpired = getBoolean("orderExpired"),
-                is3DSVer2 = getBoolean("is3DSVer2"),
-                expirationDateCustomValidation = getBoolean("expirationDateCustomValidation"),
+                orderExpired = optBoolean("orderExpired"),
+                is3DSVer2 = optBoolean("is3DSVer2"),
+                expirationDateCustomValidation = optBoolean("expirationDateCustomValidation"),
                 currencyAlphaCode = optValue("currencyAlphaCode"),
                 merchantInfo = MerchantInfo.fromJson(getJSONObject("merchantInfo")),
-                bindingDeactivationEnabled = getBoolean("bindingDeactivationEnabled"),
-                merchantOptions = jsonObject.getJSONArray("merchantOptions").asStringList(),
-                billingPayerData = BillingPayerData.fromJson(optJSONObject("billingPayerData")),
-                payerDataParamsNeedToBeFilled = PayerDataParamsNeedToBeFilled.fromJson(
-                    optJSONObject("payerDataParamsNeedToBeFilled")
-                ),
-                orderPayerData = OrderPayerData.fromJson(optJSONObject("orderPayerData")),
-                customerDetails = CustomerDetails.fromJson(optJSONObject("customerDetails"))
+                bindingDeactivationEnabled = optBoolean("bindingDeactivationEnabled"),
+                merchantOptions = jsonObject.getJSONArray("merchantOptions").asStringList()
             )
         }
     }

@@ -10,14 +10,4 @@
     <string name="payrdr_pub_key_required">Public key required</string>
     <string name="payrdr_binding_required">Binding id required</string>
     <string name="payrdr_binding_incorrect">Binding id has incorrect format</string>
-    <string name="payrdr_not_empty_required">Field must not be empty</string>
-    <string name="payrdr_email">Correo electrónico</string>
-    <string name="payrdr_phone_number">Número de teléfono\t</string>
-    <string name="payrdr_country">País</string>
-    <string name="payrdr_state">Estado</string>
-    <string name="payrdr_city">Ciudad</string>
-    <string name="payrdr_postal_code">Código postal</string>
-    <string name="payrdr_address_line_1">Dirección Línea 1</string>
-    <string name="payrdr_address_line_2">Dirección Línea 2</string>
-    <string name="payrdr_address_line_3">Dirección Línea 3</string>
 </resources>
