@@ -101,7 +101,7 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
                     request.url.toString().startsWith("sdk://done") -> {
                         finishWithResult(
                             PaymentResult(
-                                mdOrder = mdOrder,
+                                sessionId = mdOrder,
                                 isSuccess = true,
                                 exception = null,
                             )
@@ -213,7 +213,7 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
         override fun run() {
             finishWithResult(
                 PaymentResult(
-                    mdOrder = mdOrder,
+                    sessionId = mdOrder,
                     isSuccess = false,
                     exception = SDKException(message = "Transaction Timed Out."),
                 )

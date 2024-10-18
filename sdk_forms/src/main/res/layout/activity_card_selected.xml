@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:scrollbars="none">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -159,6 +159,223 @@
                 app:constraint_referenced_ids="cardExpiryInputLayout,cardCodeInputLayout"
                 tools:layout_editor_absoluteY="321dp" />
 
+            <net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
+                android:id="@+id/emailInputLayout"
+                style="@style/PAYRDRTextInputLayoutAppearance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/payrdr_medium_dimen"
+                android:layout_marginStart="@dimen/payrdr_medium_dimen"
+                android:layout_marginEnd="@dimen/payrdr_medium_dimen"
+                tools:visibility="visible"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+
+                app:layout_constraintTop_toBottomOf="@id/barrier"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <net.payrdr.mobile.payment.sdk.form.ui.widget.EmailEditText
+                    android:id="@+id/emailInput"
+                    style="@style/PAYRDREditTextStyle"
+                    android:layout_width="match_parent"
+                    android:hint="@string/payrdr_email"
+                    android:layout_height="wrap_content" />
+
+            </net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout>
+
+            <net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
+                android:id="@+id/phoneNumberInputLayout"
+                style="@style/PAYRDRTextInputLayoutAppearance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/payrdr_medium_dimen"
+                android:layout_marginEnd="@dimen/payrdr_medium_dimen"
+                tools:visibility="visible"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+
+                app:layout_constraintTop_toBottomOf="@id/emailInputLayout"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <net.payrdr.mobile.payment.sdk.form.ui.widget.PayerPhoneNumberEditText
+                    android:id="@+id/phoneNumberInput"
+                    style="@style/PAYRDREditTextStyle"
+                    android:layout_width="match_parent"
+                    android:hint="@string/payrdr_phone_number"
+                    android:layout_height="wrap_content" />
+
+            </net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout>
+
+            <LinearLayout
+                android:id="@+id/payerLocationGroupLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="@dimen/payrdr_medium_dimen"
+                android:layout_marginEnd="@dimen/payrdr_medium_dimen"
+                app:layout_constraintTop_toBottomOf="@id/phoneNumberInputLayout">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
+                        android:id="@+id/countryInputLayout"
+                        style="@style/PAYRDRTextInputLayoutAppearance"
+                        android:layout_width="0dp"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <net.payrdr.mobile.payment.sdk.form.ui.widget.PayerAdditionalInformationEditText
+                            android:id="@+id/countryInput"
+                            style="@style/PAYRDREditTextStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="@string/payrdr_country" />
+
+                    </net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout>
+
+                    <net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
+                        android:id="@+id/stateInputLayout"
+                        style="@style/PAYRDRTextInputLayoutAppearance"
+                        android:layout_width="0dp"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/payrdr_small_dimen"
+                        android:layout_weight="1">
+
+                        <net.payrdr.mobile.payment.sdk.form.ui.widget.PayerAdditionalInformationEditText
+                            android:id="@+id/stateInput"
+                            style="@style/PAYRDREditTextStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="@string/payrdr_state" />
+
+                    </net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
+                        android:id="@+id/cityInputLayout"
+                        style="@style/PAYRDRTextInputLayoutAppearance"
+                        android:layout_width="0dp"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <net.payrdr.mobile.payment.sdk.form.ui.widget.PayerAdditionalInformationEditText
+                            android:id="@+id/cityInput"
+                            style="@style/PAYRDREditTextStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="@string/payrdr_city" />
+
+                    </net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout>
+
+                    <net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
+                        android:id="@+id/postalCodeInputLayout"
+                        style="@style/PAYRDRTextInputLayoutAppearance"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/payrdr_small_dimen"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        android:layout_weight="1">
+
+                        <net.payrdr.mobile.payment.sdk.form.ui.widget.PayerAdditionalInformationEditText
+                            android:id="@+id/postalCodeInput"
+                            style="@style/PAYRDREditTextStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="@string/payrdr_postal_code" />
+
+                    </net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
+                android:id="@+id/addressLine1InputLayout"
+                style="@style/PAYRDRTextInputLayoutAppearance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/payrdr_medium_dimen"
+                android:layout_marginEnd="@dimen/payrdr_medium_dimen"
+                tools:visibility="visible"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+
+                app:layout_constraintTop_toBottomOf="@id/payerLocationGroupLayout"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <net.payrdr.mobile.payment.sdk.form.ui.widget.PayerAdditionalInformationEditText
+                    android:id="@+id/addressLine1Input"
+                    style="@style/PAYRDREditTextStyle"
+                    android:layout_width="match_parent"
+                    android:hint="@string/payrdr_address_line_1"
+                    android:layout_height="wrap_content" />
+
+            </net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout>
+
+            <net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
+                android:id="@+id/addressLine2InputLayout"
+                style="@style/PAYRDRTextInputLayoutAppearance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/payrdr_medium_dimen"
+                android:layout_marginEnd="@dimen/payrdr_medium_dimen"
+                tools:visibility="visible"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+
+                app:layout_constraintTop_toBottomOf="@id/addressLine1InputLayout"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <net.payrdr.mobile.payment.sdk.form.ui.widget.PayerAdditionalInformationEditText
+                    android:id="@+id/addressLine2Input"
+                    style="@style/PAYRDREditTextStyle"
+                    android:layout_width="match_parent"
+                    android:hint="@string/payrdr_address_line_2"
+                    android:layout_height="wrap_content" />
+
+            </net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout>
+
+            <net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
+                android:id="@+id/addressLine3InputLayout"
+                style="@style/PAYRDRTextInputLayoutAppearance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/payrdr_medium_dimen"
+                android:layout_marginEnd="@dimen/payrdr_medium_dimen"
+                tools:visibility="visible"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+
+                app:layout_constraintTop_toBottomOf="@id/addressLine2InputLayout"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <net.payrdr.mobile.payment.sdk.form.ui.widget.PayerAdditionalInformationEditText
+                    android:id="@+id/addressLine3Input"
+                    style="@style/PAYRDREditTextStyle"
+                    android:layout_width="match_parent"
+                    android:hint="@string/payrdr_address_line_3"
+                    android:layout_height="wrap_content" />
+
+            </net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout>
+
             <net.payrdr.mobile.payment.sdk.form.ui.widget.GeneralButton
                 android:id="@+id/doneButton"
                 style="@style/ButtonStyle"
@@ -171,12 +388,12 @@
                 android:text="@string/payrdr_payment_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/barrier">
+                app:layout_constraintTop_toBottomOf="@+id/addressLine3InputLayout">
 
                 <requestFocus />
             </net.payrdr.mobile.payment.sdk.form.ui.widget.GeneralButton>
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"

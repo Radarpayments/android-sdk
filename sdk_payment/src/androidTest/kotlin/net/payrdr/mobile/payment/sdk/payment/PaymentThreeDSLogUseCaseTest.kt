@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldBe
 import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.core.BaseTestCase
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper
+import net.payrdr.mobile.payment.sdk.payment.model.CheckoutConfig
 import net.payrdr.mobile.payment.sdk.screen.BottomSheetScreen
 import net.payrdr.mobile.payment.sdk.screen.NewCardScreen
 import net.payrdr.mobile.payment.sdk.screen.ThreeDS2Screen
@@ -30,10 +31,11 @@ class PaymentThreeDSLogUseCaseTest: BaseTestCase() {
         }
 
         val mdOrder: String = testOrderHelper.registerOrder()
+        val config = CheckoutConfig.MdOrder(mdOrder)
         run {
             step("Start checkout") {
                 SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
-                SDKPayment.checkout(testActivity, mdOrder)
+                SDKPayment.checkout(testActivity, config)
             }
             step("Click on new card button") {
                 BottomSheetScreen {

@@ -6,11 +6,7 @@ import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import net.payrdr.mobile.payment.sdk.core.Logger
-import net.payrdr.mobile.payment.sdk.core.component.impl.DefaultPaymentStringProcessor
-import net.payrdr.mobile.payment.sdk.core.component.impl.RSACryptogramCipher
 import net.payrdr.mobile.payment.sdk.form.Constants.REQUEST_CODE_CRYPTOGRAM
-import net.payrdr.mobile.payment.sdk.form.component.CryptogramProcessor
-import net.payrdr.mobile.payment.sdk.form.component.impl.DefaultCryptogramProcessor
 import net.payrdr.mobile.payment.sdk.form.model.CryptogramData
 import net.payrdr.mobile.payment.sdk.form.model.GooglePayPaymentConfig
 import net.payrdr.mobile.payment.sdk.form.model.PaymentConfig
@@ -33,21 +29,6 @@ object SDKForms {
     internal val sdkConfig: SDKConfig
         get() = innerSdkConfig
             ?: throw IllegalStateException("Please call SDKForms.init() before.")
-
-    @JvmSynthetic
-    internal var innerCryptogramProcessor: CryptogramProcessor? = null
-        get() {
-            return field ?: DefaultCryptogramProcessor(
-                keyProvider = sdkConfig.keyProvider,
-                paymentStringProcessor = DefaultPaymentStringProcessor(),
-                cryptogramCipher = RSACryptogramCipher()
-            )
-        }
-    internal val cryptogramProcessor: CryptogramProcessor
-        get() {
-            return innerCryptogramProcessor
-                ?: throw IllegalStateException("Please call SDKForms.init() before.")
-        }
 
     /**
      * Initialization.
@@ -72,7 +53,6 @@ object SDKForms {
      * @param config payment configuration.
      */
     fun cryptogram(activity: Activity, config: PaymentConfig) {
-        checkNotNull(cryptogramProcessor)
         LocalizationSetting.setLanguage(config.locale)
         ThemeSetting.setTheme(config.theme)
         if (config.cards.isEmpty()) {
@@ -107,7 +87,6 @@ object SDKForms {
      * @param config payment configuration.
      */
     fun cryptogram(activity: Activity, config: GooglePayPaymentConfig) {
-        checkNotNull(cryptogramProcessor)
         LocalizationSetting.setLanguage(config.locale)
         ThemeSetting.setTheme(config.theme)
         Logger.log(
@@ -129,7 +108,6 @@ object SDKForms {
      * @param config payment configuration.
      */
     fun cryptogram(fragment: Fragment, config: PaymentConfig) {
-        checkNotNull(cryptogramProcessor)
         LocalizationSetting.setLanguage(config.locale)
         ThemeSetting.setTheme(config.theme)
         if (config.cards.isEmpty()) {
@@ -164,7 +142,6 @@ object SDKForms {
      * @param config payment configuration.
      */
     fun cryptogram(fragment: Fragment, config: GooglePayPaymentConfig) {
-        checkNotNull(cryptogramProcessor)
         LocalizationSetting.setLanguage(config.locale)
         ThemeSetting.setTheme(config.theme)
         Logger.log(

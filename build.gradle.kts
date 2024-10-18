@@ -6,12 +6,13 @@ buildscript {
         gradlePluginPortal()
         google()
         mavenCentral()
+        jcenter()
         maven(uri("https://oss.jfrog.org/artifactory/oss-snapshot-local/"))
         maven(uri("https://oss.sonatype.org/content/repositories/snapshots"))
     }
     dependencies {
-        classpath("io.qameta.allure:allure-gradle:2.8.1")
         classpath("com.android.tools.build:gradle:4.1.3")
+        classpath("io.qameta.allure:allure-gradle:2.8.1")
         classpath(kotlin("gradle-plugin", version = kotlin_version))
         classpath(kotlin("serialization", version = kotlin_version))
 
@@ -28,6 +29,7 @@ allprojects {
     }
     repositories {
         google()
+        mavenCentral()
         jcenter()
         maven(uri("https://oss.sonatype.org/content/repositories/snapshots"))
         flatDir {

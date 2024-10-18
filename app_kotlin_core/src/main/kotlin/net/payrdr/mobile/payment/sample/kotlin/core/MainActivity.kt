@@ -19,6 +19,7 @@ import net.payrdr.mobile.payment.sdk.core.SDKCore
 import net.payrdr.mobile.payment.sdk.core.TokenResult
 import net.payrdr.mobile.payment.sdk.core.model.BindingParams
 import net.payrdr.mobile.payment.sdk.core.model.CardParams
+import net.payrdr.mobile.payment.sdk.core.model.SDKCoreConfig
 import net.payrdr.mobile.payment.sdk.core.validation.BaseValidator
 import net.payrdr.mobile.payment.sdk.core.validation.CardCodeValidator
 import net.payrdr.mobile.payment.sdk.core.validation.CardExpiryValidator
@@ -56,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                 pubKey = pubKeyInput.text.toString()
             )
             // Method call to get cryptogram for new card.
-            proceedResult(sdkCore.generateWithCard(params))
+            proceedResult(sdkCore.generateWithConfig(SDKCoreConfig(params)))
         }
 
         generateWithBinding.setOnClickListener {
@@ -68,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 pubKey = pubKeyInput.text.toString()
             )
             // Method call to get the cryptogram for the binding card.
-            proceedResult(sdkCore.generateWithBinding(params))
+            proceedResult(sdkCore.generateWithConfig(SDKCoreConfig(params)))
         }
     }
 

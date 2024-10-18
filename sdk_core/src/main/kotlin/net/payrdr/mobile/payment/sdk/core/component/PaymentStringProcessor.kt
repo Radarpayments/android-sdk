@@ -6,7 +6,7 @@ import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 /**
  * Payment data generation processor interface by template .
  */
-interface PaymentStringProcessor {
+internal interface PaymentStringProcessor {
 
     /**
      * Forms a line with billing information.

@@ -93,10 +93,6 @@ import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.german
 import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.russian
 import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.spanish
 import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales.ukrainian
-import net.payrdr.mobile.payment.sdk.threeds.ThreeDSLogger
-import net.payrdr.mobile.payment.sdk.threeds.logs.LogUploaderConfig
-import net.payrdr.mobile.payment.sdk.threeds.logs.LogUploaderConfigProvider
-import net.payrdr.mobile.payment.sdk.threeds.logs.sentry.SentryLogUploaderConfig
 import org.json.JSONObject
 import java.math.BigDecimal
 import java.util.Locale
@@ -203,7 +199,7 @@ class MainActivity : AppCompatActivity() {
                 // Optional, default HIDE.
                 .holderInputOptions(HolderInputOptions.VISIBLE)
                 // Optional, default true.
-                .bindingCVCRequired(false)
+                .storedPaymentMethodCVCRequired(false)
                 // Optional, default ENABLED.
                 .cameraScannerOptions(CameraScannerOptions.ENABLED)
                 // Optional, default ENABLED.
@@ -413,7 +409,7 @@ class MainActivity : AppCompatActivity() {
             // Optional, default HIDE.
             .holderInputOptions(HolderInputOptions.VISIBLE)
             // Optional, default true.
-            .bindingCVCRequired(bindingCVCRequired)
+            .storedPaymentMethodCVCRequired(bindingCVCRequired)
             // Optional, default ENABLED.
             .cameraScannerOptions(CameraScannerOptions.ENABLED)
             // Optional, default ENABLED.
@@ -464,7 +460,7 @@ class MainActivity : AppCompatActivity() {
             // Optional, default HIDE.
             .holderInputOptions(HolderInputOptions.VISIBLE)
             // Optional, default true.
-            .bindingCVCRequired(bindingCVCRequired)
+            .storedPaymentMethodCVCRequired(bindingCVCRequired)
             // Optional, default ENABLED.
             .cameraScannerOptions(CameraScannerOptions.ENABLED)
             // Optional, default ENABLED.
@@ -515,7 +511,7 @@ class MainActivity : AppCompatActivity() {
             // Optional, default HIDE.
             .holderInputOptions(HolderInputOptions.VISIBLE)
             // Optional, default true.
-            .bindingCVCRequired(true)
+            .storedPaymentMethodCVCRequired(true)
             // Optional, default ENABLED.
             .cameraScannerOptions(CameraScannerOptions.ENABLED)
             // Optional, default SYSTEM.
@@ -579,7 +575,7 @@ class MainActivity : AppCompatActivity() {
                             log("Saved card ${info.bindingId}")
                         } else if (info is PaymentInfoGooglePay) {
                             log("Google Pay ${info.order}")
-                            googlePayCryptogram.text = result.seToken
+                            googlePayCryptogram.text = info.paymentToken
                         }
                         log("$result")
                         log("Deleted cards ${result.deletedCardsList}")

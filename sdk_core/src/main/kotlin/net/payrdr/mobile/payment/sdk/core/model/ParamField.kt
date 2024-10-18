@@ -43,5 +43,10 @@ enum class ParamField {
     /**
      * Public key error.
      */
-    PUB_KEY
+    PUB_KEY,
+
+    /**
+     * Stored payment id error.
+     */
+    STORED_PAYMENT_ID
 }
