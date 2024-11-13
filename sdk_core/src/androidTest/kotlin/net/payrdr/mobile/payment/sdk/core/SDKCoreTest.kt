@@ -5,14 +5,9 @@ import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule.grant
 import io.qameta.allure.kotlin.Description
-import net.payrdr.mobile.payment.sdk.core.model.BindingInstantParams
 import net.payrdr.mobile.payment.sdk.core.model.BindingParams
-import net.payrdr.mobile.payment.sdk.core.model.CardInstantParams
 import net.payrdr.mobile.payment.sdk.core.model.CardParams
-import net.payrdr.mobile.payment.sdk.core.model.NewPaymentMethodCardParams
-import net.payrdr.mobile.payment.sdk.core.model.NewPaymentMethodStoredCardParams
 import net.payrdr.mobile.payment.sdk.core.model.ParamField
-import net.payrdr.mobile.payment.sdk.core.model.SDKCoreConfig
 import net.payrdr.mobile.payment.sdk.core.validation.ValidationCodes
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -40,8 +35,8 @@ class SDKCoreTest {
     }
 
     @Test
-    @Description("shouldGenerateNewCardPayment")
-    fun shouldGenerateNewCardPayment() {
+    @Description("shouldGenerateWithCard")
+    fun shouldGenerateWithCard() {
         val params = CardParams(
             mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
             pan = "5391119268214792",
@@ -51,32 +46,14 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertNotEquals(null, result.token)
         assertEquals(emptyMap<ParamField, String>(), result.errors)
     }
 
     @Test
-    @Description("shouldGenerateNewCardPaymentWithNewPaymentMethod")
-    fun shouldGenerateNewCardPaymentWithNewPaymentMethod() {
-        val params = NewPaymentMethodCardParams(
-            pan = "5391119268214792",
-            cvc = "123",
-            expiryMMYY = "12/25",
-            cardHolder = "Joe Doe",
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertNotEquals(null, result.token)
-        assertEquals(emptyMap<ParamField, String>(), result.errors)
-    }
-
-    @Test
-    @Description("shouldGenerateNewCardPaymentWithoutCardHolder")
-    fun shouldGenerateNewCardPaymentWithoutCardHolder() {
+    @Description("shouldGenerateWithCardWithoutCardHolder")
+    fun shouldGenerateWithCardWithoutCardHolder() {
         val params = CardParams(
             mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
             pan = "5391119268214792",
@@ -86,31 +63,13 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertNotEquals(null, result.token)
         assertEquals(emptyMap<ParamField, String>(), result.errors)
     }
 
     @Test
-    @Description("shouldGenerateNewCardPaymentWithoutCardHolderWithNewPaymentMethod")
-    fun shouldGenerateNewCardPaymentWithoutCardHolderWithNewPaymentMethod() {
-        val params = NewPaymentMethodCardParams(
-            pan = "5391119268214792",
-            cvc = "123",
-            expiryMMYY = "12/25",
-            cardHolder = null,
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertNotEquals(null, result.token)
-        assertEquals(emptyMap<ParamField, String>(), result.errors)
-    }
-
-    @Test
-    @Description("shouldGenerateNewCardPaymentWithInvalidSymbolsInCardHolder")
+    @Description("shouldGenerateWithCardWithInvalidSymbolsInCardHolder")
     fun shouldGenerateWithCardWithInvalidSymbolsInCardHolder() {
         val params = CardParams(
             mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
@@ -121,34 +80,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalidFormat, result.errors[ParamField.CARDHOLDER])
     }
 
     @Test
-    @Description("shouldGenerateNewCardPaymentWithInvalidSymbolsInCardHolderWithNewPaymentMethod")
-    fun shouldGenerateNewCardPaymentWithInvalidSymbolsInCardHolderWithNewPaymentMethod() {
-        val params = NewPaymentMethodCardParams(
-            pan = "5391119268214792",
-            cvc = "123",
-            expiryMMYY = "12/25",
-            cardHolder = "4554Pav",
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.invalidFormat, result.errors[ParamField.CARDHOLDER])
-    }
-
-    @Test
-    @Description("shouldGenerateNewCardPaymentWithMaxLengthInCardHolder")
-    fun shouldGenerateNewCardPaymentWithMaxLengthInCardHolder() {
+    @Description("shouldGenerateWithCardWithMaxLengthInCardHolder")
+    fun shouldGenerateWithCardWithMaxLengthInCardHolder() {
         val params = CardParams(
             mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
             pan = "5391119268214792",
@@ -158,34 +98,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalid, result.errors[ParamField.CARDHOLDER])
     }
 
     @Test
-    @Description("shouldGenerateNewCardPaymentWithMaxLengthInCardHolderWithNewPaymentMethod")
-    fun shouldGenerateNewCardPaymentWithMaxLengthInCardHolderWithNewPaymentMethod() {
-        val params = NewPaymentMethodCardParams(
-            pan = "5391119268214792",
-            cvc = "123",
-            expiryMMYY = "12/25",
-            cardHolder = "G".repeat(31),
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.invalid, result.errors[ParamField.CARDHOLDER])
-    }
-
-    @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyMdOrder")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyMdOrder() {
+    @Description("shouldReturnErrorWhileGenerateWithCardWithEmptyMdOrder")
+    fun shouldReturnErrorWhileGenerateWithCardWithEmptyMdOrder() {
         val params = CardParams(
             mdOrder = "",
             pan = "5391119268214792",
@@ -195,16 +116,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.required, result.errors[ParamField.MD_ORDER])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyPan")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyPan() {
+    @Description("shouldReturnErrorWhileGenerateWithCardWithEmptyPan")
+    fun shouldReturnErrorWhileGenerateWithCardWithEmptyPan() {
         val params = CardParams(
             mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
             pan = "",
@@ -214,34 +134,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.required, result.errors[ParamField.PAN])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyPanWithNewPaymentMethod")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyPanWithNewPaymentMethod() {
-        val params = NewPaymentMethodCardParams(
-            pan = "",
-            cvc = "123",
-            expiryMMYY = "12/25",
-            cardHolder = "Joe Doe",
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.required, result.errors[ParamField.PAN])
-    }
-
-    @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyCVC")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyCVC() {
+    @Description("shouldReturnErrorWhileGenerateWithCardWithEmptyCVC")
+    fun shouldReturnErrorWhileGenerateWithCardWithEmptyCVC() {
         val params = CardParams(
             mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
             pan = "5391119268214792",
@@ -251,34 +152,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.required, result.errors[ParamField.CVC])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyCVCWithNewPaymentMethod")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyCVCWithNewPaymentMethod() {
-        val params = NewPaymentMethodCardParams(
-            pan = "5391119268214792",
-            cvc = "",
-            expiryMMYY = "12/25",
-            cardHolder = "Joe Doe",
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.required, result.errors[ParamField.CVC])
-    }
-
-    @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyExpiry")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyExpiry() {
+    @Description("shouldReturnErrorWhileGenerateWithCardWithEmptyExpiry")
+    fun shouldReturnErrorWhileGenerateWithCardWithEmptyExpiry() {
         val params = CardParams(
             mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
             pan = "5391119268214792",
@@ -288,34 +170,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.required, result.errors[ParamField.EXPIRY])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyExpiryWithNewPaymentMethod")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyExpiryWithNewPaymentMethod() {
-        val params = NewPaymentMethodCardParams(
-            pan = "5391119268214792",
-            cvc = "123",
-            expiryMMYY = "",
-            cardHolder = "Joe Doe",
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.required, result.errors[ParamField.EXPIRY])
-    }
-
-    @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyPubKey")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyPubKey() {
+    @Description("shouldReturnErrorWhileGenerateWithCardWithEmptyPubKey")
+    fun shouldReturnErrorWhileGenerateWithCardWithEmptyPubKey() {
         val params = CardParams(
             mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
             pan = "5391119268214792",
@@ -325,34 +188,15 @@ class SDKCoreTest {
             pubKey = ""
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.required, result.errors[ParamField.PUB_KEY])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyPubKeyWithNewPaymentMethod")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithEmptyPubKeyWithNewPaymentMethod() {
-        val params = NewPaymentMethodCardParams(
-            pan = "5391119268214792",
-            cvc = "123",
-            expiryMMYY = "12/25",
-            cardHolder = "Joe Doe",
-            pubKey = ""
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.required, result.errors[ParamField.PUB_KEY])
-    }
-
-    @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidPan")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidPan() {
+    @Description("shouldReturnErrorWhileGenerateWithCardWithInvalidPan")
+    fun shouldReturnErrorWhileGenerateWithCardWithInvalidPan() {
         val params = CardParams(
             mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
             pan = "5INVALID19268PAN14792",
@@ -362,34 +206,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalidFormat, result.errors[ParamField.PAN])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidPanWithNewPaymentMethod")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidPanWithNewPaymentMethod() {
-        val params = NewPaymentMethodCardParams(
-            pan = "5INVALID19268PAN14792",
-            cvc = "123",
-            expiryMMYY = "12/25",
-            cardHolder = "Joe Doe",
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.invalidFormat, result.errors[ParamField.PAN])
-    }
-
-    @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidCVC")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidCVCW() {
+    @Description("shouldReturnErrorWhileGenerateWithCardWithInvalidCVC")
+    fun shouldReturnErrorWhileGenerateWithCardWithInvalidCVC() {
         val params = CardParams(
             mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
             pan = "5391119268214792",
@@ -399,34 +224,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalid, result.errors[ParamField.CVC])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidCVCWithNewPaymentMethod")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidCVCWithNewPaymentMethod() {
-        val params = NewPaymentMethodCardParams(
-            pan = "5391119268214792",
-            cvc = "1AA",
-            expiryMMYY = "12/25",
-            cardHolder = "Joe Doe",
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.invalid, result.errors[ParamField.CVC])
-    }
-
-    @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidExpiry")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidExpiry() {
+    @Description("shouldReturnErrorWhileGenerateWithCardWithInvalidExpiry")
+    fun shouldReturnErrorWhileGenerateWithCardWithInvalidExpiry() {
         val params = CardParams(
             mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
             pan = "5391119268214792",
@@ -436,34 +242,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalidFormat, result.errors[ParamField.EXPIRY])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidExpiryWithNewPaymentMethod")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidExpiryWithNewPaymentMethod() {
-        val params = NewPaymentMethodCardParams(
-            pan = "5391119268214792",
-            cvc = "123",
-            expiryMMYY = "DDD",
-            cardHolder = "Joe Doe",
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.invalidFormat, result.errors[ParamField.EXPIRY])
-    }
-
-    @Test
-    @Description("shouldNotReturnErrorWhileGenerateNewCardPaymentWithCardDateExpiry")
-    fun shouldNotReturnErrorWhileGenerateNewCardPaymentWithCardDateExpiry() {
+    @Description("shouldNotReturnErrorWhileGenerateWithCardDateExpiry")
+    fun shouldNotReturnErrorWhileGenerateWithCardDateExpiry() {
         val params = CardParams(
             mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
             pan = "5391119268214792",
@@ -473,32 +260,14 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertNotEquals(null, result.token)
         assertEquals(true, result.errors.isEmpty())
     }
 
     @Test
-    @Description("shouldNotReturnErrorWhileGenerateNewCardPaymentWithCardDateExpiryWithNewPaymentMethod")
-    fun shouldNotReturnErrorWhileGenerateNewCardPaymentWithCardDateExpiryWithNewPaymentMethod() {
-        val params = NewPaymentMethodCardParams(
-            pan = "5391119268214792",
-            cvc = "123",
-            expiryMMYY = "12/35",
-            cardHolder = "Joe Doe",
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertNotEquals(null, result.token)
-        assertEquals(true, result.errors.isEmpty())
-    }
-
-    @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidPubKey")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidPubKey() {
+    @Description("shouldReturnErrorWhileGenerateWithCardWithInvalidPubKey")
+    fun shouldReturnErrorWhileGenerateWithCardWithInvalidPubKey() {
         val params = CardParams(
             mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
             pan = "5391119268214792",
@@ -508,34 +277,15 @@ class SDKCoreTest {
             pubKey = "INVALIDPUBKEY"
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalid, result.errors[ParamField.PUB_KEY])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidPubKeyWithNewPaymentMethod")
-    fun shouldReturnErrorWhileGenerateNewCardPaymentWithInvalidPubKeyWithNewPaymentMethod() {
-        val params = NewPaymentMethodCardParams(
-            pan = "5391119268214792",
-            cvc = "123",
-            expiryMMYY = "12/25",
-            cardHolder = "Joe Doe",
-            pubKey = "INVALIDPUBKEY"
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.invalid, result.errors[ParamField.PUB_KEY])
-    }
-
-    @Test
-    @Description("shouldGenerateStoredPayment")
-    fun shouldGenerateStoredPayment() {
+    @Description("shouldGenerateWithBinding")
+    fun shouldGenerateWithBinding() {
         val params = BindingParams(
             mdOrder = "39ce26e1-5fd0-4784-9e6c-25c9f2c2d09e",
             bindingID = "513b17f4-e32e-414f-8c74-936fd7027baa",
@@ -543,30 +293,14 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithBinding(params)
         assertNotEquals(null, result.token)
         assertEquals(emptyMap<ParamField, String>(), result.errors)
     }
 
     @Test
-    @Description("shouldGenerateStoredPaymentWithNewPaymentMethod")
-    fun shouldGenerateStoredPaymentWithNewPaymentMethod() {
-        val params = NewPaymentMethodStoredCardParams(
-            storedPaymentId = "pm_QRiwYPoAGtbRrETy1uP6RovMnsF2W3aA2xbeRhG8F4Sf6b9vY",
-            cvc = "123",
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertNotEquals(null, result.token)
-        assertEquals(emptyMap<ParamField, String>(), result.errors)
-    }
-
-    @Test
-    @Description("shouldGenerateStoredPaymentWithoutCVC")
-    fun shouldGenerateStoredPaymentWithoutCVC() {
+    @Description("shouldGenerateWithBindingWithoutCVC")
+    fun shouldGenerateWithBindingWithoutCVC() {
         val params = BindingParams(
             mdOrder = "39ce26e1-5fd0-4784-9e6c-25c9f2c2d09e",
             bindingID = "513b17f4-e32e-414f-8c74-936fd7027baa",
@@ -574,30 +308,14 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithBinding(params)
         assertNotEquals(null, result.token)
         assertEquals(emptyMap<ParamField, String>(), result.errors)
     }
 
     @Test
-    @Description("shouldGenerateStoredPaymentWithoutCVCWithNewPaymentMehod")
-    fun shouldGenerateStoredPaymentWithoutCVCWithNewPaymentMehod() {
-        val params = NewPaymentMethodStoredCardParams(
-            storedPaymentId = "pm_QRiwYPoAGtbRrETy1uP6RovMnsF2W3aA2xbeRhG8F4Sf6b9vY",
-            cvc = null,
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertNotEquals(null, result.token)
-        assertEquals(emptyMap<ParamField, String>(), result.errors)
-    }
-
-    @Test
-    @Description("shouldReturnErrorGenerateStoredPaymentWithEmptyMdOrder")
-    fun shouldReturnErrorGenerateStoredPaymentWithEmptyMdOrder() {
+    @Description("shouldReturnErrorGenerateWithBindingWithEmptyMdOrder")
+    fun shouldReturnErrorGenerateWithBindingWithEmptyMdOrder() {
         val params = BindingParams(
             mdOrder = "",
             bindingID = "513b17f4-e32e-414f-8c74-936fd7027baa",
@@ -605,16 +323,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithBinding(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.required, result.errors[ParamField.MD_ORDER])
     }
 
     @Test
-    @Description("shouldReturnErrorGenerateStoredPaymentWithEmptyBindingID")
-    fun shouldReturnErrorGenerateStoredPaymentWithEmptyBindingID() {
+    @Description("shouldReturnErrorGenerateWithBindingWithEmptyBindingID")
+    fun shouldReturnErrorGenerateWithBindingWithEmptyBindingID() {
         val params = BindingParams(
             mdOrder = "39ce26e1-5fd0-4784-9e6c-25c9f2c2d09e",
             bindingID = "",
@@ -622,32 +339,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithBinding(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.required, result.errors[ParamField.BINDING_ID])
     }
 
     @Test
-    @Description("shouldReturnErrorGenerateStoredPaymentWithNewPaymentMethodWithEmptyStoredPaymentID")
-    fun shouldReturnErrorGenerateStoredPaymentWithNewPaymentMethodWithEmptyStoredPaymentID() {
-        val params = NewPaymentMethodStoredCardParams(
-            storedPaymentId = "",
-            cvc = "123",
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.required, result.errors[ParamField.STORED_PAYMENT_ID])
-    }
-
-    @Test
-    @Description("shouldReturnErrorGenerateStoredPaymentWithEmptyPubKey")
-    fun shouldReturnErrorGenerateStoredPaymentWithEmptyPubKey() {
+    @Description("shouldReturnErrorGenerateWithBindingWithEmptyPubKey")
+    fun shouldReturnErrorGenerateWithBindingWithEmptyPubKey() {
         val params = BindingParams(
             mdOrder = "39ce26e1-5fd0-4784-9e6c-25c9f2c2d09e",
             bindingID = "513b17f4-e32e-414f-8c74-936fd7027baa",
@@ -655,32 +355,15 @@ class SDKCoreTest {
             pubKey = ""
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithBinding(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.required, result.errors[ParamField.PUB_KEY])
     }
 
     @Test
-    @Description("shouldReturnErrorGenerateStoredPaymentWithEmptyPubKeyWithNewPaymentMethod")
-    fun shouldReturnErrorGenerateStoredPaymentWithEmptyPubKeyWithNewPaymentMethod() {
-        val params = NewPaymentMethodStoredCardParams(
-            storedPaymentId = "pm_QRiwYPoAGtbRrETy1uP6RovMnsF2W3aA2xbeRhG8F4Sf6b9vY",
-            cvc = "123",
-            pubKey = ""
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.required, result.errors[ParamField.PUB_KEY])
-    }
-
-    @Test
-    @Description("shouldReturnErrorGenerateStoredPaymentWithInvalidCVC")
-    fun shouldReturnErrorGenerateStoredPaymentWithInvalidCVC() {
+    @Description("shouldReturnErrorGenerateWithBindingWithInvalidCVC")
+    fun shouldReturnErrorGenerateWithBindingWithInvalidCVC() {
         val params = BindingParams(
             mdOrder = "39ce26e1-5fd0-4784-9e6c-25c9f2c2d09e",
             bindingID = "513b17f4-e32e-414f-8c74-936fd7027baa",
@@ -688,32 +371,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithBinding(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalid, result.errors[ParamField.CVC])
     }
 
     @Test
-    @Description("shouldReturnErrorGenerateStoredPaymentWithInvalidCVCWithNewPaymentMethod")
-    fun shouldReturnErrorGenerateStoredPaymentWithInvalidCVCWithNewPaymentMethod() {
-        val params = NewPaymentMethodStoredCardParams(
-            storedPaymentId = "pm_QRiwYPoAGtbRrETy1uP6RovMnsF2W3aA2xbeRhG8F4Sf6b9vY",
-            cvc = "aaD",
-            pubKey = testPubKey
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.invalid, result.errors[ParamField.CVC])
-    }
-
-    @Test
-    @Description("shouldReturnErrorGenerateStoredPaymentWithInvalidPubKey")
-    fun shouldReturnErrorGenerateStoredPaymentWithInvalidPubKey() {
+    @Description("shouldReturnErrorGenerateWithBindingWithInvalidPubKey")
+    fun shouldReturnErrorGenerateWithBindingWithInvalidPubKey() {
         val params = BindingParams(
             mdOrder = "39ce26e1-5fd0-4784-9e6c-25c9f2c2d09e",
             bindingID = "513b17f4-e32e-414f-8c74-936fd7027baa",
@@ -721,33 +387,17 @@ class SDKCoreTest {
             pubKey = "INVALIDPUBKEY"
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithBinding(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalid, result.errors[ParamField.PUB_KEY])
     }
 
     @Test
-    @Description("shouldReturnErrorGenerateStoredPaymentWithInvalidPubKeyWithNewPaymentMethod")
-    fun shouldReturnErrorGenerateStoredPaymentWithInvalidPubKeyWithNewPaymentMethod() {
-        val params = NewPaymentMethodStoredCardParams(
-            storedPaymentId = "pm_QRiwYPoAGtbRrETy1uP6RovMnsF2W3aA2xbeRhG8F4Sf6b9vY",
-            cvc = "123",
-            pubKey = "INVALIDPUBKEY"
-        )
-
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
-        assertEquals(null, result.token)
-        assertEquals(true, result.errors.isNotEmpty())
-        assertEquals(ValidationCodes.invalid, result.errors[ParamField.PUB_KEY])
-    }
-
-    @Test
-    @Description("shouldGenerateInstantWithCard")
-    fun shouldGenerateInstantWithCard() {
-        val params = CardInstantParams(
+    @Description("shouldGenerateInstanceWithCard")
+    fun shouldGenerateInstanceWithCard() {
+        val params = CardParams(
+            mdOrder = "c400b41a-aa3d-43db-8727-ac4ca9e8f701",
             pan = "5391119268214792",
             cvc = "123",
             expiryMMYY = "12/25",
@@ -755,16 +405,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateWithCard(params)
         assertNotEquals(null, result.token)
         assertEquals(emptyMap<ParamField, String>(), result.errors)
     }
 
     @Test
-    @Description("shouldGenerateInstantWithCardWithoutCardHolder")
-    fun shouldGenerateInstantWithCardWithoutCardHolder() {
-        val params = CardInstantParams(
+    @Description("shouldGenerateInstanceWithCardWithoutCardHolder")
+    fun shouldGenerateInstanceWithCardWithoutCardHolder() {
+        val params = CardParams(
             pan = "5391119268214792",
             cvc = "123",
             expiryMMYY = "12/25",
@@ -772,16 +421,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithCard(params)
         assertNotEquals(null, result.token)
         assertEquals(emptyMap<ParamField, String>(), result.errors)
     }
 
     @Test
-    @Description("shouldGenerateInstantWithCardWithInvalidSymbolsInCardHolder")
-    fun shouldGenerateInstantWithCardWithInvalidSymbolsInCardHolder() {
-        val params = CardInstantParams(
+    @Description("shouldGenerateInstanceWithCardWithInvalidSymbolsInCardHolder")
+    fun shouldGenerateInstanceWithCardWithInvalidSymbolsInCardHolder() {
+        val params = CardParams(
             pan = "5391119268214792",
             cvc = "123",
             expiryMMYY = "12/25",
@@ -789,17 +437,16 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalidFormat, result.errors[ParamField.CARDHOLDER])
     }
 
     @Test
-    @Description("shouldGenerateInstantWithCardWithMaxLengthInCardHolder")
-    fun shouldGenerateInstantWithCardWithMaxLengthInCardHolder() {
-        val params = CardInstantParams(
+    @Description("shouldGenerateInstanceWithCardWithMaxLengthInCardHolder")
+    fun shouldGenerateInstanceWithCardWithMaxLengthInCardHolder() {
+        val params = CardParams(
             pan = "5391119268214792",
             cvc = "123",
             expiryMMYY = "12/25",
@@ -807,17 +454,16 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalid, result.errors[ParamField.CARDHOLDER])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateInstantWithCardWithEmptyPan")
-    fun shouldReturnErrorWhileGenerateInstantWithCardWithEmptyPan() {
-        val params = CardInstantParams(
+    @Description("shouldReturnErrorWhileGenerateInstanceWithCardWithEmptyPan")
+    fun shouldReturnErrorWhileGenerateInstanceWithCardWithEmptyPan() {
+        val params = CardParams(
             pan = "",
             cvc = "123",
             expiryMMYY = "12/25",
@@ -825,17 +471,16 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.required, result.errors[ParamField.PAN])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateInstantWithCardWithEmptyCVC")
-    fun shouldReturnErrorWhileGenerateInstantWithCardWithEmptyCVC() {
-        val params = CardInstantParams(
+    @Description("shouldReturnErrorWhileGenerateInstanceWithCardWithEmptyCVC")
+    fun shouldReturnErrorWhileGenerateInstanceWithCardWithEmptyCVC() {
+        val params = CardParams(
             pan = "5391119268214792",
             cvc = "",
             expiryMMYY = "12/25",
@@ -843,17 +488,16 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.required, result.errors[ParamField.CVC])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateInstantWithCardWithEmptyExpiry")
-    fun shouldReturnErrorWhileGenerateInstantWithCardWithEmptyExpiry() {
-        val params = CardInstantParams(
+    @Description("shouldReturnErrorWhileGenerateInstanceWithCardWithEmptyExpiry")
+    fun shouldReturnErrorWhileGenerateInstanceWithCardWithEmptyExpiry() {
+        val params = CardParams(
             pan = "5391119268214792",
             cvc = "123",
             expiryMMYY = "",
@@ -861,17 +505,16 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.required, result.errors[ParamField.EXPIRY])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateInstantWithCardWithEmptyPubKey")
-    fun shouldReturnErrorWhileGenerateInstantWithCardWithEmptyPubKey() {
-        val params = CardInstantParams(
+    @Description("shouldReturnErrorWhileGenerateInstanceWithCardWithEmptyPubKey")
+    fun shouldReturnErrorWhileGenerateInstanceWithCardWithEmptyPubKey() {
+        val params = CardParams(
             pan = "5391119268214792",
             cvc = "123",
             expiryMMYY = "12/25",
@@ -879,17 +522,16 @@ class SDKCoreTest {
             pubKey = ""
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.required, result.errors[ParamField.PUB_KEY])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateInstantWithCardWithInvalidPan")
-    fun shouldReturnErrorWhileGenerateInstantWithCardWithInvalidPan() {
-        val params = CardInstantParams(
+    @Description("shouldReturnErrorWhileGenerateInstanceWithCardWithInvalidPan")
+    fun shouldReturnErrorWhileGenerateInstanceWithCardWithInvalidPan() {
+        val params = CardParams(
             pan = "5INVALID19268PAN14792",
             cvc = "123",
             expiryMMYY = "12/25",
@@ -897,17 +539,16 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalidFormat, result.errors[ParamField.PAN])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateInstantWithCardWithInvalidCVC")
-    fun shouldReturnErrorWhileGenerateInstantWithCardWithInvalidCVC() {
-        val params = CardInstantParams(
+    @Description("shouldReturnErrorWhileGenerateInstanceWithCardWithInvalidCVC")
+    fun shouldReturnErrorWhileGenerateInstanceWithCardWithInvalidCVC() {
+        val params = CardParams(
             pan = "5391119268214792",
             cvc = "1AA",
             expiryMMYY = "12/25",
@@ -915,17 +556,16 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalid, result.errors[ParamField.CVC])
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateInstantWithCardWithInvalidExpiry")
-    fun shouldReturnErrorWhileGenerateInstantWithCardWithInvalidExpiry() {
-        val params = CardInstantParams(
+    @Description("shouldReturnErrorWhileGenerateInstanceWithCardWithInvalidExpiry")
+    fun shouldReturnErrorWhileGenerateInstanceWithCardWithInvalidExpiry() {
+        val params = CardParams(
             pan = "5391119268214792",
             cvc = "123",
             expiryMMYY = "DDD",
@@ -933,17 +573,16 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalidFormat, result.errors[ParamField.EXPIRY])
     }
 
     @Test
-    @Description("shouldNotReturnErrorWhileGenerateInstantWithCardWithOutDateExpiry")
-    fun shouldNotReturnErrorWhileGenerateInstantWithCardWithOutDateExpiry() {
-        val params = CardInstantParams(
+    @Description("shouldNotReturnErrorWhileGenerateInstanceWithCardWithOutDateExpiry")
+    fun shouldNotReturnErrorWhileGenerateInstanceWithCardWithOutDateExpiry() {
+        val params = CardParams(
             pan = "5391119268214792",
             cvc = "123",
             expiryMMYY = "12/15",
@@ -951,16 +590,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithCard(params)
         assertNotEquals(null, result.token)
         assertEquals(true, result.errors.isEmpty())
     }
 
     @Test
-    @Description("shouldNotReturnErrorWhileGenerateInstantWithCardWithMaxOutDateExpiry")
-    fun shouldNotReturnErrorWhileGenerateInstantWithCardWithMaxOutDateExpiry() {
-        val params = CardInstantParams(
+    @Description("shouldNotReturnErrorWhileGenerateInstanceWithCardWithMaxOutDateExpiry")
+    fun shouldNotReturnErrorWhileGenerateInstanceWithCardWithMaxOutDateExpiry() {
+        val params = CardParams(
             pan = "5391119268214792",
             cvc = "123",
             expiryMMYY = "12/35",
@@ -968,16 +606,15 @@ class SDKCoreTest {
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithCard(params)
         assertNotEquals(null, result.token)
         assertEquals(true, result.errors.isEmpty())
     }
 
     @Test
-    @Description("shouldReturnErrorWhileGenerateInstantWithCardWithInvalidPubKey")
-    fun shouldReturnErrorWhileGenerateInstantWithCardWithInvalidPubKey() {
-        val params = CardInstantParams(
+    @Description("shouldReturnErrorWhileGenerateInstanceWithCardWithInvalidPubKey")
+    fun shouldReturnErrorWhileGenerateInstanceWithCardWithInvalidPubKey() {
+        val params = CardParams(
             pan = "5391119268214792",
             cvc = "123",
             expiryMMYY = "12/25",
@@ -985,102 +622,95 @@ class SDKCoreTest {
             pubKey = "INVALIDPUBKEY"
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithCard(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalid, result.errors[ParamField.PUB_KEY])
     }
 
     @Test
-    @Description("shouldGenerateInstantWithBinding")
-    fun shouldGenerateInstantWithBinding() {
-        val params = BindingInstantParams(
+    @Description("shouldGenerateInstanceWithBinding")
+    fun shouldGenerateInstanceWithBinding() {
+        val params = BindingParams(
             bindingID = "513b17f4-e32e-414f-8c74-936fd7027baa",
             cvc = "123",
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithBinding(params)
         assertNotEquals(null, result.token)
         assertEquals(emptyMap<ParamField, String>(), result.errors)
     }
 
     @Test
-    @Description("shouldGenerateInstantWithBindingWithoutCVC")
-    fun shouldGenerateInstantWithBindingWithoutCVC() {
-        val params = BindingInstantParams(
+    @Description("shouldGenerateInstanceWithBindingWithoutCVC")
+    fun shouldGenerateInstanceWithBindingWithoutCVC() {
+        val params = BindingParams(
             bindingID = "513b17f4-e32e-414f-8c74-936fd7027baa",
             cvc = null,
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithBinding(params)
         assertNotEquals(null, result.token)
         assertEquals(emptyMap<ParamField, String>(), result.errors)
     }
 
     @Test
-    @Description("shouldReturnErrorGenerateInstantWithBindingWithEmptyBindingID")
-    fun shouldReturnErrorGenerateInstantWithBindingWithEmptyBindingID() {
-        val params = BindingInstantParams(
+    @Description("shouldReturnErrorGenerateInstanceWithBindingWithEmptyBindingID")
+    fun shouldReturnErrorGenerateInstanceWithBindingWithEmptyBindingID() {
+        val params = BindingParams(
             bindingID = "",
             cvc = "123",
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithBinding(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.required, result.errors[ParamField.BINDING_ID])
     }
 
     @Test
-    @Description("shouldReturnErrorGenerateInstantWithBindingWithEmptyPubKey")
-    fun shouldReturnErrorGenerateInstantWithBindingWithEmptyPubKey() {
-        val params = BindingInstantParams(
+    @Description("shouldReturnErrorGenerateInstanceWithBindingWithEmptyPubKey")
+    fun shouldReturnErrorGenerateInstanceWithBindingWithEmptyPubKey() {
+        val params = BindingParams(
             bindingID = "513b17f4-e32e-414f-8c74-936fd7027baa",
             cvc = "123",
             pubKey = ""
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithBinding(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.required, result.errors[ParamField.PUB_KEY])
     }
 
     @Test
-    @Description("shouldReturnErrorGenerateInstantWithBindingWithInvalidCVC")
-    fun shouldReturnErrorGenerateInstantWithBindingWithInvalidCVC() {
-        val params = BindingInstantParams(
+    @Description("shouldReturnErrorGenerateInstanceWithBindingWithInvalidCVC")
+    fun shouldReturnErrorGenerateInstanceWithBindingWithInvalidCVC() {
+        val params = BindingParams(
             bindingID = "513b17f4-e32e-414f-8c74-936fd7027baa",
             cvc = "aaD",
             pubKey = testPubKey
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithBinding(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalid, result.errors[ParamField.CVC])
     }
 
     @Test
-    @Description("shouldReturnErrorGenerateInstantWithBindingWithInvalidPubKey")
-    fun shouldReturnErrorGenerateInstantWithBindingWithInvalidPubKey() {
-        val params = BindingInstantParams(
+    @Description("shouldReturnErrorGenerateInstanceWithBindingWithInvalidPubKey")
+    fun shouldReturnErrorGenerateInstanceWithBindingWithInvalidPubKey() {
+        val params = BindingParams(
             bindingID = "513b17f4-e32e-414f-8c74-936fd7027baa",
             cvc = "123",
             pubKey = "INVALIDPUBKEY"
         )
 
-        val sdkCoreConfig = SDKCoreConfig(paymentCardParams = params)
-        val result = sdkCore.generateWithConfig(sdkCoreConfig)
+        val result = sdkCore.generateInstanceWithBinding(params)
         assertEquals(null, result.token)
         assertEquals(true, result.errors.isNotEmpty())
         assertEquals(ValidationCodes.invalid, result.errors[ParamField.PUB_KEY])

@@ -10,14 +10,3 @@ fun String.containsAnyOfKeywordIgnoreCase(keywords: List<OrderStatus>): Boolean 
         it.statusName.equals(this, ignoreCase = true)
     }
 }
-
-/**
- * Creating string which looks like json from map.
- */
-fun Map<String, String>.mapToJsonString(): String {
-    return this.entries.joinToString(
-        prefix = "{",
-        postfix = "}",
-        separator = ","
-    ) { (key, value) -> "\"$key\":\"$value\"" }
-}

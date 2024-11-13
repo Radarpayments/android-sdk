@@ -6,8 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.net.http.SslError
 import android.os.Bundle
+import android.webkit.ConsoleMessage
 import android.webkit.SslErrorHandler
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +20,8 @@ import net.payrdr.mobile.payment.sdk.LogDebug
 import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.form.SDKException
+import net.payrdr.mobile.payment.sdk.logs.Logger
+import net.payrdr.mobile.payment.sdk.logs.Source
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.WebChallengeParam
 import java.security.cert.CertificateException
@@ -38,6 +44,7 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
     private val webViewClient: WebViewClient = object : WebViewClient() {
 
         @SuppressLint("WebViewClientOnReceivedSslError")
+        @Suppress("LongMethod")
         override fun onReceivedSslError(
             view: WebView?,
             handler: SslErrorHandler?,
@@ -47,6 +54,13 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
             var message = ""
             when (error?.primaryError) {
                 SslError.SSL_UNTRUSTED -> {
+                    Logger.error(
+                        this.javaClass,
+                        Constants.TAG,
+                        "onReceivedSslError $error",
+                        Exception("SSL_UNTRUSTED"),
+                        source = Source.WEB_VIEW
+                    )
                     message = "The certificate authority is not trusted."
                     val sslContextConfig = SDKPayment.sdkPaymentConfig.sslContextConfig
                     if (sslContextConfig != null) {
@@ -58,7 +72,21 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
                             )
                             isTrusted = true
                             message = "The certificate authority is trusted."
+                            Logger.info(
+                                this.javaClass,
+                                Constants.TAG,
+                                "onReceivedSslError $error",
+                                null,
+                                source = Source.WEB_VIEW
+                            )
                         } catch (e: CertificateException) {
+                            Logger.error(
+                                this.javaClass,
+                                Constants.TAG,
+                                "onReceivedSslError $error",
+                                Exception("WebClient onReceivedSslError - get Exception to try check server trusted."),
+                                source = Source.WEB_VIEW
+                            )
                             LogDebug.logIfDebug(
                                 "WebClient onReceivedSslError - get Exception to try check server trusted."
                             )
@@ -69,19 +97,47 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
                         }
                     } else {
                         message = "Ssl context config must be not null when SSL_UNTRUSTED"
+                        Logger.error(
+                            this.javaClass,
+                            Constants.TAG,
+                            "onReceivedSslError $error",
+                            Exception("Ssl context config must be not null when SSL_UNTRUSTED"),
+                            source = Source.WEB_VIEW
+                        )
                     }
                 }
 
                 SslError.SSL_EXPIRED -> {
                     message = "The certificate has expired."
+                    Logger.error(
+                        this.javaClass,
+                        Constants.TAG,
+                        "onReceivedSslError $error",
+                        Exception("The certificate has expired"),
+                        source = Source.WEB_VIEW
+                    )
                 }
 
                 SslError.SSL_IDMISMATCH -> {
                     message = "The certificate Hostname mismatch."
+                    Logger.error(
+                        this.javaClass,
+                        Constants.TAG,
+                        "onReceivedSslError $error",
+                        Exception("The certificate Hostname mismatch"),
+                        source = Source.WEB_VIEW
+                    )
                 }
 
                 SslError.SSL_NOTYETVALID -> {
                     message = "The certificate is not yet valid."
+                    Logger.error(
+                        this.javaClass,
+                        Constants.TAG,
+                        "onReceivedSslError $error",
+                        Exception("The certificate is not yet valid"),
+                        source = Source.WEB_VIEW
+                    )
                 }
             }
             LogDebug.logIfDebug("WebClient onReceivedSslError - $message")
@@ -90,6 +146,51 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
             } else {
                 handler?.cancel()
             }
+        }
+
+        override fun shouldInterceptRequest(
+            view: WebView?,
+            request: WebResourceRequest?
+        ): WebResourceResponse? {
+            Logger.info(
+                this.javaClass,
+                Constants.TAG,
+                "Intercepted Request: ${request}",
+                null,
+                source = Source.WEB_VIEW
+            )
+            return super.shouldInterceptRequest(view, request)
+        }
+
+        override fun onReceivedError(
+            view: WebView?,
+            errorCode: Int,
+            description: String?,
+            failingUrl: String?
+        ) {
+            Logger.error(
+                this.javaClass,
+                Constants.TAG,
+                "onReceivedError in WebView: $failingUrl}",
+                Exception("Web Source Error with code: $errorCode"),
+                source = Source.WEB_VIEW
+            )
+            super.onReceivedError(view, errorCode, description, failingUrl)
+        }
+
+        override fun onReceivedError(
+            view: WebView?,
+            request: WebResourceRequest?,
+            error: WebResourceError?
+        ) {
+            Logger.error(
+                this.javaClass,
+                Constants.TAG,
+                "onReceivedError in WebView: $${request?.url}",
+                Exception("Web Source Error with code: $error"),
+                source = Source.WEB_VIEW
+            )
+            super.onReceivedError(view, request, error)
         }
 
         override fun shouldOverrideUrlLoading(
@@ -101,7 +202,7 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
                     request.url.toString().startsWith("sdk://done") -> {
                         finishWithResult(
                             PaymentResult(
-                                sessionId = mdOrder,
+                                mdOrder = mdOrder,
                                 isSuccess = true,
                                 exception = null,
                             )
@@ -114,6 +215,55 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
                 }
             }
             return true
+        }
+    }
+
+    private val webChromeClient: WebChromeClient = object : WebChromeClient() {
+        override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
+            when (consoleMessage?.messageLevel()) {
+                ConsoleMessage.MessageLevel.TIP -> Logger.info(
+                    this.javaClass,
+                    Constants.TAG,
+                    consoleMessage.message(),
+                    null,
+                    Source.WEB_VIEW
+                )
+
+                ConsoleMessage.MessageLevel.LOG -> Logger.info(
+                    this.javaClass,
+                    Constants.TAG,
+                    consoleMessage.message(),
+                    null,
+                    Source.WEB_VIEW
+                )
+
+                ConsoleMessage.MessageLevel.WARNING -> Logger.warning(
+                    this.javaClass,
+                    Constants.TAG,
+                    consoleMessage.message(),
+                    null,
+                    Source.WEB_VIEW
+                )
+
+                ConsoleMessage.MessageLevel.ERROR -> Logger.error(
+                    this.javaClass,
+                    Constants.TAG,
+                    consoleMessage.message(),
+                    Exception("Something went wrong in WebView: ${consoleMessage.message()}"),
+                    Source.WEB_VIEW
+                )
+
+                ConsoleMessage.MessageLevel.DEBUG -> Logger.debug(
+                    this.javaClass,
+                    Constants.TAG,
+                    consoleMessage.message(),
+                    null,
+                    Source.WEB_VIEW
+                )
+
+                null -> {}
+            }
+            return super.onConsoleMessage(consoleMessage)
         }
     }
 
@@ -179,6 +329,7 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
         }
         WebView.setWebContentsDebuggingEnabled(true)
         webView.webViewClient = webViewClient
+        webView.webChromeClient = webChromeClient
         return webView
     }
 
@@ -213,7 +364,7 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
         override fun run() {
             finishWithResult(
                 PaymentResult(
-                    sessionId = mdOrder,
+                    mdOrder = mdOrder,
                     isSuccess = false,
                     exception = SDKException(message = "Transaction Timed Out."),
                 )

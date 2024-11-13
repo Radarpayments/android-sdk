@@ -24,11 +24,13 @@ object Versions {
     const val com_squareup_spoon = "2.0.0-SNAPSHOT"
     const val com_squareup_mockwebserver = "4.7.2"
     const val com_squareup_okhttp_tls = "4.7.2"
+    const val com_squareup_okhttp = "4.7.2"
     const val espresso_contrib = "3.0.2"
     const val test_runner = "1.1.0"
     const val javax_api = "2.3.1"
     const val allure_kotlin = "2.4.0"
     const val kaspresso = "1.5.2"
+    const val gson ="2.8.5"
 }
 
 object Libs {
@@ -48,6 +50,8 @@ object Libs {
     const val android_play_services_wallet =
         "com.google.android.gms:play-services-wallet:${Versions.android_play_services_wallet}"
     const val jaxb_api = "javax.xml.bind:jaxb-api:${Versions.javax_api}"
+    const val com_squareup_okhttp = "com.squareup.okhttp3:okhttp:${Versions.com_squareup_okhttp}"
+    const val com_google_gson = "com.google.code.gson:gson:${Versions.gson}"
 }
 
 object TestLibs {

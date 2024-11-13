@@ -37,6 +37,7 @@ jobs:
         with:
           name: build_files
           path: |
+            sdk_logs/build/outputs/aar/sdk_logs-release.aar
             sdk_core/build/outputs/aar/sdk_core-release.aar
             sdk_forms/build/outputs/aar/sdk_forms-release.aar
             sdk_payment/build/outputs/aar/sdk_payment-release.aar
@@ -157,6 +158,16 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build_files
+
+      - name: Upload sd_logs arr artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./sdk_logs/build/outputs/aar/sdk_logs-release.aar
+          asset_name: sdk_logs-release.aar
+          asset_content_type: application/octet-stream
 
       - name: Upload sd_core arr artifacts
         uses: actions/upload-release-asset@v1

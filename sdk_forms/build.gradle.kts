@@ -80,6 +80,7 @@ allure {
 
 dependencies {
     implementation(project(":sdk_core"))
+    implementation(project(":sdk_logs"))
 
     //for test
     implementation(Libs.jaxb_api)

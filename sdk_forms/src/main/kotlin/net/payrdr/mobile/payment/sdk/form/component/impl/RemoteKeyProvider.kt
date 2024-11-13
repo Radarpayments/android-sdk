@@ -4,7 +4,6 @@ import java.net.URL
 import javax.net.ssl.SSLContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.payrdr.mobile.payment.sdk.core.Logger
 import net.payrdr.mobile.payment.sdk.core.model.Key
 import net.payrdr.mobile.payment.sdk.form.Constants
 import net.payrdr.mobile.payment.sdk.form.component.KeyProvider
@@ -13,6 +12,7 @@ import net.payrdr.mobile.payment.sdk.form.utils.asList
 import net.payrdr.mobile.payment.sdk.form.utils.executeGet
 import net.payrdr.mobile.payment.sdk.form.utils.requiredField
 import net.payrdr.mobile.payment.sdk.form.utils.responseBodyToJsonObject
+import net.payrdr.mobile.payment.sdk.logs.Logger
 import org.json.JSONObject
 
 /**
@@ -29,7 +29,7 @@ class RemoteKeyProvider(
     @Suppress("TooGenericExceptionCaught")
     override suspend fun provideKey(): Key = withContext(Dispatchers.IO) {
         val keys = try {
-            Logger.log(
+            Logger.info(
                 this.javaClass,
                 Constants.TAG,
                 "provideKey(): Key provider based on the external url of the resource.",
@@ -38,7 +38,7 @@ class RemoteKeyProvider(
             val connection = URL(url).executeGet(sslContext)
              ActiveKeysDto.fromJson(connection.responseBodyToJsonObject()).keys.map { it.toKey() }
         } catch (cause: Exception) {
-            Logger.log(
+            Logger.error(
                 this.javaClass,
                 Constants.TAG,
                 "provideKey(): Error",
@@ -48,7 +48,7 @@ class RemoteKeyProvider(
         }
 
         if (keys.isEmpty()) {
-            Logger.log(
+            Logger.error(
                 this.javaClass,
                 Constants.TAG,
                 "provideKey(): Error",

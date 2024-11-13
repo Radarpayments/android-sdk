@@ -80,6 +80,8 @@ allure {
 
 dependencies {
 
+    implementation(project(":sdk_logs"))
+
     //for test
     implementation(Libs.jaxb_api)
     testImplementation(TestLibs.allure_kotlin_commons)

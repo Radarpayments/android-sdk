@@ -29,7 +29,7 @@ class PaymentApiImplTest {
 
     private val server: MockWebServer = MockWebServer()
     private lateinit var paymentApiImpl: PaymentApi
-    private lateinit var paymentToken: String
+    private lateinit var seToken: String
     private lateinit var mdOrder: String
 
     @Before
@@ -38,7 +38,7 @@ class PaymentApiImplTest {
         paymentApiImpl = PaymentApiImpl(
             server.url("/").toString()
         )
-        paymentToken = ""
+        seToken = ""
         mdOrder = "59b1ee2d-8353-7ab9-b3aa-73aa1917ef58"
     }
 
@@ -102,13 +102,10 @@ class PaymentApiImplTest {
             )
         )
         val cryptogramApiData = ProcessFormRequest(
-            paymentToken = paymentToken,
+            seToken = seToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
-            saveCard = false,
-            email = null,
-            mobilePhone = null,
-            additionalPayerData = emptyMap()
+            saveCard = false
         )
         val processForm = paymentApiImpl.processForm(cryptogramApiData, true)
 
@@ -136,13 +133,10 @@ class PaymentApiImplTest {
             )
         )
         val cryptogramApiData = ProcessFormRequest(
-            paymentToken = paymentToken,
+            seToken = seToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
-            saveCard = false,
-            email = null,
-            mobilePhone = null,
-            additionalPayerData = emptyMap()
+            saveCard = false
         )
         val processForm = paymentApiImpl.processForm(cryptogramApiData, true)
 
@@ -165,13 +159,10 @@ class PaymentApiImplTest {
             )
         )
         val cryptogramApiData = ProcessFormRequest(
-            paymentToken = paymentToken,
+            seToken = seToken,
             mdOrder = mdOrder,
             holder = "CARDHOLDER",
-            saveCard = true,
-            email = null,
-            mobilePhone = null,
-            additionalPayerData = emptyMap()
+            saveCard = true
         )
         val processBindingForm = paymentApiImpl.processBindingForm(cryptogramApiData, true)
 
@@ -240,13 +231,10 @@ class PaymentApiImplTest {
                 )
             )
             val cryptogramApiData = ProcessFormRequest(
-                paymentToken = paymentToken,
+                seToken = seToken,
                 mdOrder = mdOrder,
                 holder = "CARDHOLDER",
-                saveCard = false,
-                email = null,
-                mobilePhone = null,
-                additionalPayerData = emptyMap()
+                saveCard = false
             )
             paymentApiImpl.processForm(cryptogramApiData, true)
         }
@@ -262,13 +250,10 @@ class PaymentApiImplTest {
                 )
             )
             val cryptogramApiData = ProcessFormRequest(
-                paymentToken = paymentToken,
+                seToken = seToken,
                 mdOrder = mdOrder,
                 holder = "CARDHOLDER",
-                saveCard = false,
-                email = null,
-                mobilePhone = null,
-                additionalPayerData = emptyMap()
+                saveCard = false
             )
             paymentApiImpl.processBindingForm(cryptogramApiData, true)
         }

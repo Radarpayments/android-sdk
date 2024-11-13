@@ -10,14 +10,4 @@
     <string name="payrdr_pub_key_required">Public key required</string>
     <string name="payrdr_binding_required">Binding id required</string>
     <string name="payrdr_binding_incorrect">Binding id has incorrect format</string>
-    <string name="payrdr_not_empty_required">Field must not be empty</string>
-    <string name="payrdr_email">Электронная почта</string>
-    <string name="payrdr_phone_number">Номер телефона</string>
-    <string name="payrdr_country">Страна</string>
-    <string name="payrdr_state">Область</string>
-    <string name="payrdr_city">Город</string>
-    <string name="payrdr_postal_code">Почтовый индекс</string>
-    <string name="payrdr_address_line_1">Адрес, строка 1</string>
-    <string name="payrdr_address_line_2">Адрес, строка 2</string>
-    <string name="payrdr_address_line_3">Адрес, строка 3</string>
 </resources>

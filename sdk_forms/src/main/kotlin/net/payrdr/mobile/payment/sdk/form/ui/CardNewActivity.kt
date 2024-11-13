@@ -26,34 +26,15 @@ import io.card.payment.CardIOActivity.EXTRA_REQUIRE_POSTAL_CODE
 import io.card.payment.CardIOActivity.EXTRA_SUPPRESS_CONFIRMATION
 import io.card.payment.CardIOActivity.EXTRA_USE_PAYPAL_ACTIONBAR_ICON
 import io.card.payment.CreditCard
-import kotlinx.android.synthetic.main.activity_card_new.addressLine1Input
-import kotlinx.android.synthetic.main.activity_card_new.addressLine1InputLayout
-import kotlinx.android.synthetic.main.activity_card_new.addressLine2Input
-import kotlinx.android.synthetic.main.activity_card_new.addressLine2InputLayout
-import kotlinx.android.synthetic.main.activity_card_new.addressLine3Input
-import kotlinx.android.synthetic.main.activity_card_new.addressLine3InputLayout
 import kotlinx.android.synthetic.main.activity_card_new.bankCardView
 import kotlinx.android.synthetic.main.activity_card_new.cardCodeInput
 import kotlinx.android.synthetic.main.activity_card_new.cardCodeInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.cardExpiryInput
 import kotlinx.android.synthetic.main.activity_card_new.cardExpiryInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.cardHolderInput
-import kotlinx.android.synthetic.main.activity_card_new.cardHolderInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.cardNumberInput
 import kotlinx.android.synthetic.main.activity_card_new.cardNumberInputLayout
-import kotlinx.android.synthetic.main.activity_card_new.cityInput
-import kotlinx.android.synthetic.main.activity_card_new.cityInputLayout
-import kotlinx.android.synthetic.main.activity_card_new.countryInput
-import kotlinx.android.synthetic.main.activity_card_new.countryInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.doneButton
-import kotlinx.android.synthetic.main.activity_card_new.emailInput
-import kotlinx.android.synthetic.main.activity_card_new.emailInputLayout
-import kotlinx.android.synthetic.main.activity_card_new.phoneNumberInput
-import kotlinx.android.synthetic.main.activity_card_new.phoneNumberInputLayout
-import kotlinx.android.synthetic.main.activity_card_new.postalCodeInput
-import kotlinx.android.synthetic.main.activity_card_new.postalCodeInputLayout
-import kotlinx.android.synthetic.main.activity_card_new.stateInput
-import kotlinx.android.synthetic.main.activity_card_new.stateInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.switchBox
 import kotlinx.android.synthetic.main.activity_card_new.switchBoxText
 import kotlinx.android.synthetic.main.activity_card_new.toolbar
@@ -61,31 +42,29 @@ import kotlinx.android.synthetic.main.activity_card_new.view.arrow_back
 import kotlinx.android.synthetic.main.activity_card_new.view.title
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.payrdr.mobile.payment.sdk.core.model.CardInfo
+import net.payrdr.mobile.payment.sdk.core.model.CardPanIdentifier
 import net.payrdr.mobile.payment.sdk.core.utils.digitsOnly
+import net.payrdr.mobile.payment.sdk.core.utils.toExpDate
 import net.payrdr.mobile.payment.sdk.core.utils.toStringExpDate
-import net.payrdr.mobile.payment.sdk.form.AdditionalFieldsHelper
-import net.payrdr.mobile.payment.sdk.form.AdditionalFieldsHelper.prepareAdditionalParam
+import net.payrdr.mobile.payment.sdk.form.Constants
 import net.payrdr.mobile.payment.sdk.form.Constants.INTENT_EXTRA_CONFIG
 import net.payrdr.mobile.payment.sdk.form.Constants.REQUEST_CODE_SCAN_CARD
 import net.payrdr.mobile.payment.sdk.form.R
 import net.payrdr.mobile.payment.sdk.form.SDKForms
-import net.payrdr.mobile.payment.sdk.form.model.AdditionalField
+import net.payrdr.mobile.payment.sdk.form.component.CryptogramProcessor
 import net.payrdr.mobile.payment.sdk.form.model.CameraScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.CardSaveOptions
 import net.payrdr.mobile.payment.sdk.form.model.CryptogramData
-import net.payrdr.mobile.payment.sdk.form.model.FilledAdditionalPayerParams
-import net.payrdr.mobile.payment.sdk.form.model.HolderInputOptions
 import net.payrdr.mobile.payment.sdk.form.model.NfcScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.PaymentConfig
 import net.payrdr.mobile.payment.sdk.form.model.PaymentDataStatus
 import net.payrdr.mobile.payment.sdk.form.model.PaymentInfoNewCard
-import net.payrdr.mobile.payment.sdk.form.model.PaymentSystem
 import net.payrdr.mobile.payment.sdk.form.nfc.NFCReadDelegate
 import net.payrdr.mobile.payment.sdk.form.ui.helper.CardLogoAssetsResolver
 import net.payrdr.mobile.payment.sdk.form.ui.helper.CardResolver
 import net.payrdr.mobile.payment.sdk.form.ui.helper.LocalizationSetting
 import net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputEditText
-import net.payrdr.mobile.payment.sdk.form.ui.widget.BaseTextInputLayout
 import net.payrdr.mobile.payment.sdk.form.utils.addRightButtons
 import net.payrdr.mobile.payment.sdk.form.utils.afterTextChanged
 import net.payrdr.mobile.payment.sdk.form.utils.askToEnableNfc
@@ -95,6 +74,7 @@ import net.payrdr.mobile.payment.sdk.form.utils.finishWithError
 import net.payrdr.mobile.payment.sdk.form.utils.finishWithResult
 import net.payrdr.mobile.payment.sdk.form.utils.onDisplayError
 import net.payrdr.mobile.payment.sdk.form.utils.onInputStatusChanged
+import net.payrdr.mobile.payment.sdk.logs.Logger
 import java.util.Date
 
 /**
@@ -103,13 +83,13 @@ import java.util.Date
 @Suppress("TooManyFunctions")
 class CardNewActivity : BaseActivity() {
 
+    private var cryptogramProcessor: CryptogramProcessor = SDKForms.cryptogramProcessor
     private val cardResolver: CardResolver by lazy {
         CardResolver(
             bankCardView = bankCardView,
             cardInfoProvider = SDKForms.sdkConfig.cardInfoProvider
         )
     }
-
     private val config: PaymentConfig by lazy {
         intent.getParcelableExtra<PaymentConfig>(INTENT_EXTRA_CONFIG) as PaymentConfig
     }
@@ -118,7 +98,6 @@ class CardNewActivity : BaseActivity() {
     private val firstFieldCardEntered: MutableLiveData<String> = MutableLiveData("")
     private val secondFieldCardEntered: MutableLiveData<String> = MutableLiveData("")
     private val firthFieldCardEntered: MutableLiveData<String> = MutableLiveData("")
-    private val mandatoryAdditionalFields = mutableSetOf<BaseTextInputEditText>()
 
     private var nfcReader: NFCReadDelegate? = null
 
@@ -130,70 +109,6 @@ class CardNewActivity : BaseActivity() {
             onBackPressed()
         }
         configure(config)
-    }
-
-    private val onCardNumberStatusChanged: () -> Unit = {
-        jumpToNextInput()
-        val paymentSystem =
-            AdditionalFieldsHelper.resolvePaymentSystem(cardNumberInput.text.toString())
-        when (paymentSystem) {
-            PaymentSystem.VISA -> configureAdditionalFields(config.fieldsNeedToBeFilledForVisa)
-            PaymentSystem.MASTERCARD -> configureAdditionalFields(config.fieldsNeedToBeFilledForMastercard)
-            PaymentSystem.OTHER_SYSTEM -> hideAllAdditionalFields()
-        }
-    }
-
-    private fun hideAllAdditionalFields() {
-        val fieldLayouts = listOf(
-            emailInputLayout,
-            phoneNumberInputLayout,
-            countryInputLayout,
-            cityInputLayout,
-            stateInputLayout,
-            postalCodeInputLayout,
-            addressLine1InputLayout,
-            addressLine2InputLayout,
-            addressLine3InputLayout
-        )
-        val fields = listOf(
-            emailInput,
-            phoneNumberInput,
-            countryInput,
-            cityInput,
-            stateInput,
-            postalCodeInput,
-            addressLine1Input,
-            addressLine2Input,
-            addressLine3Input
-        )
-        fieldLayouts.forEach { fieldLayout ->
-            with(fieldLayout) {
-                visibility = GONE
-                fieldLayout.error = null
-            }
-        }
-
-        fields.forEach { fieldInput ->
-            with(fieldInput) {
-                text = null
-                error = null
-                showError = false
-                errorMessageListener = null
-            }
-        }
-        mandatoryAdditionalFields.clear()
-    }
-
-    private fun configureAdditionalFields(fieldsNeedToBeFilled: List<AdditionalField>) {
-        fieldsNeedToBeFilled.forEach { additionalField ->
-            val (fieldInputLayoutId, fieldInputId) = AdditionalFieldsHelper.resolveFieldIdByName(
-                additionalField.fieldName
-            )
-            val fieldInputLayout = findViewById<BaseTextInputLayout>(fieldInputLayoutId)
-            val fieldInput = findViewById<BaseTextInputEditText>(fieldInputId)
-            if (additionalField.isMandatory) mandatoryAdditionalFields.add(fieldInput)
-            AdditionalFieldsHelper.configureField(additionalField, fieldInputLayout, fieldInput)
-        }
     }
 
     private val jumpToNextInput: () -> Unit = {
@@ -241,17 +156,13 @@ class CardNewActivity : BaseActivity() {
     private fun configure(config: PaymentConfig) {
         configureStateButton()
         bankCardView.setupUnknownBrand()
-        cardNumberInput onInputStatusChanged onCardNumberStatusChanged
+        cardNumberInput onInputStatusChanged jumpToNextInput
         cardExpiryInput onInputStatusChanged jumpToNextInput
         cardCodeInput onInputStatusChanged jumpToNextInput
         cardNumberInput onDisplayError { cardNumberInputLayout.error = it }
-        cardHolderInput onDisplayError { cardHolderInputLayout.error = it }
         cardExpiryInput onDisplayError { cardExpiryInputLayout.error = it }
         cardCodeInput onDisplayError { cardCodeInputLayout.error = it }
-        phoneNumberInput onDisplayError { phoneNumberInputLayout.error = it }
-        emailInput onDisplayError { emailInputLayout.error = it }
         cardNumberInput afterTextChanged { number ->
-            if (number.isEmpty()) hideAllAdditionalFields()
             cardResolver.resolve(
                 number = number,
                 withDelay = true
@@ -263,26 +174,15 @@ class CardNewActivity : BaseActivity() {
                 switchBox.visibility = GONE
                 switchBoxText.visibility = GONE
             }
-
             CardSaveOptions.YES_BY_DEFAULT -> {
                 switchBox.visibility = VISIBLE
                 switchBoxText.visibility = VISIBLE
                 switchBox.isChecked = true
             }
-
             CardSaveOptions.NO_BY_DEFAULT -> {
                 switchBox.visibility = VISIBLE
                 switchBoxText.visibility = VISIBLE
                 switchBox.isChecked = false
-            }
-        }
-        when (config.holderInputOptions) {
-            HolderInputOptions.HIDE -> {
-                cardHolderInputLayout.visibility = GONE
-            }
-
-            HolderInputOptions.VISIBLE -> {
-                cardHolderInputLayout.visibility = VISIBLE
             }
         }
         val buttons: MutableList<Pair<Int, () -> Unit>> = mutableListOf()
@@ -306,18 +206,18 @@ class CardNewActivity : BaseActivity() {
         }
         firstFieldCardEntered.observe(this) {
             newCardEntered.value = firstFieldCardEntered.value!!.isNotEmpty() &&
-                    secondFieldCardEntered.value!!.isNotEmpty() &&
-                    firthFieldCardEntered.value!!.isNotEmpty()
+                secondFieldCardEntered.value!!.isNotEmpty() &&
+                firthFieldCardEntered.value!!.isNotEmpty()
         }
         secondFieldCardEntered.observe(this) {
             newCardEntered.value = firstFieldCardEntered.value!!.isNotEmpty() &&
-                    secondFieldCardEntered.value!!.isNotEmpty() &&
-                    firthFieldCardEntered.value!!.isNotEmpty()
+                secondFieldCardEntered.value!!.isNotEmpty() &&
+                firthFieldCardEntered.value!!.isNotEmpty()
         }
         firthFieldCardEntered.observe(this) {
             newCardEntered.value = firstFieldCardEntered.value!!.isNotEmpty() &&
-                    secondFieldCardEntered.value!!.isNotEmpty() &&
-                    firthFieldCardEntered.value!!.isNotEmpty()
+                secondFieldCardEntered.value!!.isNotEmpty() &&
+                firthFieldCardEntered.value!!.isNotEmpty()
         }
 
         cardNumberInput afterTextChanged { number ->
@@ -352,6 +252,7 @@ class CardNewActivity : BaseActivity() {
             android.R.id.home -> finishWithResult(
                 cryptogram = CryptogramData(
                     status = PaymentDataStatus.CANCELED,
+                    seToken = "",
                     deletedCardsList = config.cardsToDelete
                 )
             )
@@ -390,33 +291,41 @@ class CardNewActivity : BaseActivity() {
 
     private fun activeInputFields(): MutableList<BaseTextInputEditText> {
         val fields = mutableListOf(cardNumberInput, cardExpiryInput, cardCodeInput)
-        if (config.holderInputOptions == HolderInputOptions.VISIBLE) {
-            fields.add(cardHolderInput)
-        }
-        mandatoryAdditionalFields.forEach { mandatoryField ->
-            fields.add(mandatoryField)
-        }
         return fields
     }
 
     @Suppress("TooGenericExceptionCaught")
     private fun preparePaymentData() {
+        Logger.info(
+            this.javaClass,
+            Constants.TAG,
+            "preparePaymentData",
+            null
+        )
         workScope.launch(Dispatchers.Main) {
             try {
-                val holder = if (cardHolderInput.text.toString()
-                        .isEmpty()
-                ) DEFAULT_CARD_HOLDER else cardHolderInput.text.toString()
+                val seToken = cryptogramProcessor.create(
+                    order = config.order,
+                    uuid = config.uuid,
+                    timestamp = config.timestamp,
+                    cardInfo = CardInfo(
+                        identifier = CardPanIdentifier(
+                            cardNumberInput.text.toString().digitsOnly()
+                        ),
+                        expDate = cardExpiryInput.text.toString().toExpDate(),
+                        cvv = cardCodeInput.text.toString(),
+                        cardHolder = cardHolderInput.text.toString()
+                    ),
+                    registeredFrom = config.registeredFrom,
+                )
                 finishWithResult(
                     CryptogramData(
                         status = PaymentDataStatus.SUCCEEDED,
+                        seToken = seToken,
                         info = PaymentInfoNewCard(
                             order = config.order,
                             saveCard = switchBox.isChecked,
-                            holder = holder,
-                            pan = cardNumberInput.text.toString().digitsOnly(),
-                            cvc = cardCodeInput.text.toString(),
-                            expiryDate = cardExpiryInput.text.toString(),
-                            filledAdditionalPayerParams = prepareAdditionalFields()
+                            holder = cardHolderInput.text.toString()
                         ),
                         deletedCardsList = config.cardsToDelete
                     )
@@ -426,33 +335,6 @@ class CardNewActivity : BaseActivity() {
             }
         }
     }
-
-    private fun prepareAdditionalFields() = FilledAdditionalPayerParams(
-        city = prepareAdditionalParam(cityInputLayout, cityInput),
-        country = prepareAdditionalParam(cityInputLayout, cityInput),
-        addressLine1 = prepareAdditionalParam(
-            addressLine1InputLayout,
-            addressLine1Input
-        ),
-        addressLine2 = prepareAdditionalParam(
-            addressLine2InputLayout,
-            addressLine2Input
-        ),
-        addressLine3 = prepareAdditionalParam(
-            addressLine3InputLayout,
-            addressLine3Input
-        ),
-        postalCode = prepareAdditionalParam(
-            postalCodeInputLayout,
-            postalCodeInput
-        ),
-        state = prepareAdditionalParam(stateInputLayout, stateInput),
-        email = prepareAdditionalParam(emailInputLayout, emailInput),
-        phone = prepareAdditionalParam(
-            phoneNumberInputLayout,
-            phoneNumberInput
-        )
-    )
 
     private fun startScanner() {
         val scanIntent = Intent(this, CardIOActivity::class.java).apply {
@@ -500,7 +382,6 @@ class CardNewActivity : BaseActivity() {
 
         private const val PAYMENT_SYSTEM_LOGO_HEIGHT = 50f
         private const val PAYMENT_SYSTEM_LOGO_WIDTH = 80f
-        private const val DEFAULT_CARD_HOLDER = "CARDHOLDER"
 
         /**
          * Prepares [Intent] to launch the new card payment screen.

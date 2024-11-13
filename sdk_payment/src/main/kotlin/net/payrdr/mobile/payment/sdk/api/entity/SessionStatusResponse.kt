@@ -26,10 +26,6 @@ import org.json.JSONObject
  * @param expirationDateCustomValidation is own validation enabled for card expiration.
  * @param bindingDeactivationEnabled allows unbinding the card.
  * @param merchantOptions list of available payment methods.
- * @param orderPayerData information about payer personal data.
- * @param customerDetails information about customer.
- * @param billingPayerData information about payer country, city, address and etc.
- * @param payerDataParamsNeedToBeFilled fields to be filled by payer.
  */
 data class SessionStatusResponse(
     val redirect: String? = null,
@@ -49,10 +45,6 @@ data class SessionStatusResponse(
     val currencyAlphaCode: String? = null,
     val merchantInfo: MerchantInfo,
     val merchantOptions: List<String>,
-    val orderPayerData: OrderPayerData,
-    val customerDetails: CustomerDetails,
-    val billingPayerData: BillingPayerData,
-    val payerDataParamsNeedToBeFilled: PayerDataParamsNeedToBeFilled
 ) {
 
     companion object {
@@ -82,13 +74,7 @@ data class SessionStatusResponse(
                 currencyAlphaCode = optValue("currencyAlphaCode"),
                 merchantInfo = MerchantInfo.fromJson(getJSONObject("merchantInfo")),
                 bindingDeactivationEnabled = optBoolean("bindingDeactivationEnabled"),
-                merchantOptions = jsonObject.getJSONArray("merchantOptions").asStringList(),
-                billingPayerData = BillingPayerData.fromJson(optJSONObject("billingPayerData")),
-                payerDataParamsNeedToBeFilled = PayerDataParamsNeedToBeFilled.fromJson(
-                    optJSONObject("payerDataParamsNeedToBeFilled")
-                ),
-                orderPayerData = OrderPayerData.fromJson(optJSONObject("orderPayerData")),
-                customerDetails = CustomerDetails.fromJson(optJSONObject("customerDetails"))
+                merchantOptions = jsonObject.getJSONArray("merchantOptions").asStringList()
             )
         }
     }

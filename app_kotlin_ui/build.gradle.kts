@@ -63,6 +63,7 @@ android {
 }
 
 dependencies {
+    implementation(group = "", name = "sdk_logs-release", ext = "aar")
     implementation(group = "", name = "sdk_forms-release", ext = "aar")
     implementation(group = "", name = "sdk_core-release", ext = "aar")
     implementation(group = "", name = "sdk_payment-release", ext = "aar")
@@ -90,7 +91,7 @@ dependencies {
 
     // 3DS2 SDK
     implementation("com.google.code.gson:gson:2.8.5")
-    implementation("com.squareup.okhttp3:okhttp:3.11.0")
+    implementation("com.squareup.okhttp3:okhttp:4.7.2")
     implementation("com.google.android.gms:play-services-ads:17.2.1")
     implementation("com.google.android.gms:play-services-location:16.0.0")
 

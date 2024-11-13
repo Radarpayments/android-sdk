@@ -1,7 +1,6 @@
 package net.payrdr.mobile.payment.sdk.payment
 
 import net.payrdr.mobile.payment.sdk.api.entity.BindingItem
-import net.payrdr.mobile.payment.sdk.form.model.AdditionalFieldsForPaymentSystem
 import net.payrdr.mobile.payment.sdk.form.model.GooglePayPaymentConfig
 
 /**
@@ -26,7 +25,6 @@ interface CardFormDelegate {
         bindingCards: List<BindingItem>,
         cvcNotRequired: Boolean,
         bindingDeactivationEnabled: Boolean,
-        googlePayConfig: GooglePayPaymentConfig?,
-        additionalCardParamForPayments: AdditionalFieldsForPaymentSystem
+        googlePayConfig: GooglePayPaymentConfig?
     )
 }

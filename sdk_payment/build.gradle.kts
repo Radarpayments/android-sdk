@@ -83,6 +83,7 @@ dependencies {
     implementation(project(":sdk_forms"))
     implementation(project(":sdk_threeds"))
     implementation(project(":sdk_core"))
+    implementation(project(":sdk_logs"))
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     //for test

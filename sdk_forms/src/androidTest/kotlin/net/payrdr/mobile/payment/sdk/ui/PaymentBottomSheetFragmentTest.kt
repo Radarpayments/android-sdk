@@ -14,11 +14,12 @@ import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.params.ScreenshotParams
 import com.kaspersky.kaspresso.testcases.api.testcase.DocLocScreenshotTestCase
 import com.kaspersky.kaspresso.testcases.models.info.TestInfo
+import io.mockk.mockk
 import io.qameta.allure.android.allureScreenshot
 import io.qameta.allure.android.runners.AllureAndroidJUnit4
 import net.payrdr.mobile.payment.sdk.core.model.ExpiryDate
-import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
+import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.component.impl.CachedKeyProvider
 import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
 import net.payrdr.mobile.payment.sdk.form.model.Card
@@ -52,8 +53,8 @@ class PaymentBottomSheetFragmentTest : DocLocScreenshotTestCase(
                     .getInstance(instrumentation)
                     .executeShellCommand(
                         "appops set --uid " +
-                                "${InstrumentationRegistry.getInstrumentation().targetContext.packageName}" +
-                                " MANAGE_EXTERNAL_STORAGE allow"
+                            "${InstrumentationRegistry.getInstrumentation().targetContext.packageName}" +
+                            " MANAGE_EXTERNAL_STORAGE allow"
                     )
             }
         }
@@ -98,6 +99,7 @@ class PaymentBottomSheetFragmentTest : DocLocScreenshotTestCase(
                     )
                 ).build()
         )
+        SDKForms.innerCryptogramProcessor = mockk()
     }
 
     @Test

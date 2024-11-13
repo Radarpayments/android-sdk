@@ -4,7 +4,6 @@ package net.payrdr.mobile.payment.sample.kotlin
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
@@ -53,8 +52,6 @@ import net.payrdr.mobile.payment.sample.kotlin.payment.PaymentFormActivity
 import net.payrdr.mobile.payment.sample.kotlin.payment.PaymentFormActivityWeb
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSActivity
 import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSManualActivity
-import net.payrdr.mobile.payment.sdk.core.LogInterface
-import net.payrdr.mobile.payment.sdk.core.Logger
 import net.payrdr.mobile.payment.sdk.core.model.ExpiryDate
 import net.payrdr.mobile.payment.sdk.form.GooglePayConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.PaymentConfigBuilder
@@ -103,17 +100,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Logger.addLogInterface(object : LogInterface {
-            override fun log(
-                classMethod: Class<Any>,
-                tag: String,
-                message: String,
-                exception: Exception?
-            ) {
-                Log.i(tag, "$classMethod: $message", exception)
-            }
-        })
 
 //        Example: Setup provider for logs uploading
 //        ThreeDSLogger.INSTANCE.setupLogUploaderConfigProvider(object : LogUploaderConfigProvider {
@@ -199,7 +185,7 @@ class MainActivity : AppCompatActivity() {
                 // Optional, default HIDE.
                 .holderInputOptions(HolderInputOptions.VISIBLE)
                 // Optional, default true.
-                .storedPaymentMethodCVCRequired(false)
+                .bindingCVCRequired(false)
                 // Optional, default ENABLED.
                 .cameraScannerOptions(CameraScannerOptions.ENABLED)
                 // Optional, default ENABLED.
@@ -409,7 +395,7 @@ class MainActivity : AppCompatActivity() {
             // Optional, default HIDE.
             .holderInputOptions(HolderInputOptions.VISIBLE)
             // Optional, default true.
-            .storedPaymentMethodCVCRequired(bindingCVCRequired)
+            .bindingCVCRequired(bindingCVCRequired)
             // Optional, default ENABLED.
             .cameraScannerOptions(CameraScannerOptions.ENABLED)
             // Optional, default ENABLED.
@@ -460,7 +446,7 @@ class MainActivity : AppCompatActivity() {
             // Optional, default HIDE.
             .holderInputOptions(HolderInputOptions.VISIBLE)
             // Optional, default true.
-            .storedPaymentMethodCVCRequired(bindingCVCRequired)
+            .bindingCVCRequired(bindingCVCRequired)
             // Optional, default ENABLED.
             .cameraScannerOptions(CameraScannerOptions.ENABLED)
             // Optional, default ENABLED.
@@ -511,7 +497,7 @@ class MainActivity : AppCompatActivity() {
             // Optional, default HIDE.
             .holderInputOptions(HolderInputOptions.VISIBLE)
             // Optional, default true.
-            .storedPaymentMethodCVCRequired(true)
+            .bindingCVCRequired(true)
             // Optional, default ENABLED.
             .cameraScannerOptions(CameraScannerOptions.ENABLED)
             // Optional, default SYSTEM.
@@ -575,11 +561,12 @@ class MainActivity : AppCompatActivity() {
                             log("Saved card ${info.bindingId}")
                         } else if (info is PaymentInfoGooglePay) {
                             log("Google Pay ${info.order}")
-                            googlePayCryptogram.text = info.paymentToken
+                            googlePayCryptogram.text = result.seToken
                         }
                         log("$result")
                         log("Deleted cards ${result.deletedCardsList}")
                     }
+
                     result.status.isCanceled() -> {
                         log("canceled")
                         log("Deleted cards ${result.deletedCardsList}")

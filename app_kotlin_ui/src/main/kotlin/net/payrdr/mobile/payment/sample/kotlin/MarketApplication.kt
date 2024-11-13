@@ -3,11 +3,7 @@
 package net.payrdr.mobile.payment.sample.kotlin
 
 import android.app.Application
-import net.payrdr.mobile.payment.sdk.SDKPayment
-import net.payrdr.mobile.payment.sdk.core.Logger
-import java.io.InputStream
 import net.payrdr.mobile.payment.sdk.form.component.impl.SSLContextConfig
-import net.payrdr.mobile.payment.sdk.form.component.impl.SSLContextCustomCAFactory
 
 @Suppress("UndocumentedPublicClass")
 class MarketApplication : Application() {
@@ -40,6 +36,24 @@ class MarketApplication : Application() {
         //   3) Example
         //   val cert: InputStream = baseContext.resources.openRawResource(R.raw.custom_cert)
         //   sslContextConfig = SSLContextCustomCAFactory.fromInputStream(cert)
+
+        //   4) Example of configuration Sentry Logs
+        //    Logger.addLogInterface(
+        //        SentryLogger(
+        //            SentryLogUploader(
+        //                logUploaderConfig = SentryLogUploaderConfig(
+        //                    url = "https://..../api/17/store/",
+        //                    key = "fcc...2b6b",
+        //                    appId = "sdkAppId",
+        //                ),
+        //                installationIdProvider = InstallationIdProviderImpl(baseContext)
+        //            ),
+        //            isWebViewLogsEnabled = true,
+        //        )
+        //    )
+
+        //   5) Example of SDKPaymentUncaughtExceptionHandler installation
+        //   SDKPaymentUncaughtExceptionHandler.install()
     }
 
     companion object {

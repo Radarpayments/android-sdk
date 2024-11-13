@@ -4,13 +4,13 @@ import java.net.URL
 import javax.net.ssl.SSLContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.payrdr.mobile.payment.sdk.core.Logger
 import net.payrdr.mobile.payment.sdk.form.Constants
 import net.payrdr.mobile.payment.sdk.form.component.CardInfo
 import net.payrdr.mobile.payment.sdk.form.component.CardInfoProvider
 import net.payrdr.mobile.payment.sdk.form.component.CardInfoProviderException
 import net.payrdr.mobile.payment.sdk.form.utils.executePostJson
 import net.payrdr.mobile.payment.sdk.form.utils.responseBodyToJsonObject
+import net.payrdr.mobile.payment.sdk.logs.Logger
 import org.json.JSONObject
 
 /**
@@ -29,7 +29,7 @@ class RemoteCardInfoProvider(
     @Suppress("TooGenericExceptionCaught")
     override suspend fun resolve(bin: String): CardInfo = withContext(Dispatchers.IO) {
         try {
-            Logger.log(
+            Logger.info(
                 this.javaClass,
                 Constants.TAG,
                 "resolve($bin):",
@@ -42,7 +42,7 @@ class RemoteCardInfoProvider(
                 logoMini = urlBin + info.logoMini
             )
         } catch (cause: Exception) {
-            Logger.log(
+            Logger.error(
                 this.javaClass,
                 Constants.TAG,
                 "resolve($bin): Error",

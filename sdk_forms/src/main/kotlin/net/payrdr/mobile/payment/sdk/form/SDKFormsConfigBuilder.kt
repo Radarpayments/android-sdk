@@ -1,12 +1,12 @@
 package net.payrdr.mobile.payment.sdk.form
 
-import javax.net.ssl.SSLContext
-import net.payrdr.mobile.payment.sdk.core.Logger
 import net.payrdr.mobile.payment.sdk.form.component.CardInfoProvider
 import net.payrdr.mobile.payment.sdk.form.component.KeyProvider
 import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteCardInfoProvider
 import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
 import net.payrdr.mobile.payment.sdk.form.model.SDKConfig
+import net.payrdr.mobile.payment.sdk.logs.Logger
+import javax.net.ssl.SSLContext
 
 /**
  * Constructor for forming the SDK configuration.
@@ -26,14 +26,14 @@ class SDKFormsConfigBuilder {
      * @param providerUrl url address for receiving encryption keys
      */
     fun keyProviderUrl(providerUrl: String, sslContext: SSLContext?): SDKFormsConfigBuilder = apply {
-        Logger.log(
+        Logger.info(
             this.javaClass,
             Constants.TAG,
             "keyProviderUrl($providerUrl): Set the remote key provider by url.",
             null
         )
         if (this.keyProvider != null) {
-            Logger.log(
+            Logger.error(
                 this.javaClass,
                 Constants.TAG,
                 "keyProviderUrl($providerUrl): Error",
@@ -50,14 +50,14 @@ class SDKFormsConfigBuilder {
      * @param provider the encryption key provider to use.
      */
     fun keyProvider(provider: KeyProvider): SDKFormsConfigBuilder = apply {
-        Logger.log(
+        Logger.info(
             this.javaClass,
             Constants.TAG,
             "keyProvider($provider): Set the provider of the encryption key.",
             null
         )
         if (this.keyProvider != null) {
-            Logger.log(
+            Logger.error(
                 this.javaClass,
                 Constants.TAG,
                 "keyProvider($provider): Error",

@@ -25,13 +25,4 @@
     <string name="payrdr_alert_dialog_text">Wenn Sie es sich später anders überlegen, müssen Sie sie wieder hinzufügen.</string>
     <string name="payrdr_alert_dialog_cancel">Abbrechen</string>
     <string name="payrdr_alert_dialog_delete">Entfernen</string>
-    <string name="payrdr_email">Email</string>
-    <string name="payrdr_phone_number">Telefonnummer</string>
-    <string name="payrdr_country">Land</string>
-    <string name="payrdr_state">Staat</string>
-    <string name="payrdr_city">Stadt</string>
-    <string name="payrdr_postal_code">Postleitzahl</string>
-    <string name="payrdr_address_line_1">Adresszeile 1</string>
-    <string name="payrdr_address_line_2">Adresszeile 2</string>
-    <string name="payrdr_address_line_3">Adresszeile 3</string>
 </resources>

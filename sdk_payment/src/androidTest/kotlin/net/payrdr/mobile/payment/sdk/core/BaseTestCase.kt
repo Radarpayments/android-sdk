@@ -20,9 +20,9 @@ import io.qameta.allure.android.runners.AllureAndroidJUnit4
 import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.data.TestClientIdHelper
 import net.payrdr.mobile.payment.sdk.data.TestOrderHelper
+import net.payrdr.mobile.payment.sdk.logs.Logger
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 import net.payrdr.mobile.payment.sdk.payment.model.Use3DSConfig
-import net.payrdr.mobile.payment.sdk.threeds.ThreeDSLogger
 import org.junit.Before
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -96,20 +96,7 @@ open class BaseTestCase : DocLocScreenshotTestCase(
 
     @Before
     fun setUp() {
-        Logger.addLogInterface(object : LogInterface {
-            override fun log(
-                classMethod: Class<Any>,
-                tag: String,
-                message: String,
-                exception: Exception?
-            ) {
-                Log.d("TESTLOG", "$classMethod $tag $message ${exception ?: ""}")
-            }
-
-        })
-        ThreeDSLogger.INSTANCE.addLogInterface { classMethod, tag, message, exception ->
-            Log.d("TESTLOG3DS" ,  "$classMethod $tag $message ${exception ?: ""}")
-        }
+        Logger.addLogInterface(TestLoggerFactory.createLogcatLogger("TESTLOG"))
         val baseUrl = "https://dev.bpcbt.com/payment"
         testPaymentConfig = SDKPaymentConfig(
             baseUrl,

@@ -1,8 +1,6 @@
 package net.payrdr.mobile.payment.sdk.form
 
-import net.payrdr.mobile.payment.sdk.core.Logger
 import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
-import net.payrdr.mobile.payment.sdk.form.model.AdditionalField
 import net.payrdr.mobile.payment.sdk.form.model.CameraScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.Card
 import net.payrdr.mobile.payment.sdk.form.model.CardDeleteOptions
@@ -11,6 +9,7 @@ import net.payrdr.mobile.payment.sdk.form.model.HolderInputOptions
 import net.payrdr.mobile.payment.sdk.form.model.NfcScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.PaymentConfig
 import net.payrdr.mobile.payment.sdk.form.model.Theme
+import net.payrdr.mobile.payment.sdk.logs.Logger
 import java.util.Locale
 import java.util.UUID
 
@@ -31,11 +30,9 @@ class PaymentConfigBuilder(private val order: String = "") {
     private var uuid: String = UUID.randomUUID().toString()
     private var timestamp: Long = System.currentTimeMillis()
     private var locale: Locale = Locale.getDefault()
-    private var storedPaymentMethodCVCRequired: Boolean = true
+    private var bindingCVCRequired: Boolean = true
     private var cardDeleteOptions: CardDeleteOptions = CardDeleteOptions.NO_DELETE
     private var registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_FORMS
-    private var paramsNeedToBeFilledForMastercard: List<AdditionalField> = emptyList()
-    private var paramsNeedToBeFilledForVisa: List<AdditionalField> = emptyList()
 
     /**
      * Change the text of the payment button.
@@ -46,7 +43,7 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun buttonText(buttonText: String): PaymentConfigBuilder = apply {
-        Logger.log(
+        Logger.info(
             this.javaClass,
             Constants.TAG,
             "buttonText($buttonText): Change the text of the payment button.",
@@ -64,7 +61,7 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun cards(cards: Set<Card>): PaymentConfigBuilder = apply {
-        Logger.log(
+        Logger.info(
             this.javaClass,
             Constants.TAG,
             "cards($cards): Adding a list of linked cards.",
@@ -82,7 +79,7 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun cardSaveOptions(options: CardSaveOptions): PaymentConfigBuilder = apply {
-        Logger.log(
+        Logger.info(
             this.javaClass,
             Constants.TAG,
             "cardSaveOptions($options): Option to manage the ability to bind a new card.",
@@ -100,7 +97,7 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun cameraScannerOptions(options: CameraScannerOptions): PaymentConfigBuilder = apply {
-        Logger.log(
+        Logger.info(
             this.javaClass,
             Constants.TAG,
             "cameraScannerOptions($options):",
@@ -118,7 +115,7 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun nfcScannerOptions(options: NfcScannerOptions): PaymentConfigBuilder = apply {
-        Logger.log(
+        Logger.info(
             this.javaClass,
             Constants.TAG,
             "nfcScannerOptions($options): Option to control the functionality of card scanning via NFC.",
@@ -136,7 +133,7 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun theme(theme: Theme): PaymentConfigBuilder = apply {
-        Logger.log(
+        Logger.info(
             this.javaClass,
             Constants.TAG,
             "theme($theme): Option to control the theme of the interface.",
@@ -154,7 +151,7 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun holderInputOptions(options: HolderInputOptions): PaymentConfigBuilder = apply {
-        Logger.log(
+        Logger.info(
             this.javaClass,
             Constants.TAG,
             "holderInputOptions($options):",
@@ -172,7 +169,7 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun uuid(uuid: String): PaymentConfigBuilder = apply {
-        Logger.log(
+        Logger.info(
             this.javaClass,
             Constants.TAG,
             "uuid($uuid): Setting a unique identifier for the payment.",
@@ -190,7 +187,7 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun timestamp(timestamp: Long): PaymentConfigBuilder = apply {
-        Logger.log(
+        Logger.info(
             this.javaClass,
             Constants.TAG,
             "timestamp($timestamp): Setting the time of formation of payment.",
@@ -208,7 +205,7 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun locale(locale: Locale): PaymentConfigBuilder = apply {
-        Logger.log(
+        Logger.info(
             this.javaClass,
             Constants.TAG,
             "locale($locale): Installation of localization.",
@@ -225,14 +222,14 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @param required CVC filling requirement.
      * @return the current constructor.
      */
-    fun storedPaymentMethodCVCRequired(required: Boolean): PaymentConfigBuilder = apply {
-        Logger.log(
+    fun bindingCVCRequired(required: Boolean): PaymentConfigBuilder = apply {
+        Logger.info(
             this.javaClass,
             Constants.TAG,
-            "storedPaymentMethodCVCRequired($required):",
+            "bindingCVCRequired($required):",
             null
         )
-        this.storedPaymentMethodCVCRequired = required
+        this.bindingCVCRequired = required
     }
 
     /**
@@ -244,7 +241,7 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @return the current constructor.
      */
     fun cardDeleteOptions(options: CardDeleteOptions): PaymentConfigBuilder = apply {
-        Logger.log(
+        Logger.info(
             this.javaClass,
             Constants.TAG,
             "cardDeleteOptions($options): Option to manage the ability to remove the card.",
@@ -261,42 +258,14 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @param registeredFrom setting the source.
      * @return the current constructor.
      */
-    fun registeredFrom(registeredFrom: MSDKRegisteredFrom): PaymentConfigBuilder = apply {
-        Logger.log(
+    fun registeredFrom(registeredFrom: MSDKRegisteredFrom) : PaymentConfigBuilder = apply {
+        Logger.info(
             this.javaClass,
             Constants.TAG,
             "registeredFrom($registeredFrom): Option to manage the source.",
             null
         )
         this.registeredFrom = registeredFrom
-    }
-
-    /**
-     * Option to add additional fields about payer to fill by payer when pay with MASTERCARD.
-     *
-     * Optional, default empty.
-     *
-     * @param paramsNeedToBeFilledForMastercard the list of additional fields.
-     * @return the current constructor.
-     */
-    fun paramsNeedToBeFilledForMastercard(
-        paramsNeedToBeFilledForMastercard: List<AdditionalField>
-    ): PaymentConfigBuilder = apply {
-        this.paramsNeedToBeFilledForMastercard = paramsNeedToBeFilledForMastercard
-    }
-
-    /**
-     * Option to add additional fields about payer to fill by payer when pay with VISA.
-     *
-     * Optional, default empty.
-     *
-     * @param paramsNeedToBeFilledForVisa the list of additional fields.
-     * @return the current constructor.
-     */
-    fun paramsNeedToBeFilledForVisa(
-        paramsNeedToBeFilledForVisa: List<AdditionalField>
-    ): PaymentConfigBuilder = apply {
-        this.paramsNeedToBeFilledForVisa = paramsNeedToBeFilledForVisa
     }
 
     /**
@@ -316,10 +285,8 @@ class PaymentConfigBuilder(private val order: String = "") {
         timestamp = this.timestamp,
         buttonText = this.buttonText,
         locale = this.locale,
-        storedPaymentMethodCVCRequired = this.storedPaymentMethodCVCRequired,
+        bindingCVCRequired = this.bindingCVCRequired,
         cardDeleteOptions = this.cardDeleteOptions,
         registeredFrom = this.registeredFrom,
-        fieldsNeedToBeFilledForMastercard = this.paramsNeedToBeFilledForMastercard,
-        fieldsNeedToBeFilledForVisa = this.paramsNeedToBeFilledForVisa
     )
 }

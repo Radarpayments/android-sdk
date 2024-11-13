@@ -5,17 +5,14 @@ import android.content.Intent
 import androidx.fragment.app.Fragment
 import net.payrdr.mobile.payment.sdk.Constants.INTENT_EXTRA_RESULT
 import net.payrdr.mobile.payment.sdk.Constants.REQUEST_CODE_PAYMENT
-import net.payrdr.mobile.payment.sdk.core.Logger
 import net.payrdr.mobile.payment.sdk.form.SDKException
 import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
+import net.payrdr.mobile.payment.sdk.logs.Logger
 import net.payrdr.mobile.payment.sdk.payment.PaymentActivity
-import net.payrdr.mobile.payment.sdk.payment.model.CheckoutConfig
-import net.payrdr.mobile.payment.sdk.payment.model.PaymentApiVersion
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
-import net.payrdr.mobile.payment.sdk.utils.SessionIdConverter
 import net.payrdr.mobile.payment.sdk.core.BuildConfig as BuildConfigCore
 import net.payrdr.mobile.payment.sdk.form.BuildConfig as BuildConfigForms
 import net.payrdr.mobile.payment.sdk.threeds.BuildConfig as BuildConfigThreeDS
@@ -52,106 +49,46 @@ object SDKPayment {
      * Starting the billing cycle process via SDK from [activity].
      *
      * @param activity to which the result will be returned.
-     * @param checkoutConfig configuration for checkout
+     * @param mdOrder order number.
      */
     fun checkout(
         activity: Activity,
-        checkoutConfig: CheckoutConfig,
+        mdOrder: String,
         gPayClicked: Boolean = false
     ) {
-        when (checkoutConfig) {
-            is CheckoutConfig.MdOrder -> {
-                val mdOrder = checkoutConfig.value
-                Logger.log(
-                    this.javaClass,
-                    Constants.TAG,
-                    "checkout($activity, $mdOrder, $gPayClicked): ",
-                    null
-                )
-                activity.startActivityForResult(
-                    PaymentActivity.prepareIntent(
-                        activity,
-                        mdOrder,
-                        gPayClicked,
-                        PaymentApiVersion.V1
-                    ),
-                    REQUEST_CODE_PAYMENT
-                )
-            }
-
-            is CheckoutConfig.SessionId -> {
-                val sessionId = checkoutConfig.value
-                val mdOrder = SessionIdConverter.sessionIdToMdOrder(sessionId)
-                Logger.log(
-                    this.javaClass,
-                    Constants.TAG,
-                    "checkout($activity, $mdOrder, $sessionId, $gPayClicked): ",
-                    null
-                )
-                activity.startActivityForResult(
-                    PaymentActivity.prepareIntent(
-                        activity,
-                        mdOrder,
-                        gPayClicked,
-                        PaymentApiVersion.V2
-                    ),
-                    REQUEST_CODE_PAYMENT
-                )
-            }
-        }
+        Logger.info(
+            this.javaClass,
+            Constants.TAG,
+            "checkout($activity, $mdOrder, $gPayClicked): ",
+            null
+        )
+        activity.startActivityForResult(
+            PaymentActivity.prepareIntent(activity, mdOrder, gPayClicked),
+            REQUEST_CODE_PAYMENT
+        )
     }
 
     /**
      * Starting the billing cycle process via SDK from [fragment].
      *
      * @param fragment to which the result will be returned.
-     * @param checkoutConfig configuration for checkout
+     * @param mdOrder order number.
      */
     fun checkout(
         fragment: Fragment,
-        checkoutConfig: CheckoutConfig,
+        mdOrder: String,
         gPayClicked: Boolean = false
     ) {
-        when (checkoutConfig) {
-            is CheckoutConfig.MdOrder -> {
-                val mdOrder = checkoutConfig.value
-                Logger.log(
-                    this.javaClass,
-                    Constants.TAG,
-                    "checkout($fragment, $mdOrder, $gPayClicked): ",
-                    null
-                )
-                fragment.startActivityForResult(
-                    PaymentActivity.prepareIntent(
-                        fragment.requireContext(),
-                        mdOrder,
-                        gPayClicked,
-                        PaymentApiVersion.V1
-                    ),
-                    REQUEST_CODE_PAYMENT
-                )
-            }
-
-            is CheckoutConfig.SessionId -> {
-                val sessionId = checkoutConfig.value
-                val mdOrder = SessionIdConverter.sessionIdToMdOrder(sessionId)
-                Logger.log(
-                    this.javaClass,
-                    Constants.TAG,
-                    "checkout($fragment, $sessionId, $gPayClicked): ",
-                    null
-                )
-                fragment.startActivityForResult(
-                    PaymentActivity.prepareIntent(
-                        fragment.requireContext(),
-                        mdOrder,
-                        gPayClicked,
-                        PaymentApiVersion.V2
-                    ),
-                    REQUEST_CODE_PAYMENT
-                )
-            }
-        }
+        Logger.info(
+            this.javaClass,
+            Constants.TAG,
+            "checkout($fragment, $mdOrder, $gPayClicked): ",
+            null
+        )
+        fragment.startActivityForResult(
+            PaymentActivity.prepareIntent(fragment.requireContext(), mdOrder, gPayClicked),
+            REQUEST_CODE_PAYMENT
+        )
     }
 
     fun handleCheckoutResult(
@@ -172,22 +109,32 @@ object SDKPayment {
     ) {
         val paymentData = data.getParcelableExtra(INTENT_EXTRA_RESULT) as PaymentResult?
         if (paymentData != null) {
-            Logger.log(
+            Logger.info(
                 this.javaClass,
                 Constants.TAG,
                 "handleCheckoutResult($data, $paymentCallback): Success " +
-                        "PaymentData(${paymentData.sessionId},${paymentData.isSuccess})",
+                        "PaymentData(${paymentData.mdOrder},${paymentData.isSuccess})",
                 null
             )
             paymentCallback.onResult(paymentData)
+            if (paymentData.isSuccess.not()) {
+                Logger.uploadLogs()
+            }
         } else {
+            Logger.error(
+                this.javaClass,
+                Constants.TAG,
+                "handleCheckoutResult $data",
+                SDKException("Error handle result")
+            )
             paymentCallback.onResult(
                 PaymentResult(
-                    sessionId = "",
+                    mdOrder = "",
                     isSuccess = false,
                     exception = SDKException("Error handle result"),
                 )
             )
+            Logger.uploadLogs()
         }
     }
 

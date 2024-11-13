@@ -8,8 +8,8 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import com.github.devnied.emvnfccard.parser.EmvTemplate
-import net.payrdr.mobile.payment.sdk.core.Logger
 import net.payrdr.mobile.payment.sdk.form.Constants
+import net.payrdr.mobile.payment.sdk.logs.Logger
 import java.util.Date
 
 /**
@@ -39,7 +39,7 @@ class NFCReadDelegate(
             NfcAdapter.ACTION_TAG_DISCOVERED == intent.action
         ) {
             try {
-                Logger.log(
+                Logger.info(
                     this.javaClass,
                     Constants.TAG,
                     "onNewIntent($intent): NFCReadDelegate.onNewIntent()",
@@ -66,7 +66,7 @@ class NFCReadDelegate(
                     )
                 }
             } catch (e: Exception) {
-                Logger.log(
+                Logger.error(
                     this.javaClass,
                     Constants.TAG,
                     "onNewIntent($intent): Error NFCReadDelegate.onNewIntent()",
