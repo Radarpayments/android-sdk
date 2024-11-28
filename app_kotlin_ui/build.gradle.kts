@@ -68,6 +68,8 @@ dependencies {
     implementation(group = "", name = "sdk_core-release", ext = "aar")
     implementation(group = "", name = "sdk_payment-release", ext = "aar")
     implementation(group = "", name = "sdk_threeds-release", ext = "aar")
+    implementation(group = "", name = "sdk_logs-release", ext = "aar")
+
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.3.72")
