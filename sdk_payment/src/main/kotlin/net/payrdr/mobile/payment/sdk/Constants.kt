@@ -15,4 +15,5 @@ object Constants {
     internal const val INTENT_EXTRA_ACS_URL = "acsUrl"
     internal const val INTENT_EXTRA_TERM_URL = "termUrl"
     internal const val INTENT_EXTRA_PAREQ = "paReq"
+    internal const val PAYMENT_API_VERSION = "paymentApiVersion"
 }

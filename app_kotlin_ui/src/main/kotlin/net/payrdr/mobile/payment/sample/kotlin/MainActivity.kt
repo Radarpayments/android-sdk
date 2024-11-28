@@ -101,27 +101,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        Example: Setup provider for logs uploading
-//        ThreeDSLogger.INSTANCE.setupLogUploaderConfigProvider(object : LogUploaderConfigProvider {
-//            override fun provideConfig(p0: String?): LogUploaderConfig {
-//                return SentryLogUploaderConfig.Builder()
-//                    .withUrl("SentryURL")
-//                    .withKey("SentryKey")
-//                    .build()
-//            }
-//        })
-//
-//        ThreeDSLogger.INSTANCE.addLogInterface(object : net.payrdr.mobile.payment.sdk.threeds.LogInterface {
-//            override fun log(
-//                classMethod: Class<*>,
-//                tag: String,
-//                message: String,
-//                exception: Throwable?
-//            ) {
-//                Log.i(tag, "$classMethod: $message", exception)
-//            }
-//        })
-
         setContentView(R.layout.activity_main)
         bottomSheetButton.setOnClickListener {
             val cards = setOf(
@@ -185,7 +164,7 @@ class MainActivity : AppCompatActivity() {
                 // Optional, default HIDE.
                 .holderInputOptions(HolderInputOptions.VISIBLE)
                 // Optional, default true.
-                .bindingCVCRequired(false)
+                .storedPaymentMethodCVCRequired(false)
                 // Optional, default ENABLED.
                 .cameraScannerOptions(CameraScannerOptions.ENABLED)
                 // Optional, default ENABLED.
@@ -395,7 +374,7 @@ class MainActivity : AppCompatActivity() {
             // Optional, default HIDE.
             .holderInputOptions(HolderInputOptions.VISIBLE)
             // Optional, default true.
-            .bindingCVCRequired(bindingCVCRequired)
+            .storedPaymentMethodCVCRequired(bindingCVCRequired)
             // Optional, default ENABLED.
             .cameraScannerOptions(CameraScannerOptions.ENABLED)
             // Optional, default ENABLED.
@@ -446,7 +425,7 @@ class MainActivity : AppCompatActivity() {
             // Optional, default HIDE.
             .holderInputOptions(HolderInputOptions.VISIBLE)
             // Optional, default true.
-            .bindingCVCRequired(bindingCVCRequired)
+            .storedPaymentMethodCVCRequired(bindingCVCRequired)
             // Optional, default ENABLED.
             .cameraScannerOptions(CameraScannerOptions.ENABLED)
             // Optional, default ENABLED.
@@ -497,7 +476,7 @@ class MainActivity : AppCompatActivity() {
             // Optional, default HIDE.
             .holderInputOptions(HolderInputOptions.VISIBLE)
             // Optional, default true.
-            .bindingCVCRequired(true)
+            .storedPaymentMethodCVCRequired(true)
             // Optional, default ENABLED.
             .cameraScannerOptions(CameraScannerOptions.ENABLED)
             // Optional, default SYSTEM.
@@ -561,7 +540,7 @@ class MainActivity : AppCompatActivity() {
                             log("Saved card ${info.bindingId}")
                         } else if (info is PaymentInfoGooglePay) {
                             log("Google Pay ${info.order}")
-                            googlePayCryptogram.text = result.seToken
+                            googlePayCryptogram.text = info.paymentToken
                         }
                         log("$result")
                         log("Deleted cards ${result.deletedCardsList}")

@@ -1,7 +1,7 @@
 package net.payrdr.mobile.payment.sdk.core.model
 
 /**
- *  Information about binding card.
+ *  Information about the binding card for payment with old method.
  *
  *  @param mdOrder order number.
  *  @param bindingID number of binding card.
@@ -12,6 +12,6 @@ package net.payrdr.mobile.payment.sdk.core.model
 data class BindingParams(
     val mdOrder: String = "",
     val bindingID: String,
-    val cvc: String?,
-    val pubKey: String
-)
+    override val cvc: String?,
+    override val pubKey: String
+) : PaymentCardParams.StoredCardPaymentParams(cvc = cvc, pubKey = pubKey)

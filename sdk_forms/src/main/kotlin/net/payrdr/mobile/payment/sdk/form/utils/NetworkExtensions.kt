@@ -74,7 +74,10 @@ fun URL.executePostJson(jsonBody: String, sslContext: SSLContext? = null): Https
  * @param paramBody collection of parameters to send in the request body.
  * @return returns [HttpURLConnection].
  */
-fun URL.executePostParams(paramBody: Map<String, String>, sslContext: SSLContext? = null): HttpsURLConnection =
+fun URL.executePostParams(
+    paramBody: Map<String, String>,
+    sslContext: SSLContext? = null
+): HttpsURLConnection =
     (openConnection() as HttpsURLConnection).apply {
         sslContext?.let {
             sslSocketFactory = it.socketFactory

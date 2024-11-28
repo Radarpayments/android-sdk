@@ -7,14 +7,22 @@ import net.payrdr.mobile.payment.sdk.core.component.PaymentStringProcessor
 import net.payrdr.mobile.payment.sdk.core.component.impl.DefaultPaymentStringProcessor
 import net.payrdr.mobile.payment.sdk.core.component.impl.RSACryptogramCipher
 import net.payrdr.mobile.payment.sdk.core.model.BindingParams
+import net.payrdr.mobile.payment.sdk.core.model.BindingInstantParams
 import net.payrdr.mobile.payment.sdk.core.model.CardBindingIdIdentifier
 import net.payrdr.mobile.payment.sdk.core.model.CardInfo
 import net.payrdr.mobile.payment.sdk.core.model.CardPanIdentifier
 import net.payrdr.mobile.payment.sdk.core.model.CardParams
+import net.payrdr.mobile.payment.sdk.core.model.CardInstantParams
 import net.payrdr.mobile.payment.sdk.core.model.Key
 import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
+import net.payrdr.mobile.payment.sdk.core.model.NewPaymentMethodCardParams
 import net.payrdr.mobile.payment.sdk.core.model.ParamField
+import net.payrdr.mobile.payment.sdk.core.model.PaymentCardParams
+import net.payrdr.mobile.payment.sdk.core.model.SDKCoreConfig
+import net.payrdr.mobile.payment.sdk.core.model.NewPaymentMethodStoredCardParams
+import net.payrdr.mobile.payment.sdk.core.utils.BindingUtils
 import net.payrdr.mobile.payment.sdk.core.utils.toExpDate
+import net.payrdr.mobile.payment.sdk.core.validation.BaseValidator
 import net.payrdr.mobile.payment.sdk.core.validation.CardBindingIdValidator
 import net.payrdr.mobile.payment.sdk.core.validation.CardCodeValidator
 import net.payrdr.mobile.payment.sdk.core.validation.CardExpiryValidator
@@ -43,51 +51,38 @@ class SDKCore(
     private val pubKeyValidator: PubKeyValidator = PubKeyValidator(context)
 
     /**
-     * Token generation method for a new card.
+     * Token generation method for a card.
      *
-     * @param params a new card information.
-     * @param timestamp the timestamp used in the generated token.
-     * @param registeredFrom source of token generation.
+     * @param sdkCoreConfig sdk core configuration.
      *
      * @return generated token or error.
      */
-    @JvmOverloads
-    fun generateWithCard(
-        params: CardParams,
-        timestamp: Long = System.currentTimeMillis(),
-        registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_CORE,
-    ): TokenResult {
+
+    @Suppress("ComplexMethod")
+    fun generateWithConfig(sdkCoreConfig: SDKCoreConfig): TokenResult {
+        val params = sdkCoreConfig.paymentCardParams
+        val timestamp = sdkCoreConfig.timestamp
+        val (validatorsMap, fieldErrors) = when (params) {
+            is PaymentCardParams.StoredCardPaymentParams -> {
+                createValidatorAndErrorsForStoredCardPayment(params)
+            }
+
+            is PaymentCardParams.NewCardPaymentParams -> {
+                createValidatorAndErrorsForNewCardPayment(params)
+            }
+        }
 
         Logger.info(
             this.javaClass,
             TAG,
-            "generateWithCard($params, $timestamp): Token generation method for a new card.",
+            "generateWithConfig($params, $timestamp): Token generation method for a new card.",
             null
         )
-
-        val validatorsMap = mapOf(
-            params.cardHolder to cardHolderValidator,
-            params.mdOrder to orderNumberValidator,
-            params.expiryMMYY to cardExpiryValidator,
-            params.pan to cardNumberValidator,
-            params.cvc to cardCodeValidator,
-            params.pubKey to pubKeyValidator
-        )
-
-        val fieldErrors = mapOf(
-            params.cardHolder to ParamField.CARDHOLDER,
-            params.mdOrder to ParamField.MD_ORDER,
-            params.expiryMMYY to ParamField.EXPIRY,
-            params.pan to ParamField.PAN,
-            params.cvc to ParamField.CVC,
-            params.pubKey to ParamField.PUB_KEY
-        )
-
         for ((fieldValue, validator) in validatorsMap) {
             Logger.info(
                 this.javaClass,
                 TAG,
-                "generateWithCard($params, $timestamp): Validate ${fieldErrors[fieldValue]}",
+                "generateWithConfig($params, $timestamp): Validate ${fieldErrors[fieldValue]}",
                 null
             )
             if (fieldValue != null) {
@@ -95,198 +90,131 @@ class SDKCore(
                     Logger.warning(
                         this.javaClass,
                         TAG,
-                        "generateWithCard($params, $timestamp): Error ${fieldErrors[fieldValue]}",
-                        IllegalArgumentException(
-                            (fieldErrors[fieldValue] ?: ParamField.UNKNOWN).toString()
-                        )
+                        "generateWithConfig($params, $timestamp}): Error ${fieldErrors[fieldValue]}",
+                        IllegalArgumentException((fieldErrors[fieldValue] ?: ParamField.UNKNOWN).toString())
                     )
                     return TokenResult.withErrors(
-                        mapOf(
-                            (fieldErrors[fieldValue] ?: error(ParamField.UNKNOWN)) to it.errorCode!!
-                        )
+                        mapOf((fieldErrors[fieldValue] ?: error(ParamField.UNKNOWN)) to it.errorCode!!)
                     )
                 }
             }
         }
+        val cardInfo = when (params) {
+            is PaymentCardParams.StoredCardPaymentParams -> {
+                createCardInfoForStoredCardPayment(params)
+            }
 
-        val cardInfo = CardInfo(
-            identifier = CardPanIdentifier(value = params.pan),
-            expDate = params.expiryMMYY.toExpDate(),
-            cardHolder = params.cardHolder,
-            cvv = params.cvc,
-        )
-        return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp, registeredFrom)
+            is PaymentCardParams.NewCardPaymentParams -> {
+                createCardInfoForNewCardPayment(params)
+            }
+        }
+        val mdOrder = when (params) {
+            is CardParams -> params.mdOrder
+            is NewPaymentMethodCardParams -> ""
+            is BindingParams -> params.mdOrder
+            is NewPaymentMethodStoredCardParams -> ""
+            is CardInstantParams -> ""
+            is BindingInstantParams -> ""
+        }
+        return prepareToken(mdOrder, cardInfo, params.pubKey, timestamp, sdkCoreConfig.registeredFrom)
     }
 
-    /**
-     * Token generation method for a new card.
-     *
-     * @param params a new card information.
-     * @param timestamp the timestamp used in the generated token.
-     * @param registeredFrom source of token generation.
-     *
-     * @return generated token or error.
-     */
-    @JvmOverloads
-    fun generateInstanceWithCard(
-        params: CardParams,
-        timestamp: Long = System.currentTimeMillis(),
-        registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_CORE,
-    ): TokenResult {
-
-        val validatorsMap = mapOf(
-            params.cardHolder to cardHolderValidator,
-            params.expiryMMYY to cardExpiryValidator,
-            params.pan to cardNumberValidator,
-            params.cvc to cardCodeValidator,
-            params.pubKey to pubKeyValidator
+    private fun createCardInfoForNewCardPayment(
+        paymentCardParams: PaymentCardParams.NewCardPaymentParams
+    ): CardInfo {
+        return CardInfo(
+            identifier = CardPanIdentifier(value = paymentCardParams.pan),
+            expDate = paymentCardParams.expiryMMYY.toExpDate(),
+            cardHolder = paymentCardParams.cardHolder,
+            cvv = paymentCardParams.cvc,
         )
-
-        val fieldErrors = mapOf(
-            params.cardHolder to ParamField.CARDHOLDER,
-            params.expiryMMYY to ParamField.EXPIRY,
-            params.pan to ParamField.PAN,
-            params.cvc to ParamField.CVC,
-            params.pubKey to ParamField.PUB_KEY
-        )
-
-        for ((fieldValue, validator) in validatorsMap) {
-            if (fieldValue != null) {
-                validator.validate(fieldValue).takeIf { !it.isValid }?.let {
-                    return TokenResult.withErrors(
-                        mapOf(
-                            (fieldErrors[fieldValue] ?: error(ParamField.UNKNOWN)) to it.errorCode!!
-                        )
-                    )
-                }
-            }
-        }
-
-        val cardInfo = CardInfo(
-            identifier = CardPanIdentifier(value = params.pan),
-            expDate = params.expiryMMYY.toExpDate(),
-            cvv = params.cvc,
-            cardHolder = params.cardHolder,
-        )
-        return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp, registeredFrom)
     }
 
-    /**
-     * Token generation method for a saved card.
-     *
-     * @param params information about the linked card.
-     * @param timestamp the timestamp used in the generated token.
-     * @param registeredFrom source of token generation.
-     *
-     * @return generated token or error.
-     */
-    @JvmOverloads
-    fun generateWithBinding(
-        params: BindingParams,
-        timestamp: Long = System.currentTimeMillis(),
-        registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_CORE,
-    ): TokenResult {
+    private fun createCardInfoForStoredCardPayment(
+        paymentCardParams: PaymentCardParams.StoredCardPaymentParams)
+    : CardInfo {
+        val identifier = when (paymentCardParams) {
+            is BindingParams -> {
+                CardBindingIdIdentifier(value = paymentCardParams.bindingID)
+            }
 
-        Logger.info(
-            this.javaClass,
-            TAG,
-            "generateWithBinding($params, $timestamp): Token generation method for a saved card.",
-            null
-        )
+            is NewPaymentMethodStoredCardParams -> {
+                val bindingId = BindingUtils.extractBindingId(paymentCardParams.storedPaymentId)
+                CardBindingIdIdentifier(value = bindingId)
+            }
 
-        val validatorsMap = mapOf(
-            params.mdOrder to orderNumberValidator,
-            params.bindingID to cardBindingIdValidator,
-            params.cvc to cardCodeValidator,
-            params.pubKey to pubKeyValidator
-        )
-
-        val fieldErrors = mapOf(
-            params.mdOrder to ParamField.MD_ORDER,
-            params.bindingID to ParamField.BINDING_ID,
-            params.cvc to ParamField.CVC,
-            params.pubKey to ParamField.PUB_KEY
-        )
-
-        for ((fieldValue, validator) in validatorsMap) {
-            Logger.info(
-                this.javaClass,
-                TAG,
-                "generateWithBinding($params, $timestamp): Validate ${fieldErrors[fieldValue]}",
-                null
-            )
-            if (fieldValue != null) {
-                validator.validate(fieldValue).takeIf { !it.isValid }?.let {
-                    Logger.warning(
-                        this.javaClass,
-                        TAG,
-                        "generateWithBinding($params, $timestamp): Error ${fieldErrors[fieldValue]}",
-                        IllegalArgumentException(
-                            (fieldErrors[fieldValue] ?: ParamField.UNKNOWN).toString()
-                        )
-                    )
-                    return TokenResult.withErrors(
-                        mapOf(
-                            (fieldErrors[fieldValue] ?: error(ParamField.UNKNOWN)) to it.errorCode!!
-                        )
-                    )
-                }
+            is BindingInstantParams -> {
+                CardBindingIdIdentifier(value = paymentCardParams.bindingID)
             }
         }
-
-        val cardInfo = CardInfo(
-            identifier = CardBindingIdIdentifier(value = params.bindingID),
-            cvv = params.cvc,
+        return CardInfo(
+            identifier = identifier,
+            cvv = paymentCardParams.cvc,
             cardHolder = null,
         )
-        return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp, registeredFrom)
     }
 
-    /**
-     * Token generation method for a saved card.
-     *
-     * @param params information about the linked card.
-     * @param timestamp the timestamp used in the generated token.
-     * @param registeredFrom source of token generation.
-     *
-     * @return generated token or error.
-     */
-    @JvmOverloads
-    fun generateInstanceWithBinding(
-        params: BindingParams,
-        timestamp: Long = System.currentTimeMillis(),
-        registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_CORE,
-    ): TokenResult {
-        val validatorsMap = mapOf(
-            params.bindingID to cardBindingIdValidator,
-            params.cvc to cardCodeValidator,
-            params.pubKey to pubKeyValidator
+    private fun createValidatorAndErrorsForNewCardPayment(
+        paymentCardParams: PaymentCardParams.NewCardPaymentParams
+    ): Pair<Map<String?, BaseValidator<String>>, Map<String?, ParamField>> {
+        val validatorsMap = mutableMapOf(
+            paymentCardParams.cardHolder to cardHolderValidator,
+            paymentCardParams.expiryMMYY to cardExpiryValidator,
+            paymentCardParams.pan to cardNumberValidator,
+            paymentCardParams.cvc to cardCodeValidator,
+            paymentCardParams.pubKey to pubKeyValidator
         )
-
-        val fieldErrors = mapOf(
-            params.bindingID to ParamField.BINDING_ID,
-            params.cvc to ParamField.CVC,
-            params.pubKey to ParamField.PUB_KEY
+        val fieldErrors = mutableMapOf(
+            paymentCardParams.cardHolder to ParamField.CARDHOLDER,
+            paymentCardParams.expiryMMYY to ParamField.EXPIRY,
+            paymentCardParams.pan to ParamField.PAN,
+            paymentCardParams.cvc to ParamField.CVC,
+            paymentCardParams.pubKey to ParamField.PUB_KEY
         )
+        when (paymentCardParams) {
+            is CardParams -> {
+                validatorsMap[paymentCardParams.mdOrder] = orderNumberValidator
+                fieldErrors[paymentCardParams.mdOrder] = ParamField.MD_ORDER
+            }
 
-        for ((fieldValue, validator) in validatorsMap) {
-            if (fieldValue != null) {
-                validator.validate(fieldValue).takeIf { !it.isValid }?.let {
-                    return TokenResult.withErrors(
-                        mapOf(
-                            (fieldErrors[fieldValue] ?: error(ParamField.UNKNOWN)) to it.errorCode!!
-                        )
-                    )
-                }
+            is NewPaymentMethodCardParams -> {}
+
+            is CardInstantParams -> {}
+        }
+        return Pair(validatorsMap.toMap(), fieldErrors.toMap())
+    }
+
+    private fun createValidatorAndErrorsForStoredCardPayment(
+        paymentCardParams: PaymentCardParams.StoredCardPaymentParams
+    ): Pair<Map<String?, BaseValidator<String>>, Map<String?, ParamField>> {
+        val validatorsMap = mutableMapOf(
+            paymentCardParams.cvc to cardCodeValidator,
+            paymentCardParams.pubKey to pubKeyValidator
+        )
+        val fieldErrors = mutableMapOf(
+            paymentCardParams.cvc to ParamField.CVC,
+            paymentCardParams.pubKey to ParamField.PUB_KEY
+        )
+        when (paymentCardParams) {
+            is BindingParams -> {
+                validatorsMap[paymentCardParams.mdOrder] = orderNumberValidator
+                validatorsMap[paymentCardParams.bindingID] = cardBindingIdValidator
+                fieldErrors[paymentCardParams.bindingID] = ParamField.BINDING_ID
+                fieldErrors[paymentCardParams.mdOrder] = ParamField.MD_ORDER
+            }
+
+            is NewPaymentMethodStoredCardParams -> {
+                val bindingId = BindingUtils.extractBindingId(paymentCardParams.storedPaymentId)
+                validatorsMap[bindingId] = cardBindingIdValidator
+                fieldErrors[bindingId] = ParamField.STORED_PAYMENT_ID
+            }
+
+            is BindingInstantParams -> {
+                validatorsMap[paymentCardParams.bindingID] = cardBindingIdValidator
+                fieldErrors[paymentCardParams.bindingID] = ParamField.BINDING_ID
             }
         }
-
-        val cardInfo = CardInfo(
-            identifier = CardBindingIdIdentifier(value = params.bindingID),
-            cvv = params.cvc,
-            cardHolder = null,
-        )
-        return prepareToken(params.mdOrder, cardInfo, params.pubKey, timestamp, registeredFrom)
+        return Pair(validatorsMap.toMap(), fieldErrors.toMap())
     }
 
     @Suppress("TooGenericExceptionCaught")

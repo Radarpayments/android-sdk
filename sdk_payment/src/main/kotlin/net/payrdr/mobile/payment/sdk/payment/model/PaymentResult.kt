@@ -7,12 +7,12 @@ import net.payrdr.mobile.payment.sdk.form.SDKException
 /**
  * The result of a full payment cycle.
  *
- * @param mdOrder order number.
+ * @param sessionId id of session.
  * @param isSuccess the payment process was completed successfully.
  * @param exception possible exception for order payment error.
  */
 data class PaymentResult(
-    val mdOrder: String,
+    val sessionId: String,
     val isSuccess: Boolean,
     val exception: SDKException?,
 ) : Parcelable {
@@ -24,7 +24,7 @@ data class PaymentResult(
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(mdOrder)
+        parcel.writeString(sessionId)
         parcel.writeInt(if (isSuccess) 1 else 0)
         parcel.writeSerializable(exception)
     }

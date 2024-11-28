@@ -52,6 +52,7 @@ object Libs {
     const val jaxb_api = "javax.xml.bind:jaxb-api:${Versions.javax_api}"
     const val com_squareup_okhttp = "com.squareup.okhttp3:okhttp:${Versions.com_squareup_okhttp}"
     const val com_google_gson = "com.google.code.gson:gson:${Versions.gson}"
+
 }
 
 object TestLibs {

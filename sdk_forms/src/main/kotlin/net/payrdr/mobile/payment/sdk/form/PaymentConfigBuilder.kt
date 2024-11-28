@@ -1,6 +1,7 @@
 package net.payrdr.mobile.payment.sdk.form
 
 import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
+import net.payrdr.mobile.payment.sdk.form.model.AdditionalField
 import net.payrdr.mobile.payment.sdk.form.model.CameraScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.Card
 import net.payrdr.mobile.payment.sdk.form.model.CardDeleteOptions
@@ -30,9 +31,11 @@ class PaymentConfigBuilder(private val order: String = "") {
     private var uuid: String = UUID.randomUUID().toString()
     private var timestamp: Long = System.currentTimeMillis()
     private var locale: Locale = Locale.getDefault()
-    private var bindingCVCRequired: Boolean = true
+    private var storedPaymentMethodCVCRequired: Boolean = true
     private var cardDeleteOptions: CardDeleteOptions = CardDeleteOptions.NO_DELETE
     private var registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_FORMS
+    private var paramsNeedToBeFilledForMastercard: List<AdditionalField> = emptyList()
+    private var paramsNeedToBeFilledForVisa: List<AdditionalField> = emptyList()
 
     /**
      * Change the text of the payment button.
@@ -222,14 +225,14 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @param required CVC filling requirement.
      * @return the current constructor.
      */
-    fun bindingCVCRequired(required: Boolean): PaymentConfigBuilder = apply {
+    fun storedPaymentMethodCVCRequired(required: Boolean): PaymentConfigBuilder = apply {
         Logger.info(
             this.javaClass,
             Constants.TAG,
-            "bindingCVCRequired($required):",
+            "storedPaymentMethodCVCRequired($required):",
             null
         )
-        this.bindingCVCRequired = required
+        this.storedPaymentMethodCVCRequired = required
     }
 
     /**
@@ -269,6 +272,34 @@ class PaymentConfigBuilder(private val order: String = "") {
     }
 
     /**
+     * Option to add additional fields about payer to fill by payer when pay with MASTERCARD.
+     *
+     * Optional, default empty.
+     *
+     * @param paramsNeedToBeFilledForMastercard the list of additional fields.
+     * @return the current constructor.
+     */
+    fun paramsNeedToBeFilledForMastercard(
+        paramsNeedToBeFilledForMastercard: List<AdditionalField>
+    ): PaymentConfigBuilder = apply {
+        this.paramsNeedToBeFilledForMastercard = paramsNeedToBeFilledForMastercard
+    }
+
+    /**
+     * Option to add additional fields about payer to fill by payer when pay with VISA.
+     *
+     * Optional, default empty.
+     *
+     * @param paramsNeedToBeFilledForVisa the list of additional fields.
+     * @return the current constructor.
+     */
+    fun paramsNeedToBeFilledForVisa(
+        paramsNeedToBeFilledForVisa: List<AdditionalField>
+    ): PaymentConfigBuilder = apply {
+        this.paramsNeedToBeFilledForVisa = paramsNeedToBeFilledForVisa
+    }
+
+    /**
      * Creates a payment configuration.
      *
      * @return payment configuration.
@@ -285,8 +316,10 @@ class PaymentConfigBuilder(private val order: String = "") {
         timestamp = this.timestamp,
         buttonText = this.buttonText,
         locale = this.locale,
-        bindingCVCRequired = this.bindingCVCRequired,
+        storedPaymentMethodCVCRequired = this.storedPaymentMethodCVCRequired,
         cardDeleteOptions = this.cardDeleteOptions,
         registeredFrom = this.registeredFrom,
+        fieldsNeedToBeFilledForMastercard = this.paramsNeedToBeFilledForMastercard,
+        fieldsNeedToBeFilledForVisa = this.paramsNeedToBeFilledForVisa
     )
 }

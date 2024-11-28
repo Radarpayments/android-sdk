@@ -16,6 +16,34 @@ object SelectedCardScreen : KScreen<SelectedCardScreen>() {
 
     val doneButton = KButton { withId(R.id.doneButton) }
     val cardCodeInput = KEditText { withId(R.id.cardCodeInput) }
+
     val cvcIncorrectText = KView { withText(R.string.payrdr_card_incorrect_cvc) }
     val cardCodeInputLayout = KTextInputLayout { withId(R.id.cardCodeInputLayout) }
+
+    val phoneNumberInputLayout = KTextInputLayout { withId(R.id.phoneNumberInputLayout) }
+    val phoneNumberInput = KEditText { withId(R.id.phoneNumberInput) }
+
+    val emailInputLayout = KTextInputLayout { withId(R.id.emailInputLayout) }
+    val emailInput = KEditText { withId(R.id.emailInput) }
+
+    val cityInputLayout = KTextInputLayout { withId(R.id.cityInputLayout) }
+    val cityInput = KEditText { withId(R.id.cityInput) }
+
+    val countryInputLayout = KTextInputLayout { withId(R.id.countryInputLayout) }
+    val countryInput = KEditText { withId(R.id.countryInput) }
+
+    val stateInputLayout = KTextInputLayout { withId(R.id.stateInputLayout) }
+    val stateInput = KEditText { withId(R.id.stateInput) }
+
+    val postalCodeInputLayout = KTextInputLayout { withId(R.id.postalCodeInputLayout) }
+    val postalCodeInput = KEditText { withId(R.id.postalCodeInput) }
+
+    val addressLine1InputLayout = KTextInputLayout { withId(R.id.addressLine1InputLayout) }
+    val addressLine1Input = KEditText { withId(R.id.addressLine1Input) }
+
+    val addressLine2InputLayout = KTextInputLayout { withId(R.id.addressLine2InputLayout) }
+    val addressLine2Input = KEditText { withId(R.id.addressLine2Input) }
+
+    val addressLine3InputLayout = KTextInputLayout { withId(R.id.addressLine3InputLayout) }
+    val addressLine3Input = KEditText { withId(R.id.addressLine3Input) }
 }

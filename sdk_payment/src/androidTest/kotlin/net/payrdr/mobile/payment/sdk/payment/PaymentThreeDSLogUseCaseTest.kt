@@ -9,6 +9,7 @@ import net.payrdr.mobile.payment.sdk.logs.Logger
 import net.payrdr.mobile.payment.sdk.logs.sentry.SentryLogUploader
 import net.payrdr.mobile.payment.sdk.logs.sentry.SentryLogUploaderConfig
 import net.payrdr.mobile.payment.sdk.logs.sentry.SentryLogger
+import net.payrdr.mobile.payment.sdk.payment.model.CheckoutConfig
 import net.payrdr.mobile.payment.sdk.screen.BottomSheetScreen
 import net.payrdr.mobile.payment.sdk.screen.NewCardScreen
 import net.payrdr.mobile.payment.sdk.screen.ThreeDS2Screen
@@ -17,7 +18,7 @@ import net.payrdr.mobile.payment.sdk.screen.fillOutFormAndSend
 import org.junit.Ignore
 import org.junit.Test
 
-class PaymentThreeDSLogUseCaseTest : BaseTestCase() {
+class PaymentThreeDSLogUseCaseTest: BaseTestCase() {
 
     @ScreenShooterTest
     @Ignore("Need URL and Key")
@@ -39,10 +40,11 @@ class PaymentThreeDSLogUseCaseTest : BaseTestCase() {
         )
 
         val mdOrder: String = testOrderHelper.registerOrder()
+        val config = CheckoutConfig.MdOrder(mdOrder)
         run {
             step("Start checkout") {
                 SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
-                SDKPayment.checkout(testActivity, mdOrder)
+                SDKPayment.checkout(testActivity, config)
             }
             step("Click on new card button") {
                 BottomSheetScreen {

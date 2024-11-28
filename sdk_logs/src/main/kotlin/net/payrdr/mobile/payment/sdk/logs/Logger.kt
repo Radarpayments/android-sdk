@@ -18,7 +18,7 @@ object Logger {
 
     /**
      * Perform log message with debug prefix.
-     * @param  classMethod class where the log method was called.
+     * @param classMethod class where the log method was called.
      * @param tag module tag.
      * @param message log message.
      * @param exception caused exception.
@@ -39,7 +39,7 @@ object Logger {
 
     /**
      * Perform log message with error prefix.
-     * @param  classMethod class where the log method was called.
+     * @param classMethod class where the log method was called.
      * @param tag module tag.
      * @param message log message.
      * @param exception caused exception.
@@ -60,7 +60,7 @@ object Logger {
 
     /**
      * Perform log message with warning prefix.
-     * @param  classMethod class where the log method was called.
+     * @param classMethod class where the log method was called.
      * @param tag module tag.
      * @param message log message.
      * @param exception caused exception.
@@ -81,7 +81,7 @@ object Logger {
 
     /**
      * Perform log message with info prefix.
-     * @param  classMethod class where the log method was called.
+     * @param classMethod class where the log method was called.
      * @param tag module tag.
      * @param message log message.
      * @param exception caused exception.
