@@ -33,7 +33,7 @@ jobs:
 
       - name: Artifacts release
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build_files
           path: |
@@ -87,7 +87,7 @@ jobs:
 
       - name: Upload spoon result (Artifact)
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sdk_payment_spoon_e2e
           path: sdk_payment/build/spoon-output
@@ -129,7 +129,7 @@ jobs:
 
       - name: Upload spoon result (Artifact)
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sdk_all_test_spoon
           path: |
