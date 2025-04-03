@@ -23,7 +23,6 @@ import java.util.Locale
  * @param buttonText the text of the payment button.
  * @param storedPaymentMethodCVCRequired mandatory entry of CVC paying with a previously saved card.
  * @param cardDeleteOptions the option to remove the card.
- * @param cardsToDelete the list of cards to be removed that the user has selected.
  * @param registeredFrom source of token generation.
  * @param fieldsNeedToBeFilledForMastercard the list of additional fields about payer to fill when pay by MASTERCARD.
  * @param fieldsNeedToBeFilledForVisa the list of additional fields about payer to fill when pay by VISA.
@@ -42,7 +41,6 @@ data class PaymentConfig internal constructor(
     val buttonText: String?,
     val storedPaymentMethodCVCRequired: Boolean,
     val cardDeleteOptions: CardDeleteOptions,
-    var cardsToDelete: MutableSet<Card> = mutableSetOf(),
     val registeredFrom: MSDKRegisteredFrom,
     val fieldsNeedToBeFilledForMastercard: List<AdditionalField>,
     val fieldsNeedToBeFilledForVisa:List<AdditionalField>
@@ -62,7 +60,6 @@ data class PaymentConfig internal constructor(
         source.readString(),
         1 == source.readInt(),
         CardDeleteOptions.values()[source.readInt()],
-        source.readCards().toMutableSet(),
         source.readString()?.let {  MSDKRegisteredFrom.valueOf(it) } ?: MSDKRegisteredFrom.MSDK_CORE,
         source.createTypedArrayList(AdditionalField.CREATOR) ?: emptyList(),
         source.createTypedArrayList(AdditionalField.CREATOR) ?: emptyList()
@@ -84,7 +81,6 @@ data class PaymentConfig internal constructor(
         writeString(buttonText)
         writeInt((if (storedPaymentMethodCVCRequired) 1 else 0))
         writeInt(cardDeleteOptions.ordinal)
-        writeCards(cardsToDelete, flags)
         writeString(registeredFrom.registeredFromValue)
         writeTypedList(fieldsNeedToBeFilledForMastercard)
         writeTypedList(fieldsNeedToBeFilledForVisa)

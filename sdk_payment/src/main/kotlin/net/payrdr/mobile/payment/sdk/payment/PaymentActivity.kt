@@ -256,7 +256,6 @@ class PaymentActivity : AppCompatActivity() {
                                     workScope.launch(Dispatchers.Main) {
                                         val keyProvider = RemoteKeyProvider("${sdkPaymentConfig.baseURL}/se/keys.do")
                                         val pubKey = keyProvider.provideKey().value
-                                        deleteBindingCards(result.deletedCardsList)
                                         when (val info = result.info) {
                                             is PaymentInfoNewCard -> {
                                                 val config = SDKCoreConfig(
@@ -303,7 +302,6 @@ class PaymentActivity : AppCompatActivity() {
 
                                 result.status.isCanceled() -> {
                                     LogDebug.logIfDebug("Cryptogram canceled")
-                                    deleteBindingCards(result.deletedCardsList)
                                     paymentManager.finishWithError(SDKCryptogramException(cause = null))
                                 }
                             }
@@ -359,17 +357,6 @@ class PaymentActivity : AppCompatActivity() {
                 mdOrder = paymentInfoGooglePay.order
             )
         )
-    }
-
-    @Suppress("TooGenericExceptionCaught")
-    private fun deleteBindingCards(cardsSet: Set<Card>) {
-        cardsSet.forEach { card ->
-            try {
-                paymentManager.unbindCard(card.bindingId)
-            } catch (e: Throwable) {
-                LogDebug.logIfDebug("Error unbind card.")
-            }
-        }
     }
 
     /**

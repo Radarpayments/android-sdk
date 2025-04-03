@@ -3,6 +3,7 @@ package net.payrdr.mobile.payment.sdk.payment
 import com.kaspersky.kaspresso.annotations.ScreenShooterTest
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.core.BaseTestCase
@@ -15,9 +16,14 @@ import net.payrdr.mobile.payment.sdk.data.TestCardHelper.withInvalidCVC
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper.withInvalidExpiry
 import net.payrdr.mobile.payment.sdk.payment.model.CheckoutConfig
 import net.payrdr.mobile.payment.sdk.screen.BottomSheetScreen
+import net.payrdr.mobile.payment.sdk.screen.CardListScreen
 import net.payrdr.mobile.payment.sdk.screen.NewCardScreen
 import net.payrdr.mobile.payment.sdk.screen.ThreeDS1Screen
 import net.payrdr.mobile.payment.sdk.screen.ThreeDS2Screen
+import net.payrdr.mobile.payment.sdk.screen.clickApproveDeleteCard
+import net.payrdr.mobile.payment.sdk.screen.clickOnAllPaymentMethods
+import net.payrdr.mobile.payment.sdk.screen.clickOnDeleteIcon
+import net.payrdr.mobile.payment.sdk.screen.clickOnEdit
 import net.payrdr.mobile.payment.sdk.screen.clickOnNewCard
 import net.payrdr.mobile.payment.sdk.screen.clickOnReturnToMerchant
 import net.payrdr.mobile.payment.sdk.screen.fillOutAllAdditionalFieldsAndSend
@@ -665,4 +671,68 @@ class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
         }
     }
 
+    @ScreenShooterTest
+    @Test
+    @Suppress("LongMethod")
+    fun shouldDeleteSavedCardFrictionlessThreeDSNoUse3DS2SDKSDK() {
+        val clientId = testClientIdHelper.getNewTestClientId()
+        val mdOrder: String = testOrderHelper.registerOrder(clientId = clientId)
+        val config = CheckoutConfig.MdOrder(mdOrder)
+        run {
+            step("Start checkout") {
+                SDKPayment.init(testPaymentConfig)
+                SDKPayment.checkout(testActivity, config)
+            }
+            step("Click on new card button") {
+                BottomSheetScreen {
+                    clickOnNewCard()
+                }
+            }
+            step("Fill new card form") {
+                NewCardScreen {
+                    fillOutFormAndSend(cardSuccessFrictionless3DS2)
+                }
+            }
+            step("Verify card saved") {
+                val mdOrderBinding: String =
+                    testOrderHelper.registerOrder(clientId = clientId)
+                verifyResult {
+                    paymentData?.isSuccess shouldBe true
+                }
+                flakySafely {
+                    runBlocking {
+                        val sessionStatus = testOrderHelper.getSessionStatus(mdOrderBinding)
+                        sessionStatus.bindingItems?.first()?.label shouldBe getLabelForSavedBindingItem(
+                            cardSuccessFrictionless3DS2
+                        )
+                        delay(2000)
+                        SDKPayment.checkout(testActivity, CheckoutConfig.MdOrder(mdOrderBinding))
+                    }
+                }
+            }
+            step("choose all payment methods") {
+                BottomSheetScreen {
+                    clickOnAllPaymentMethods()
+                }
+            }
+            step("delete saved card") {
+                CardListScreen {
+                    clickOnEdit()
+                    clickOnDeleteIcon()
+                    clickApproveDeleteCard()
+                    clickOnEdit()
+                }
+            }
+            step("check no saved card") {
+                flakySafely {
+                    runBlocking {
+                        val mdOrderBinding: String =
+                            testOrderHelper.registerOrder(clientId = clientId)
+                        val sessionStatus = testOrderHelper.getSessionStatus(mdOrderBinding)
+                        sessionStatus.bindingItems shouldBe emptyList()
+                    }
+                }
+            }
+        }
+    }
 }

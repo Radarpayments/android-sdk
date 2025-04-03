@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.activity_card_list.view.arrow_back
 import kotlinx.android.synthetic.main.activity_card_list.view.title
 import net.payrdr.mobile.payment.sdk.form.Constants
 import net.payrdr.mobile.payment.sdk.form.R
+import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.model.Card
 import net.payrdr.mobile.payment.sdk.form.model.CardDeleteOptions
 import net.payrdr.mobile.payment.sdk.form.model.CryptogramData
@@ -74,7 +75,6 @@ class CardListActivity : BaseActivity() {
             android.R.id.home -> finishWithResult(
                 cryptogram = CryptogramData(
                     status = PaymentDataStatus.CANCELED,
-                    deletedCardsList = config.cardsToDelete
                 )
             )
         }
@@ -86,16 +86,22 @@ class CardListActivity : BaseActivity() {
             DialogInterface.OnClickListener { dialog, which ->
                 when (which) {
                     DialogInterface.BUTTON_POSITIVE -> {
-                        config.cardsToDelete.add(card)
-                        updateCardsListView(config)
+                        SDKForms.deleteCardHandler?.deleteCard(card.bindingId)
+                        updateCardsList(card)
                     }
                 }
             }
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.payrdr_alert_dialog_title))
             .setMessage(resources.getString(R.string.payrdr_alert_dialog_text))
-            .setPositiveButton(resources.getString(R.string.payrdr_alert_dialog_delete), dialogClickListener)
-            .setNegativeButton(resources.getString(R.string.payrdr_alert_dialog_cancel), dialogClickListener)
+            .setPositiveButton(
+                resources.getString(R.string.payrdr_alert_dialog_delete),
+                dialogClickListener
+            )
+            .setNegativeButton(
+                resources.getString(R.string.payrdr_alert_dialog_cancel),
+                dialogClickListener
+            )
             .show()
     }
 
@@ -106,11 +112,13 @@ class CardListActivity : BaseActivity() {
             editCardsList.text = resources.getString(R.string.payrdr_save_changes)
         }
         cardsAdapter.showDelIcon = !cardsAdapter.showDelIcon
-        updateCardsListView(config)
+        cardsAdapter.notifyDataSetChanged()
     }
 
-    private fun updateCardsListView(config: PaymentConfig) {
-        cardsAdapter.cards = config.cards.subtract(config.cardsToDelete).toList()
+    private fun updateCardsList(card: Card) {
+        val currentCards = cardsAdapter.cards.toMutableList()
+        currentCards.remove(card)
+        cardsAdapter.cards = currentCards
         cardsAdapter.notifyDataSetChanged()
     }
 

@@ -4,21 +4,21 @@ internal object TestCardHelper {
 
     internal val cardSuccessFull3DS2 = TestCard(
         pan = "5555555555555599",
-        expiry = "12/24",
+        expiry = "12/34",
         cvc = "123",
         holder = "CARD HOLDER"
     )
 
     internal val cardSuccessFrictionless3DS2 = TestCard(
         pan = "4111111111111111",
-        expiry = "12/24",
+        expiry = "12/26",
         cvc = "123",
         holder = "CARD HOLDER"
     )
 
     internal val cardFailFrictionless3DS2 = TestCard(
         pan = "5168494895055780",
-        expiry = "12/24",
+        expiry = "12/26",
         cvc = "123",
         holder = "CARD HOLDER"
     )
@@ -32,14 +32,14 @@ internal object TestCardHelper {
 
     internal val cardSuccessSSL = TestCard(
         pan = "4444555511113333",
-        expiry = "12/24",
+        expiry = "12/26",
         cvc = "123",
         holder = "CARD HOLDER"
     )
 
     internal val cardWith3DSWithPaRes = TestCard(
         pan = "4012001038166662",
-        expiry = "12/24",
+        expiry = "12/30",
         cvc = "123",
         holder = "CARD HOLDER"
     )

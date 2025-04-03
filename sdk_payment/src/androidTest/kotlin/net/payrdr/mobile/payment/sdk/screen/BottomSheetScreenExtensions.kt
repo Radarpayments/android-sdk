@@ -12,6 +12,13 @@ internal fun BottomSheetScreen.clickOnNewCard() {
     }
 }
 
+internal fun BottomSheetScreen.clickOnAllPaymentMethods() {
+    allPaymentMethods {
+        isVisible()
+        perform { click() }
+    }
+}
+
 internal fun BottomSheetScreen.clickOnSavedCard(card: TestCard) {
     paymentMethods {
         firstChild<BottomSheetScreen.SavedCard> {

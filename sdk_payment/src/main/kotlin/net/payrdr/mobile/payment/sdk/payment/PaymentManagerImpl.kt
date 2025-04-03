@@ -19,8 +19,10 @@ import net.payrdr.mobile.payment.sdk.exceptions.SDKNotConfigureException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKSessionNotExistException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKTransactionException
+import net.payrdr.mobile.payment.sdk.form.DeleteCardHandler
 import net.payrdr.mobile.payment.sdk.form.GooglePayConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.SDKException
+import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.gpay.AllowedPaymentMethods
 import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayAuthMethod
 import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayCardNetwork
@@ -84,6 +86,16 @@ class PaymentManagerImpl(
     private val paymentApi: PaymentApi = PaymentApiImpl(
         baseUrl = paymentConfig.baseURL
     )
+
+    init {
+        SDKForms.deleteCardHandler = object : DeleteCardHandler {
+            override fun deleteCard(bindingId: String) {
+                paymentScope.launchSafe {
+                    paymentApi.unbindCardAnonymous(bindingId, mdOrder)
+                }
+            }
+        }
+    }
 
     // The fields are required to create and run the 3DS Challenge Flow.
     private val factory = Factory()

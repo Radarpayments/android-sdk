@@ -2,6 +2,7 @@ package net.payrdr.mobile.payment.sdk.screen
 
 import android.view.View
 import com.kaspersky.kaspresso.screens.KScreen
+import io.github.kakaocup.kakao.common.views.KView
 import io.github.kakaocup.kakao.recycler.KRecyclerItem
 import io.github.kakaocup.kakao.recycler.KRecyclerView
 import io.github.kakaocup.kakao.text.KButton
@@ -19,6 +20,8 @@ object BottomSheetScreen : KScreen<BottomSheetScreen>() {
     val newCardItem = KButton { withId(R.id.newCardItem) }.also {
         it.inRoot { isDialog() }
     }
+
+    val allPaymentMethods = KView { withId(R.id.allPaymentMethodLayout) }
 
     val paymentMethods = KRecyclerView(
         builder = { withId(R.id.cardList) },

@@ -121,7 +121,6 @@ class CardSelectedActivity : BaseActivity() {
             android.R.id.home -> finishWithResult(
                 cryptogram = CryptogramData(
                     status = PaymentDataStatus.CANCELED,
-                    deletedCardsList = config.cardsToDelete
                 )
             )
         }
@@ -200,7 +199,6 @@ class CardSelectedActivity : BaseActivity() {
                             cvc = cardCodeInput.text.toString(),
                             filledAdditionalPayerParams = prepareAdditionalFields()
                         ),
-                        deletedCardsList = config.cardsToDelete
                     )
                 )
             } catch (e: Exception) {
