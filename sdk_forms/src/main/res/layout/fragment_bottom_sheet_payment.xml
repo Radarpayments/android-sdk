@@ -28,17 +28,16 @@
                 android:padding="10dp"
                 android:src="@drawable/ic_xmark" />
 
-            <net.payrdr.mobile.payment.sdk.form.ui.widget.GooglePayButton
+            <com.google.android.gms.wallet.button.PayButton
                 android:id="@+id/googlePayButton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
+                android:layout_height="48dp"
                 android:layout_marginHorizontal="@dimen/payrdr_medium_dimen"
                 android:layout_marginBottom="@dimen/payrdr_medium_dimen"
-                app:payrdr_google_pay_button_background_format="outlet"
-                app:payrdr_google_pay_button_image_format="without_text" />
+                android:layout_weight="1" />
 
             <LinearLayout
+                android:id="@+id/orPayByCardLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/payrdr_medium_dimen"
@@ -94,9 +93,9 @@
                     style="@style/PAYRDRTextViewStyleBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/payrdr_all_payment_methods"
                     android:layout_marginStart="@dimen/payrdr_medium_dimen"
                     android:layout_marginEnd="@dimen/payrdr_small_dimen"
+                    android:text="@string/payrdr_all_payment_methods"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

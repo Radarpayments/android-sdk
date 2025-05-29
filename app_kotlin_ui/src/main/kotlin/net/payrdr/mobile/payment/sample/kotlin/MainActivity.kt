@@ -3,6 +3,7 @@
 package net.payrdr.mobile.payment.sample.kotlin
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -12,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.gms.wallet.PaymentDataRequest
 import com.google.android.gms.wallet.WalletConstants
+import com.google.android.gms.wallet.button.ButtonConstants
+import com.google.android.gms.wallet.button.ButtonOptions
 import kotlinx.android.synthetic.main.activity_main.amountInput
 import kotlinx.android.synthetic.main.activity_main.bottomSheetButton
 import kotlinx.android.synthetic.main.activity_main.cardCameraOffButton
@@ -30,10 +33,7 @@ import kotlinx.android.synthetic.main.activity_main.darkThemeButton
 import kotlinx.android.synthetic.main.activity_main.gatewayInput
 import kotlinx.android.synthetic.main.activity_main.gatewayMerchantIdInput
 import kotlinx.android.synthetic.main.activity_main.googlePayArea
-import kotlinx.android.synthetic.main.activity_main.googlePayButtonFirst
-import kotlinx.android.synthetic.main.activity_main.googlePayButtonFourth
-import kotlinx.android.synthetic.main.activity_main.googlePayButtonSecond
-import kotlinx.android.synthetic.main.activity_main.googlePayButtonThird
+import kotlinx.android.synthetic.main.activity_main.googlePayButton
 import kotlinx.android.synthetic.main.activity_main.googlePayCryptogram
 import kotlinx.android.synthetic.main.activity_main.googlePayNotAvailableMessage
 import kotlinx.android.synthetic.main.activity_main.lightThemeButton
@@ -67,10 +67,13 @@ import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayPaymentMethod
 import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayTotalPriceStatus
 import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayUtils
 import net.payrdr.mobile.payment.sdk.form.gpay.GoogleTokenizationSpecificationType
+import net.payrdr.mobile.payment.sdk.form.gpay.GoogleTokenizationSpecificationType.PAYMENT_GATEWAY
 import net.payrdr.mobile.payment.sdk.form.gpay.MerchantInfo
 import net.payrdr.mobile.payment.sdk.form.gpay.PaymentMethodParameters
 import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecification
+import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecification.Companion.tokenizationSpecificationCreate
 import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecificationParameters
+import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecificationParameters.Companion.tokenizationSpecificationParametersCreate
 import net.payrdr.mobile.payment.sdk.form.gpay.TransactionInfo
 import net.payrdr.mobile.payment.sdk.form.model.CameraScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.Card
@@ -261,18 +264,29 @@ class MainActivity : AppCompatActivity() {
     private fun showGPayButtons() {
         googlePayArea.visibility = VISIBLE
         googlePayNotAvailableMessage.visibility = GONE
-        listOf(
-            googlePayButtonFirst,
-            googlePayButtonSecond,
-            googlePayButtonThird,
-            googlePayButtonFourth
-        ).forEach { button ->
-            button.apply {
-                setOnClickListener {
-                    SDKForms.cryptogram(this@MainActivity, createGooglePayConfig())
-                }
-            }
+        googlePayButton.initialize(
+            ButtonOptions
+                .newBuilder()
+                .setButtonTheme(googlePayButtonTheme())
+                .setButtonType(ButtonConstants.ButtonType.PAY)
+                .setAllowedPaymentMethods(
+                    GooglePayUtils.allowedPaymentMethods(
+                        tokenizationSpecification = tokenizationSpecificationCreate {
+                            type = PAYMENT_GATEWAY
+                            parameters =
+                                tokenizationSpecificationParametersCreate {
+                                    gateway = gatewayInput.text.toString()
+                                    gatewayMerchantId = gatewayMerchantIdInput.text.toString()
+                                }
+                        }
+                    ).toString()
+                )
+                .build()
+        )
+        googlePayButton.setOnClickListener {
+            SDKForms.cryptogram(this@MainActivity, createGooglePayConfig())
         }
+
         googlePayCryptogram.setOnClickListener {
             copyToClipboard("Google Pay Cryptogram", googlePayCryptogram.text.toString())
         }
@@ -606,7 +620,9 @@ class MainActivity : AppCompatActivity() {
 
         return GooglePayConfigBuilder(
             order = "5daf3fe4-09a7-74d2-95a2-521b1917ef58",
-            paymentData = PaymentDataRequest.fromJson(paymentData)
+            paymentData = PaymentDataRequest.fromJson(paymentData),
+            gateway = gatewayInput.text.toString(),
+            gatewayMerchantId = gatewayMerchantIdInput.text.toString(),
         ).testEnvironment(true)
             .build()
     }
@@ -631,5 +647,14 @@ class MainActivity : AppCompatActivity() {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
+    }
+
+    private fun googlePayButtonTheme() =
+        if (isDarkTheme()) ButtonConstants.ButtonTheme.LIGHT
+        else ButtonConstants.ButtonTheme.DARK
+
+    private fun isDarkTheme(): Boolean {
+        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return currentNightMode == Configuration.UI_MODE_NIGHT_YES
     }
 }

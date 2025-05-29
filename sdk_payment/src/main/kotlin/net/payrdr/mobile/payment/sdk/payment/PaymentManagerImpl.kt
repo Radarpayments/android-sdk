@@ -683,7 +683,10 @@ class PaymentManagerImpl(
         return GooglePayConfigBuilder(
             order = mdOrder,
             paymentData = PaymentDataRequest.fromJson(paymentData),
-        ).testEnvironment(isTestEnvironment)
+            gateway = gatewayGPay,
+            gatewayMerchantId = getawayMerchantIdConfig
+        )
+            .testEnvironment(isTestEnvironment)
             .build()
     }
 

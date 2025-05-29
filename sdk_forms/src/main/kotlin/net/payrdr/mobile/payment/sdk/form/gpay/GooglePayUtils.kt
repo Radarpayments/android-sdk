@@ -75,6 +75,14 @@ object GooglePayUtils {
         put("allowedPaymentMethods", JSONArray().put(baseCardPaymentMethod()))
     }
 
+    fun allowedPaymentMethods(tokenizationSpecification: TokenizationSpecification): JSONArray {
+        val cardPaymentMethod = baseCardPaymentMethod().apply {
+            put("tokenizationSpecification", tokenizationSpecification.toJson())
+        }
+
+        return JSONArray().put(cardPaymentMethod)
+    }
+
     private fun baseCardPaymentMethod(): JSONObject {
         return JSONObject().apply {
 

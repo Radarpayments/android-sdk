@@ -49,25 +49,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mdOrder" />
 
-    <TextView
-        android:id="@+id/titlePaymentGooglePay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Pay with Google Pay"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.05"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/paymentCheckout" />
-
-    <net.payrdr.mobile.payment.sdk.form.ui.widget.GooglePayButton
-        android:id="@+id/googlePayButtonFirst"
-        android:layout_width="366dp"
-        android:layout_height="61dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titlePaymentGooglePay"
-        app:payrdr_google_pay_button_image_format="with_text" />
 </androidx.constraintlayout.widget.ConstraintLayout>

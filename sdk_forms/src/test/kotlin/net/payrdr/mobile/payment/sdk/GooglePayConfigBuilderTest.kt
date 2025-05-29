@@ -28,28 +28,36 @@ class GooglePayConfigBuilderTest {
     fun `should return theme`() {
         GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).theme(Theme.DARK)
             .build()
             .theme shouldBe Theme.DARK
 
         GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).theme(Theme.LIGHT)
             .build()
             .theme shouldBe Theme.LIGHT
 
         GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).theme(Theme.SYSTEM)
             .build()
             .theme shouldBe Theme.SYSTEM
 
         GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).theme(Theme.DEFAULT)
             .build()
             .theme shouldBe Theme.DEFAULT
@@ -60,42 +68,54 @@ class GooglePayConfigBuilderTest {
     fun `should return locale`() {
         GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).locale(english())
             .build()
             .locale.language shouldBe "en"
 
         GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).locale(german())
             .build()
             .locale.language shouldBe "de"
 
         GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).locale(french())
             .build()
             .locale.language shouldBe "fr"
 
         GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).locale(spanish())
             .build()
             .locale.language shouldBe "es"
 
         GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).locale(russian())
             .build()
             .locale.language shouldBe "ru"
 
         GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).locale(ukrainian())
             .build()
             .locale.language shouldBe "uk"
@@ -108,12 +128,16 @@ class GooglePayConfigBuilderTest {
 
         val firstUUID = GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).build().uuid
 
         val secondUUID = GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).build().uuid
 
         firstUUID shouldNot beEmpty()
@@ -128,7 +152,9 @@ class GooglePayConfigBuilderTest {
 
         val actualUuid = GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).uuid(expectedUuid)
             .build()
             .uuid
@@ -141,7 +167,9 @@ class GooglePayConfigBuilderTest {
     fun `should return same generated value of uuid for the same builder`() {
         val builder = GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         )
 
         val firstUUID = builder
@@ -165,12 +193,16 @@ class GooglePayConfigBuilderTest {
         Thread.sleep(100)
         val firstTimestamp = GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).build().timestamp
         Thread.sleep(100)
         val secondTimestamp = GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).build().timestamp
         Thread.sleep(100)
         val afterExecute = System.currentTimeMillis()
@@ -191,7 +223,9 @@ class GooglePayConfigBuilderTest {
 
         val actualTimestamp = GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).timestamp(expectedTimestamp)
             .build()
             .timestamp
@@ -204,7 +238,9 @@ class GooglePayConfigBuilderTest {
     fun `should return same value of timestamp for the same builder`() {
         val builder = GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         )
 
         val firstTimestamp = builder
@@ -224,7 +260,9 @@ class GooglePayConfigBuilderTest {
     fun `should return testEnvironment`() {
         GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         )
             .testEnvironment(true)
             .build()
@@ -232,7 +270,9 @@ class GooglePayConfigBuilderTest {
 
         GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         )
             .testEnvironment(false)
             .build()
@@ -244,7 +284,9 @@ class GooglePayConfigBuilderTest {
     fun `should return testEnvironment false by default`() {
         GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).build()
             .testEnvironment shouldBe false
     }
@@ -255,7 +297,9 @@ class GooglePayConfigBuilderTest {
         val actualPaymentData = PaymentDataRequest.fromJson("{}")
         GooglePayConfigBuilder(
             order = "394f2c04-430c-4102-81e6-451d79234fc8",
-            paymentData = actualPaymentData
+            paymentData = actualPaymentData,
+            gateway = "",
+            gatewayMerchantId = "",
         ).build().paymentData shouldBe actualPaymentData
     }
 
@@ -263,25 +307,33 @@ class GooglePayConfigBuilderTest {
     @Description("should return theme without order")
     fun `should return theme without order`() {
         GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).theme(Theme.DARK)
             .build()
             .theme shouldBe Theme.DARK
 
         GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).theme(Theme.LIGHT)
             .build()
             .theme shouldBe Theme.LIGHT
 
         GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).theme(Theme.SYSTEM)
             .build()
             .theme shouldBe Theme.SYSTEM
 
         GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).theme(Theme.DEFAULT)
             .build()
             .theme shouldBe Theme.DEFAULT
@@ -291,37 +343,49 @@ class GooglePayConfigBuilderTest {
     @Description("should return locale without order")
     fun `should return locale without order`() {
         GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).locale(english())
             .build()
             .locale.language shouldBe "en"
 
         GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).locale(german())
             .build()
             .locale.language shouldBe "de"
 
         GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).locale(french())
             .build()
             .locale.language shouldBe "fr"
 
         GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).locale(spanish())
             .build()
             .locale.language shouldBe "es"
 
         GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).locale(russian())
             .build()
             .locale.language shouldBe "ru"
 
         GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).locale(ukrainian())
             .build()
             .locale.language shouldBe "uk"
@@ -332,11 +396,15 @@ class GooglePayConfigBuilderTest {
     fun `should return generated uuid value by default without order`() {
 
         val firstUUID = GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).build().uuid
 
         val secondUUID = GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).build().uuid
 
         firstUUID shouldNot beEmpty()
@@ -350,7 +418,9 @@ class GooglePayConfigBuilderTest {
         val expectedUuid = "62d0bb9e-111b-4c28-a79e-e7fb8d1791eb"
 
         val actualUuid = GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).uuid(expectedUuid)
             .build()
             .uuid
@@ -362,7 +432,9 @@ class GooglePayConfigBuilderTest {
     @Description("should return same generated value of uuid for the same builder without order")
     fun `should return same generated value of uuid for the same builder without order`() {
         val builder = GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         )
 
         val firstUUID = builder
@@ -383,11 +455,15 @@ class GooglePayConfigBuilderTest {
         val beforeExecute = System.currentTimeMillis()
         Thread.sleep(100)
         val firstTimestamp = GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).build().timestamp
         Thread.sleep(100)
         val secondTimestamp = GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).build().timestamp
         Thread.sleep(100)
         val afterExecute = System.currentTimeMillis()
@@ -407,7 +483,9 @@ class GooglePayConfigBuilderTest {
         val expectedTimestamp = 1593791597L
 
         val actualTimestamp = GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).timestamp(expectedTimestamp)
             .build()
             .timestamp
@@ -419,7 +497,9 @@ class GooglePayConfigBuilderTest {
     @Description("should return same value of timestamp for the same builder without order")
     fun `should return same value of timestamp for the same builder without order`() {
         val builder = GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         )
 
         val firstTimestamp = builder
@@ -438,14 +518,18 @@ class GooglePayConfigBuilderTest {
     @Description("should return testEnvironment without order")
     fun `should return testEnvironment without order`() {
         GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         )
             .testEnvironment(true)
             .build()
             .testEnvironment shouldBe true
 
         GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         )
             .testEnvironment(false)
             .build()
@@ -456,7 +540,9 @@ class GooglePayConfigBuilderTest {
     @Description("should return testEnvironment false by default without order")
     fun `should return testEnvironment false by default without order`() {
         GooglePayConfigBuilder(
-            paymentData = PaymentDataRequest.fromJson("{}")
+            paymentData = PaymentDataRequest.fromJson("{}"),
+            gateway = "",
+            gatewayMerchantId = "",
         ).build()
             .testEnvironment shouldBe false
     }
@@ -466,7 +552,9 @@ class GooglePayConfigBuilderTest {
     fun `should return paymentData without order`() {
         val actualPaymentData = PaymentDataRequest.fromJson("{}")
         GooglePayConfigBuilder(
-            paymentData = actualPaymentData
+            paymentData = actualPaymentData,
+            gateway = "",
+            gatewayMerchantId = "",
         ).build().paymentData shouldBe actualPaymentData
     }
 }

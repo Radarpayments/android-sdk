@@ -89,12 +89,11 @@ dependencies {
     implementation("com.github.devnied.emvnfccard:library:3.0.1")
     implementation("com.caverock:androidsvg-aar:1.4")
     implementation("io.card:android-sdk:5.5.1")
-    implementation("com.google.android.gms:play-services-wallet:18.0.0")
+    implementation("com.google.android.gms:play-services-wallet:19.4.0")
 
     // 3DS2 SDK
     implementation("com.google.code.gson:gson:2.8.5")
     implementation("com.squareup.okhttp3:okhttp:4.7.2")
-    implementation("com.google.android.gms:play-services-ads:17.2.1")
     implementation("com.google.android.gms:play-services-location:16.0.0")
 
     implementation("com.google.android.material:material:1.2.0-beta01")

@@ -17,6 +17,8 @@ import java.util.UUID
 class GooglePayConfigBuilder(
     private val order: String = "",
     private val paymentData: PaymentDataRequest,
+    private var gateway: String,
+    private var gatewayMerchantId: String,
 ) {
     private var theme: Theme = Theme.SYSTEM
     private var locale: Locale = Locale.getDefault()
@@ -126,6 +128,8 @@ class GooglePayConfigBuilder(
         theme = this.theme,
         locale = this.locale,
         timestamp = this.timestamp,
-        testEnvironment = this.testEnvironment
+        testEnvironment = this.testEnvironment,
+        gateway = this.gateway,
+        gatewayMerchantId = this.gatewayMerchantId,
     )
 }

@@ -504,38 +504,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-                <net.payrdr.mobile.payment.sdk.form.ui.widget.GooglePayButton
-                    android:id="@+id/googlePayButtonFirst"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <com.google.android.gms.wallet.button.PayButton
+                    android:id="@+id/googlePayButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
                     android:layout_gravity="center_horizontal"
-                    app:payrdr_google_pay_button_image_format="with_text"/>
-
-                <net.payrdr.mobile.payment.sdk.form.ui.widget.GooglePayButton
-                    android:id="@+id/googlePayButtonSecond"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    app:payrdr_google_pay_button_image_format="without_text" />
-
-                <net.payrdr.mobile.payment.sdk.form.ui.widget.GooglePayButton
-                    android:id="@+id/googlePayButtonThird"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    app:payrdr_google_pay_button_image_format="without_text" />
-
-                <net.payrdr.mobile.payment.sdk.form.ui.widget.GooglePayButton
-                    android:id="@+id/googlePayButtonFourth"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginLeft="32dp"
-                    android:layout_marginRight="32dp"
-                    app:payrdr_google_pay_button_background_format="shadow"
-                    app:payrdr_google_pay_button_image_format="without_text" />
+                    android:layout_weight="1" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

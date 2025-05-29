@@ -17,6 +17,8 @@ import java.util.Locale
  * @param timestamp payment date.
  * @param paymentData payment information.
  * @param testEnvironment flag for making a payment in a test environment.
+ * @param gateway gateway for merchantId.
+ * @param gatewayMerchantId merchantId for gateway
  */
 data class GooglePayPaymentConfig internal constructor(
     val order: String = "",
@@ -26,6 +28,8 @@ data class GooglePayPaymentConfig internal constructor(
     val timestamp: Long,
     val paymentData: PaymentDataRequest,
     val testEnvironment: Boolean,
+    var gateway: String,
+    var gatewayMerchantId: String,
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
@@ -36,6 +40,8 @@ data class GooglePayPaymentConfig internal constructor(
         source.readLong(),
         source.readParcelable<PaymentDataRequest>(PaymentDataRequest::class.java.classLoader)!!,
         source.readBooleanValue(),
+        source.readString()!!,
+        source.readString()!!,
     )
 
     override fun describeContents() = 0
@@ -48,6 +54,8 @@ data class GooglePayPaymentConfig internal constructor(
         writeLong(timestamp)
         writeParcelable(paymentData, flags)
         writeBooleanValue(testEnvironment)
+        writeString(gateway)
+        writeString(gatewayMerchantId)
     }
 
     companion object {
