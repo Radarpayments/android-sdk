@@ -46,6 +46,7 @@ import kotlinx.android.synthetic.main.activity_main.localeUkButton
 import kotlinx.android.synthetic.main.activity_main.merchantIdInput
 import kotlinx.android.synthetic.main.activity_main.sdkButton
 import kotlinx.android.synthetic.main.activity_main.sdkButtonWeb
+import net.payrdr.mobile.payment.sample.kotlin.helpers.PaymentsUtilsSample
 import net.payrdr.mobile.payment.sample.kotlin.helpers.copyToClipboard
 import net.payrdr.mobile.payment.sample.kotlin.helpers.log
 import net.payrdr.mobile.payment.sample.kotlin.payment.PaymentFormActivity
@@ -67,13 +68,10 @@ import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayPaymentMethod
 import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayTotalPriceStatus
 import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayUtils
 import net.payrdr.mobile.payment.sdk.form.gpay.GoogleTokenizationSpecificationType
-import net.payrdr.mobile.payment.sdk.form.gpay.GoogleTokenizationSpecificationType.PAYMENT_GATEWAY
 import net.payrdr.mobile.payment.sdk.form.gpay.MerchantInfo
 import net.payrdr.mobile.payment.sdk.form.gpay.PaymentMethodParameters
 import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecification
-import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecification.Companion.tokenizationSpecificationCreate
 import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecificationParameters
-import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecificationParameters.Companion.tokenizationSpecificationParametersCreate
 import net.payrdr.mobile.payment.sdk.form.gpay.TransactionInfo
 import net.payrdr.mobile.payment.sdk.form.model.CameraScannerOptions
 import net.payrdr.mobile.payment.sdk.form.model.Card
@@ -270,16 +268,7 @@ class MainActivity : AppCompatActivity() {
                 .setButtonTheme(googlePayButtonTheme())
                 .setButtonType(ButtonConstants.ButtonType.PAY)
                 .setAllowedPaymentMethods(
-                    GooglePayUtils.allowedPaymentMethods(
-                        tokenizationSpecification = tokenizationSpecificationCreate {
-                            type = PAYMENT_GATEWAY
-                            parameters =
-                                tokenizationSpecificationParametersCreate {
-                                    gateway = gatewayInput.text.toString()
-                                    gatewayMerchantId = gatewayMerchantIdInput.text.toString()
-                                }
-                        }
-                    ).toString()
+                    PaymentsUtilsSample.allowedPaymentMethods.toString()
                 )
                 .build()
         )

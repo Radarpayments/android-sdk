@@ -12,6 +12,8 @@ import java.util.UUID
  *
  * @param order identifier of the paid order.
  * @param paymentData information for making a payment.
+ * @param gateway name of merchant
+ * @param gatewayMerchantId merchatntId for gateway
  */
 @Suppress("TooManyFunctions")
 class GooglePayConfigBuilder(
