@@ -16,7 +16,6 @@ import net.payrdr.mobile.payment.sdk.Constants.MDORDER
 import net.payrdr.mobile.payment.sdk.Constants.PAYMENT_API_VERSION
 import net.payrdr.mobile.payment.sdk.Constants.REQUEST_CODE_3DS2_WEB
 import net.payrdr.mobile.payment.sdk.Constants.REQUEST_CODE_CRYPTOGRAM
-import net.payrdr.mobile.payment.sdk.Constants.TIMEOUT_THREE_DS
 import net.payrdr.mobile.payment.sdk.LogDebug
 import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.SDKPayment
@@ -50,11 +49,6 @@ import net.payrdr.mobile.payment.sdk.payment.model.PaymentApiVersion
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 import net.payrdr.mobile.payment.sdk.payment.model.WebChallengeParam
-import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeParameters
-import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeStatusReceiver
-import net.payrdr.mobile.payment.sdk.threeds.spec.SDKNotInitializedException
-import net.payrdr.mobile.payment.sdk.threeds.spec.ThreeDS2Service
-import net.payrdr.mobile.payment.sdk.threeds.spec.Transaction
 
 /**
  *  Activity for payment cycle.
@@ -147,42 +141,6 @@ class PaymentActivity : AppCompatActivity() {
     }
 
     /**
-     *  Property for initializing the 3DS2 service, calling the Challenge Flow window, and completing the transaction.
-     */
-    private val threeDS2FormDelegate = object : ThreeDS2SDKFormDelegate {
-
-        override fun openChallengeFlow(
-            transaction: Transaction?,
-            challengeParameters: ChallengeParameters,
-            challengeStatusReceiver: ChallengeStatusReceiver
-        ) {
-            transaction!!.doChallenge(
-                this@PaymentActivity,
-                challengeParameters,
-                challengeStatusReceiver,
-                TIMEOUT_THREE_DS,
-            )
-        }
-
-        override fun cleanup(transaction: Transaction?, threeDS2Service: ThreeDS2Service) {
-            transaction?.close()
-            try {
-                threeDS2Service.cleanup(this@PaymentActivity)
-            } catch (ex: SDKNotInitializedException) {
-                LogDebug.logIfDebug(ex.toString())
-            }
-        }
-
-        override fun getApplicationContext(): Context {
-            return this@PaymentActivity.applicationContext
-        }
-
-        override fun getBaseContext(): Context {
-            return this@PaymentActivity.baseContext
-        }
-    }
-
-    /**
      *  A property to call the completion methods of the activity, passing information.
      */
     private val activityDelegate = object : ActivityDelegate {
@@ -216,7 +174,6 @@ class PaymentActivity : AppCompatActivity() {
     private val paymentManager: PaymentManagerImpl = PaymentManagerImpl(
         cardFormDelegate,
         threeDS1FormDelegate,
-        threeDS2FormDelegate,
         activityDelegate,
         gPayDelegate,
     )

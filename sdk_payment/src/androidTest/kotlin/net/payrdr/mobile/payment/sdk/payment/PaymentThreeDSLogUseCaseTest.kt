@@ -12,7 +12,8 @@ import net.payrdr.mobile.payment.sdk.logs.sentry.SentryLogger
 import net.payrdr.mobile.payment.sdk.payment.model.CheckoutConfig
 import net.payrdr.mobile.payment.sdk.screen.BottomSheetScreen
 import net.payrdr.mobile.payment.sdk.screen.NewCardScreen
-import net.payrdr.mobile.payment.sdk.screen.ThreeDS2Screen
+import net.payrdr.mobile.payment.sdk.screen.ThreeDS1Screen
+import net.payrdr.mobile.payment.sdk.screen.clickFail
 import net.payrdr.mobile.payment.sdk.screen.clickOnNewCard
 import net.payrdr.mobile.payment.sdk.screen.fillOutFormAndSend
 import org.junit.Ignore
@@ -43,7 +44,7 @@ class PaymentThreeDSLogUseCaseTest: BaseTestCase() {
         val config = CheckoutConfig.MdOrder(mdOrder)
         run {
             step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
+                SDKPayment.init(testPaymentConfig)
                 SDKPayment.checkout(testActivity, config)
             }
             step("Click on new card button") {
@@ -57,18 +58,8 @@ class PaymentThreeDSLogUseCaseTest: BaseTestCase() {
                 }
             }
             step("Input verification code attempt #1") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(TestCardHelper.invalidVerificationCode)
-                }
-            }
-            step("Input verification code attempt #2") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(TestCardHelper.invalidVerificationCode)
-                }
-            }
-            step("Input verification code attempt #3") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(TestCardHelper.invalidVerificationCode)
+                ThreeDS1Screen {
+                    clickFail()
                 }
             }
             step("Verify result") {

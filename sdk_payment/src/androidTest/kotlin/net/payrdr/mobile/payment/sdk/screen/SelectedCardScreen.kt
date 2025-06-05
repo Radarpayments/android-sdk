@@ -14,5 +14,9 @@ object SelectedCardScreen : KScreen<SelectedCardScreen>() {
 
     val cardCodeInput = KEditText { withId(R.id.cardCodeInput) }
 
+    val phoneNumberInput = KEditText { withId(R.id.phoneNumberInput) }
+
+    val emailInput = KEditText { withId(R.id.emailInput) }
+
     val doneButton = KButton { withId(R.id.doneButton) }
 }

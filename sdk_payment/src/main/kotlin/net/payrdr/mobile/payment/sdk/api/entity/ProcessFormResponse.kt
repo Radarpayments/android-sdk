@@ -7,7 +7,6 @@ import org.json.JSONObject
  * Response DTO for requesting payment by new card.
  *
  * @param errorCode error code.
- * @param is3DSVer2 there is 3DS.
  * @param threeDSServerTransId transaction identifier for 3DS Server.
  * @param threeDSSDKKey key to encrypt device data.
  * @param acsUrl automatic configuration server url.
@@ -17,7 +16,6 @@ import org.json.JSONObject
  */
 data class ProcessFormResponse(
     val errorCode: Int,
-    val is3DSVer2: Boolean,
     val threeDSServerTransId: String?,
     val threeDSSDKKey: String?,
     val acsUrl: String?,
@@ -34,7 +32,6 @@ data class ProcessFormResponse(
         fun fromJson(jsonObject: JSONObject): ProcessFormResponse = with(jsonObject) {
             ProcessFormResponse(
                 errorCode = getInt("errorCode"),
-                is3DSVer2 = optBoolean("is3DSVer2"),
                 threeDSServerTransId = optValue("threeDSServerTransId"),
                 threeDSSDKKey = optValue("threeDSSDKKey"),
                 acsUrl = optValue("acsUrl"),

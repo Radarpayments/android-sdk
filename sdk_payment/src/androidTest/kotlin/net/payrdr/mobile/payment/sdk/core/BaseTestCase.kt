@@ -22,7 +22,6 @@ import net.payrdr.mobile.payment.sdk.data.TestClientIdHelper
 import net.payrdr.mobile.payment.sdk.data.TestOrderHelper
 import net.payrdr.mobile.payment.sdk.logs.Logger
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
-import net.payrdr.mobile.payment.sdk.payment.model.Use3DSConfig
 import org.junit.Before
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -73,35 +72,12 @@ open class BaseTestCase : DocLocScreenshotTestCase(
     protected lateinit var testClientIdHelper: TestClientIdHelper
     protected val testActivity get() = activityTestRule.activity
     protected lateinit var testPaymentConfig: SDKPaymentConfig
-    protected val testConfigForUse3DS2sdk = Use3DSConfig.Use3ds2sdk(
-        /* spellchecker: disable */
-        dsRoot = """
-        MIICDTCCAbOgAwIBAgIUOO3a573khC9kCsQJGKj/PpKOSl8wCgYIKoZIzj0EA
-        wIwXDELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBA
-        oMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDEVMBMGA1UEAwwMZHVtbXkzZHN
-        yb290MB4XDTIxMDkxNDA2NDQ1OVoXDTMxMDkxMjA2NDQ1OVowXDELMAkGA1UE
-        BhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoMGEludGVybmV0I
-        FdpZGdpdHMgUHR5IEx0ZDEVMBMGA1UEAwwMZHVtbXkzZHNyb290MFkwEwYHKo
-        ZIzj0CAQYIKoZIzj0DAQcDQgAE//e+MhwdgWxkFpexkjBCx8FtJ24KznHRXMS
-        WabTrRYwdSZMScgwdpG1QvDO/ErTtW8IwouvDRlR2ViheGr02bqNTMFEwHQYD
-        VR0OBBYEFHK/QzMXw3kW9UzY5w9LVOXr+6YpMB8GA1UdIwQYMBaAFHK/QzMXw
-        3kW9UzY5w9LVOXr+6YpMA8GA1UdEwEB/wQFMAMBAf8wCgYIKoZIzj0EAwIDSA
-        AwRQIhAOPEiotH3HJPIjlrj9/0m3BjlgvME0EhGn+pBzoX7Z3LAiAOtAFtkip
-        d9T5c9qwFAqpjqwS9sSm5odIzk7ug8wow4Q==
-        """
-            /* spellchecker: enable */
-            .replace("\n", "")
-            .trimIndent()
-    )
 
     @Before
     fun setUp() {
         Logger.addLogInterface(TestLoggerFactory.createLogcatLogger("TESTLOG"))
         val baseUrl = "https://dev.bpcbt.com/payment"
-        testPaymentConfig = SDKPaymentConfig(
-            baseUrl,
-            use3DSConfig = Use3DSConfig.NoUse3ds2sdk,
-        )
+        testPaymentConfig = SDKPaymentConfig(baseUrl)
         SDKPayment.getSDKVersion()
         activityTestRule.launchActivity(null)
         testOrderHelper = TestOrderHelper(activityTestRule.activity.applicationContext, baseUrl)

@@ -13,3 +13,25 @@ internal fun SelectedCardScreen.fillOutFormAndSend(card: TestCard) {
         click()
     }
 }
+
+internal fun SelectedCardScreen.fillOutWithEmailAndPhoneFieldsAndSend(
+    card: TestCard,
+) {
+    cardCodeInput {
+        isVisible()
+        typeText(card.cvc)
+    }
+    emailInput {
+        isVisible()
+        typeText("test@test.com")
+    }
+    phoneNumberInput {
+        isVisible()
+        typeText("+35799902871")
+    }
+    closeSoftKeyboard()
+    doneButton {
+        scrollTo()
+        click()
+    }
+}

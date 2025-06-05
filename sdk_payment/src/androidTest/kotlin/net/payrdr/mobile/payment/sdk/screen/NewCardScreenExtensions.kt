@@ -25,7 +25,9 @@ internal fun NewCardScreen.fillOutFormAndSend(
             typeText("test@test.com")
         }
     }
+    closeSoftKeyboard()
     doneButton {
+        scrollTo()
         click()
     }
 }

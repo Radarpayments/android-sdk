@@ -19,7 +19,6 @@ import org.json.JSONObject
  * @param feeEnabled tax is included.
  * @param backUrl url for back redirect.
  * @param orderExpired order expired.
- * @param is3DSVer2 there is 3DS.
  * @param expirationDateCustomValidation is own validation enabled for card expiration.
  * @param currencyAlphaCode Country currency code.
  * @param merchantInfo information about merchant.
@@ -43,7 +42,6 @@ data class SessionStatusResponse(
     val feeEnabled: Boolean,
     val backUrl: String? = null,
     val orderExpired: Boolean,
-    val is3DSVer2: Boolean,
     val expirationDateCustomValidation: Boolean,
     val bindingDeactivationEnabled: Boolean = false,
     val currencyAlphaCode: String? = null,
@@ -77,7 +75,6 @@ data class SessionStatusResponse(
                 feeEnabled = optBoolean("feeEnabled"),
                 backUrl = optValue("backUrl"),
                 orderExpired = optBoolean("orderExpired"),
-                is3DSVer2 = optBoolean("is3DSVer2"),
                 expirationDateCustomValidation = optBoolean("expirationDateCustomValidation"),
                 currencyAlphaCode = optValue("currencyAlphaCode"),
                 merchantInfo = MerchantInfo.fromJson(getJSONObject("merchantInfo")),

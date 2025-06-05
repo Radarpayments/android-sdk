@@ -19,7 +19,6 @@ import net.payrdr.mobile.payment.sdk.ResultPaymentCallback
 import net.payrdr.mobile.payment.sdk.payment.model.CheckoutConfig
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
-import net.payrdr.mobile.payment.sdk.payment.model.Use3DSConfig
 
 class PaymentFormFragment : Fragment() {
     override fun onCreateView(
@@ -30,28 +29,8 @@ class PaymentFormFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_payment_form, container, false)
         view.setBackgroundColor(Color.WHITE)
         view.findViewById<Button>(R.id.paymentCheckoutFragment).setOnClickListener {
-            /* spellchecker: disable */
-            val dsRoot =
-                """
-                MIICDTCCAbOgAwIBAgIUOO3a573khC9kCsQJGKj/PpKOSl8wCgYIKoZIzj0EA
-                wIwXDELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBA
-                oMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDEVMBMGA1UEAwwMZHVtbXkzZHN
-                yb290MB4XDTIxMDkxNDA2NDQ1OVoXDTMxMDkxMjA2NDQ1OVowXDELMAkGA1UE
-                BhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoMGEludGVybmV0I
-                FdpZGdpdHMgUHR5IEx0ZDEVMBMGA1UEAwwMZHVtbXkzZHNyb290MFkwEwYHKo
-                ZIzj0CAQYIKoZIzj0DAQcDQgAE//e+MhwdgWxkFpexkjBCx8FtJ24KznHRXMS
-                WabTrRYwdSZMScgwdpG1QvDO/ErTtW8IwouvDRlR2ViheGr02bqNTMFEwHQYD
-                VR0OBBYEFHK/QzMXw3kW9UzY5w9LVOXr+6YpMB8GA1UdIwQYMBaAFHK/QzMXw
-                3kW9UzY5w9LVOXr+6YpMA8GA1UdEwEB/wQFMAMBAf8wCgYIKoZIzj0EAwIDSA
-                AwRQIhAOPEiotH3HJPIjlrj9/0m3BjlgvME0EhGn+pBzoX7Z3LAiAOtAFtkip
-                d9T5c9qwFAqpjqwS9sSm5odIzk7ug8wow4Q==
-                """
-                    /* spellchecker: enable */
-                    .replace("\n", "")
-                    .trimIndent()
             val paymentConfig = SDKPaymentConfig(
                 "https://dev.bpcbt.com/payment",
-                use3DSConfig = Use3DSConfig.Use3ds2sdk(dsRoot)
             )
             SDKPayment.init(paymentConfig)
             SDKPayment.checkout(this, CheckoutConfig.MdOrder(mdOrder.text.trim().toString()))

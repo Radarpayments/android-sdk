@@ -120,4 +120,5 @@ dependencies {
     androidTestImplementation(TestLibs.io_mockk_android)
     androidTestImplementation(TestLibs.com_squareup_spoon)
     androidTestImplementation(TestLibs.com_squareup_mockwebserver)
+    androidTestImplementation(TestLibs.com_squareup_okhttp_tls)
 }

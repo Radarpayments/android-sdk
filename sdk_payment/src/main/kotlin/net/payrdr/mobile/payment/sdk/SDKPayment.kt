@@ -18,7 +18,6 @@ import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 import net.payrdr.mobile.payment.sdk.utils.SessionIdConverter
 import net.payrdr.mobile.payment.sdk.core.BuildConfig as BuildConfigCore
 import net.payrdr.mobile.payment.sdk.form.BuildConfig as BuildConfigForms
-import net.payrdr.mobile.payment.sdk.threeds.BuildConfig as BuildConfigThreeDS
 
 /**
  * The main class for working with the functionality of the payment library from a mobile application.
@@ -205,7 +204,6 @@ object SDKPayment {
         LogDebug.logIfDebug("SDKPayment version is: ${BuildConfig.SDK_PAYMENT_VERSION_NUMBER}")
         LogDebug.logIfDebug("SDKForms version is: ${BuildConfigForms.SDK_FORMS_VERSION_NUMBER}")
         LogDebug.logIfDebug("SDKCore version is: ${BuildConfigCore.SDK_CORE_VERSION_NUMBER}")
-        LogDebug.logIfDebug("SDKThreeDS version is: ${BuildConfigThreeDS.SDK_THREEDS_VERSION_NUMBER}")
         return BuildConfig.SDK_PAYMENT_VERSION_NUMBER
     }
 }

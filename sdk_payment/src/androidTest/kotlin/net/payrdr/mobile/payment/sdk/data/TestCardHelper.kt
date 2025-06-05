@@ -37,13 +37,6 @@ internal object TestCardHelper {
         holder = "CARD HOLDER"
     )
 
-    internal val cardWith3DSWithPaRes = TestCard(
-        pan = "4012001038166662",
-        expiry = "12/30",
-        cvc = "123",
-        holder = "CARD HOLDER"
-    )
-
     private const val invalidExpiry = "10/35"
 
     private const val invalidCVC = "000"

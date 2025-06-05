@@ -6,322 +6,21 @@ import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.core.BaseTestCase
 import net.payrdr.mobile.payment.sdk.data.TestAdditionalPayerParams
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper.cardSuccessAttempt3DS2
-import net.payrdr.mobile.payment.sdk.data.TestCardHelper.invalidVerificationCode
-import net.payrdr.mobile.payment.sdk.data.TestCardHelper.validVerificationCode
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper.withInvalidCVC
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper.withInvalidExpiry
 import net.payrdr.mobile.payment.sdk.payment.model.CheckoutConfig
 import net.payrdr.mobile.payment.sdk.screen.BottomSheetScreen
 import net.payrdr.mobile.payment.sdk.screen.NewCardScreen
 import net.payrdr.mobile.payment.sdk.screen.ThreeDS1Screen
-import net.payrdr.mobile.payment.sdk.screen.ThreeDS2Screen
-import net.payrdr.mobile.payment.sdk.screen.ThreeDSSDKWebViewScreen
 import net.payrdr.mobile.payment.sdk.screen.clickFail
 import net.payrdr.mobile.payment.sdk.screen.clickOnNewCard
 import net.payrdr.mobile.payment.sdk.screen.clickOnReturnToMerchant
 import net.payrdr.mobile.payment.sdk.screen.clickSuccess
 import net.payrdr.mobile.payment.sdk.screen.fillOutFormAndSend
-import net.payrdr.mobile.payment.sdk.screen.inputCode
-import net.payrdr.mobile.payment.sdk.screen.onClickVerify
-import org.junit.Ignore
 import org.junit.Test
 
 @Suppress("LargeClass")
 class PaymentCardAttemptThreeDSUseCaseTest : BaseTestCase() {
-
-    @ScreenShooterTest
-    @Test
-    fun shouldReturnSuccessPaymentWithNewCardAttemptThreeDSUse3DS2SDK() {
-        val mdOrder: String = testOrderHelper.registerOrder()
-        val config = CheckoutConfig.MdOrder(mdOrder)
-        run {
-            step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
-                SDKPayment.checkout(testActivity, config)
-            }
-            step("Click on new card button") {
-                BottomSheetScreen {
-                    clickOnNewCard()
-                }
-            }
-            step("Fill new card form") {
-                NewCardScreen {
-                    fillOutFormAndSend(cardSuccessAttempt3DS2)
-                }
-            }
-            step("Input verification code") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(validVerificationCode)
-                }
-            }
-            step("Verify result") {
-                verifyResult {
-                    paymentData?.sessionId shouldBe mdOrder
-                    paymentData?.isSuccess shouldBe true
-                    paymentData?.exception shouldBe null
-                }
-            }
-        }
-    }
-
-    @ScreenShooterTest
-    @Test
-    fun shouldReturnSuccessPaymentWithNewCardAttemptThreeDSUse3DS2SDKWithSessionId() {
-        val sessionId: String = testOrderHelper.registerSession()
-        val config = CheckoutConfig.SessionId(sessionId)
-        run {
-            step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
-                SDKPayment.checkout(testActivity, config)
-            }
-            step("Click on new card button") {
-                BottomSheetScreen {
-                    clickOnNewCard()
-                }
-            }
-            step("Fill new card form") {
-                NewCardScreen {
-                    fillOutFormAndSend(cardSuccessAttempt3DS2)
-                }
-            }
-            step("Input verification code") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(validVerificationCode)
-                }
-            }
-            step("Verify result") {
-                verifyResult {
-                    paymentData?.sessionId shouldBe sessionId
-                    paymentData?.isSuccess shouldBe true
-                    paymentData?.exception shouldBe null
-                }
-            }
-        }
-    }
-
-    @ScreenShooterTest
-    @Test
-    fun shouldReturnErrorPaymentWithNewCardAttemptThreeDSUse3DS2SDKWithInvalidVerificationCode() {
-        val mdOrder: String = testOrderHelper.registerOrder()
-        val config = CheckoutConfig.MdOrder(mdOrder)
-        run {
-            step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
-                SDKPayment.checkout(testActivity, config)
-            }
-            step("Click on new card button") {
-                BottomSheetScreen {
-                    clickOnNewCard()
-                }
-            }
-            step("Fill new card form") {
-                NewCardScreen {
-                    fillOutFormAndSend(cardSuccessAttempt3DS2)
-                }
-            }
-            step("Input verification code attempt #1") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(invalidVerificationCode)
-                }
-            }
-            step("Input verification code attempt #2") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(invalidVerificationCode)
-                }
-            }
-            step("Input verification code attempt #3") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(invalidVerificationCode)
-                }
-            }
-            step("Verify result") {
-                verifyResult {
-                    paymentData?.sessionId shouldBe mdOrder
-                    paymentData?.isSuccess shouldBe false
-                }
-            }
-        }
-    }
-
-    @ScreenShooterTest
-    @Test
-    fun shouldReturnErrorPaymentWithNewCardAttemptThreeDSUse3DS2SDKWithWithSessionIdInvalidVerificationCode() {
-        val sessionId: String = testOrderHelper.registerSession()
-        val config = CheckoutConfig.SessionId(sessionId)
-        run {
-            step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
-                SDKPayment.checkout(testActivity, config)
-            }
-            step("Click on new card button") {
-                BottomSheetScreen {
-                    clickOnNewCard()
-                }
-            }
-            step("Fill new card form") {
-                NewCardScreen {
-                    fillOutFormAndSend(cardSuccessAttempt3DS2)
-                }
-            }
-            step("Input verification code attempt #1") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(invalidVerificationCode)
-                }
-            }
-            step("Input verification code attempt #2") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(invalidVerificationCode)
-                }
-            }
-            step("Input verification code attempt #3") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(invalidVerificationCode)
-                }
-            }
-            step("Verify result") {
-                verifyResult {
-                    paymentData?.sessionId shouldBe sessionId
-                    paymentData?.isSuccess shouldBe false
-                }
-            }
-        }
-    }
-
-    @ScreenShooterTest
-    @Test
-    fun shouldReturnErrorPaymentWithNewCardAttemptThreeDSUse3DS2SDKWithInvalidCVC() {
-        val mdOrder: String = testOrderHelper.registerOrder()
-        val config = CheckoutConfig.MdOrder(mdOrder)
-        run {
-            step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
-                SDKPayment.checkout(testActivity, config)
-            }
-            step("Click on new card button") {
-                BottomSheetScreen {
-                    clickOnNewCard()
-                }
-            }
-            step("Fill new card form") {
-                NewCardScreen {
-                    fillOutFormAndSend(cardSuccessAttempt3DS2.withInvalidCVC())
-                }
-            }
-            step("Input verification code") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(validVerificationCode)
-                }
-            }
-            step("Verify result") {
-                verifyResult {
-                    paymentData?.sessionId shouldBe mdOrder
-                    paymentData?.isSuccess shouldBe false
-                }
-            }
-        }
-    }
-
-    @ScreenShooterTest
-    @Test
-    fun shouldReturnErrorPaymentWithNewCardAttemptThreeDSUse3DS2SDKWithSessionIdWithInvalidCVC() {
-        val sessionId: String = testOrderHelper.registerSession()
-        val config = CheckoutConfig.SessionId(sessionId)
-        run {
-            step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
-                SDKPayment.checkout(testActivity, config)
-            }
-            step("Click on new card button") {
-                BottomSheetScreen {
-                    clickOnNewCard()
-                }
-            }
-            step("Fill new card form") {
-                NewCardScreen {
-                    fillOutFormAndSend(cardSuccessAttempt3DS2.withInvalidCVC())
-                }
-            }
-            step("Input verification code") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(validVerificationCode)
-                }
-            }
-            step("Verify result") {
-                verifyResult {
-                    paymentData?.sessionId shouldBe sessionId
-                    paymentData?.isSuccess shouldBe false
-                }
-            }
-        }
-    }
-
-    @ScreenShooterTest
-    @Test
-    fun shouldReturnErrorPaymentWithNewCardAttemptThreeDSUse3DS2SDKWithInvalidExpiry() {
-        val mdOrder: String = testOrderHelper.registerOrder()
-        val config = CheckoutConfig.MdOrder(mdOrder)
-        run {
-            step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
-                SDKPayment.checkout(testActivity, config)
-            }
-            step("Click on new card button") {
-                BottomSheetScreen {
-                    clickOnNewCard()
-                }
-            }
-            step("Fill new card form") {
-                NewCardScreen {
-                    fillOutFormAndSend(cardSuccessAttempt3DS2.withInvalidExpiry())
-                }
-            }
-            step("Input verification code") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(validVerificationCode)
-                }
-            }
-            step("Verify result") {
-                verifyResult {
-                    paymentData?.sessionId shouldBe mdOrder
-                    paymentData?.isSuccess shouldBe false
-                }
-            }
-        }
-    }
-
-    @ScreenShooterTest
-    @Test
-    fun shouldReturnErrorPaymentWithNewCardAttemptThreeDSUse3DS2SDKWithSessionIdWithInvalidExpiry() {
-        val sessionId: String = testOrderHelper.registerSession()
-        val config = CheckoutConfig.SessionId(sessionId)
-        run {
-            step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
-                SDKPayment.checkout(testActivity, config)
-            }
-            step("Click on new card button") {
-                BottomSheetScreen {
-                    clickOnNewCard()
-                }
-            }
-            step("Fill new card form") {
-                NewCardScreen {
-                    fillOutFormAndSend(cardSuccessAttempt3DS2.withInvalidExpiry())
-                }
-            }
-            step("Input verification code") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(validVerificationCode)
-                }
-            }
-            step("Verify result") {
-                verifyResult {
-                    paymentData?.sessionId shouldBe sessionId
-                    paymentData?.isSuccess shouldBe false
-                }
-            }
-        }
-    }
 
     @ScreenShooterTest
     @Test
@@ -615,100 +314,15 @@ class PaymentCardAttemptThreeDSUseCaseTest : BaseTestCase() {
         }
     }
 
-    @ScreenShooterTest
-    @Test
-    fun shouldReturnSuccessWithNewCardAttemptThreeDSUse3DS2SDKWithSDKWebView() {
-        val mdOrder: String = testOrderHelper.registerOrder(amount = 333)
-        val config = CheckoutConfig.MdOrder(mdOrder)
-        run {
-            step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
-                SDKPayment.checkout(testActivity, config)
-            }
-            step("Click on new card button") {
-                BottomSheetScreen {
-                    clickOnNewCard()
-                }
-            }
-            step("Fill new card form") {
-                NewCardScreen {
-                    fillOutFormAndSend(cardSuccessAttempt3DS2)
-                }
-            }
-
-            step("Input verification code") {
-                ThreeDSSDKWebViewScreen {
-                    inputCode(validVerificationCode)
-                }
-            }
-
-            step("Click on verify button") {
-                ThreeDSSDKWebViewScreen {
-                    onClickVerify()
-                }
-            }
-
-            step("Verify result") {
-                verifyResult {
-                    paymentData?.sessionId shouldBe mdOrder
-                    paymentData?.isSuccess shouldBe true
-                }
-            }
-        }
-    }
-
-    @ScreenShooterTest
-    @Ignore
-    @Test
-    fun shouldReturnErrorWithNewCardAttemptThreeDSUse3DS2SDKWithSDKWebViewWithInvalidVerificationCode() {
-        val mdOrder: String = testOrderHelper.registerOrder(amount = 333)
-        val config = CheckoutConfig.MdOrder(mdOrder)
-        run {
-            step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
-                SDKPayment.checkout(testActivity, config)
-            }
-            step("Click on new card button") {
-                BottomSheetScreen {
-                    clickOnNewCard()
-                }
-            }
-            step("Fill new card form") {
-                NewCardScreen {
-                    fillOutFormAndSend(cardSuccessAttempt3DS2)
-                }
-            }
-
-            step("Input invalid verification code") {
-                ThreeDSSDKWebViewScreen {
-                    inputCode(invalidVerificationCode)
-                }
-            }
-
-            step("Click on verify button") {
-                ThreeDSSDKWebViewScreen {
-                    onClickVerify()
-                }
-            }
-
-            step("Verify result") {
-                verifyResult {
-                    paymentData?.sessionId shouldBe mdOrder
-                    paymentData?.isSuccess shouldBe false
-                }
-            }
-        }
-    }
-
     @Test
     @ScreenShooterTest
     @Suppress("LongMethod")
-    fun shouldReturnSuccessPaymentWithNewCardAttemptWithAdditionalFieldsThreeDSUse3DS2SDK() {
+    fun shouldReturnSuccessPaymentWithNewCardAttemptWithAdditionalFieldsThreeDSNoUse3DS2SDK() {
         val mdOrder: String = testOrderHelper.registerOrder(
             testAdditionalPayerParams = TestAdditionalPayerParams(
                 billingPayerData = mapOf(
                     "billingCity" to "Berlin",
-                    "billingPostalCode" to "123567"
+                    "billingPostalCode" to "26133"
                 ),
                 email = "test@test.mail.com",
                 mobilePhone = null
@@ -717,7 +331,7 @@ class PaymentCardAttemptThreeDSUseCaseTest : BaseTestCase() {
         val config = CheckoutConfig.MdOrder(mdOrder)
         run {
             step("Start checkout") {
-                SDKPayment.init(testPaymentConfig.copy(use3DSConfig = testConfigForUse3DS2sdk))
+                SDKPayment.init(testPaymentConfig)
                 SDKPayment.checkout(testActivity, config)
             }
             step("Click on new card button") {
@@ -748,7 +362,7 @@ class PaymentCardAttemptThreeDSUseCaseTest : BaseTestCase() {
                     }
                     phoneNumberInput {
                         isVisible()
-                        typeText("35799902871")
+                        typeText("+35799902871")
                     }
                     cityInput {
                         isVisible()
@@ -756,25 +370,26 @@ class PaymentCardAttemptThreeDSUseCaseTest : BaseTestCase() {
                     }
                     countryInput {
                         isVisible()
-                        typeText("USA")
+                        typeText("Germany")
                     }
                     stateInput {
                         isVisible()
-                        typeText("LA")
+                        typeText("DE-BE")
                     }
                     postalCodeInput {
                         isVisible()
-                        hasText("123567")
+                        hasText("26133")
                     }
+                    closeSoftKeyboard()
                     doneButton {
                         scrollTo()
                         click()
                     }
                 }
             }
-            step("Input verification code") {
-                ThreeDS2Screen {
-                    fillOutFormAndSend(validVerificationCode)
+            step("Click success on ACS form") {
+                ThreeDS1Screen {
+                    clickSuccess()
                 }
             }
             step("Verify result") {

@@ -16,9 +16,7 @@ import net.payrdr.mobile.payment.sdk.api.entity.SessionStatusResponse
 import net.payrdr.mobile.payment.sdk.exceptions.SDKAlreadyPaymentException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKDeclinedException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKNotConfigureException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKSessionNotExistException
-import net.payrdr.mobile.payment.sdk.exceptions.SDKTransactionException
 import net.payrdr.mobile.payment.sdk.form.DeleteCardHandler
 import net.payrdr.mobile.payment.sdk.form.GooglePayConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.SDKException
@@ -44,16 +42,7 @@ import net.payrdr.mobile.payment.sdk.payment.model.PaymentApiVersion
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
-import net.payrdr.mobile.payment.sdk.payment.model.Use3DSConfig
 import net.payrdr.mobile.payment.sdk.payment.model.WebChallengeParam
-import net.payrdr.mobile.payment.sdk.threeds.impl.Factory
-import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeParameters
-import net.payrdr.mobile.payment.sdk.threeds.spec.ChallengeStatusReceiver
-import net.payrdr.mobile.payment.sdk.threeds.spec.CompletionEvent
-import net.payrdr.mobile.payment.sdk.threeds.spec.ProtocolErrorEvent
-import net.payrdr.mobile.payment.sdk.threeds.spec.RuntimeErrorEvent
-import net.payrdr.mobile.payment.sdk.threeds.spec.ThreeDS2Service
-import net.payrdr.mobile.payment.sdk.threeds.spec.Transaction
 import net.payrdr.mobile.payment.sdk.utils.AdditionalFieldsAssembler
 import net.payrdr.mobile.payment.sdk.utils.OrderStatuses
 import net.payrdr.mobile.payment.sdk.utils.SessionIdConverter
@@ -64,14 +53,13 @@ import java.math.BigDecimal
  * A set of methods for carrying out a full payment cycle.
  *
  * @param cardFormDelegate interface describing the operation of the card data entry form.
- * @param threeDS2FormDelegate interface describing the work of the 3DS form.
+ * @param threeDS2WebFormDelegate interface describing the work of the 3DS form.
  * @param activityDelegate interface describing activity methods.
  */
 @Suppress("TooGenericExceptionCaught", "TooManyFunctions")
 class PaymentManagerImpl(
     private val cardFormDelegate: CardFormDelegate,
-    private val threeDS1FormDelegate: ThreeDS2WebFormDelegate,
-    private val threeDS2FormDelegate: ThreeDS2SDKFormDelegate,
+    private val threeDS2WebFormDelegate: ThreeDS2WebFormDelegate,
     private val activityDelegate: ActivityDelegate,
     private val gPayDelegate: GPayDelegate,
 ) : PaymentManager {
@@ -96,27 +84,6 @@ class PaymentManagerImpl(
             }
         }
     }
-
-    // The fields are required to create and run the 3DS Challenge Flow.
-    private val factory = Factory()
-    private val threeDS2Service: ThreeDS2Service by lazy {
-        val service = factory.newThreeDS2Service()
-        val configParams = factory.newConfigParameters()
-        val uiCustomization = factory.newUiCustomization(threeDS2FormDelegate.getBaseContext())
-        if (!service.isInitialized) {
-            service.initialize(
-                threeDS2FormDelegate.getApplicationContext(),
-                configParams,
-                "ru-RU",
-                uiCustomization,
-                paymentConfig.sslContextConfig?.sslContext,
-                paymentConfig.sslContextConfig?.trustManager,
-            )
-        }
-        service
-    }
-
-    private var transaction: Transaction? = null
 
     @Suppress("LongMethod")
     override fun checkout(order: String, gPayClicked: Boolean, versionApi: PaymentApiVersion) {
@@ -285,17 +252,10 @@ class PaymentManagerImpl(
      */
     private fun processFormData(processFormRequest: ProcessFormRequest, isBinding: Boolean) {
         paymentScope.launchSafe {
-            val threeDSSDK = paymentConfig.use3DSConfig is Use3DSConfig.Use3ds2sdk
             val paymentResult: ProcessFormResponse = if (isBinding) {
-                paymentApi.processBindingForm(
-                    cryptogramApiData = processFormRequest,
-                    threeDSSDK = threeDSSDK
-                )
+                paymentApi.processBindingForm(cryptogramApiData = processFormRequest)
             } else {
-                paymentApi.processForm(
-                    cryptogramApiData = processFormRequest,
-                    threeDSSDK = threeDSSDK
-                )
+                paymentApi.processForm(cryptogramApiData = processFormRequest)
             }
 
             when {
@@ -307,20 +267,9 @@ class PaymentManagerImpl(
                     )
                 }
 
-                paymentResult.is3DSVer2 -> {
-                    LogDebug.logIfDebug("processForm - Payment need 3DSVer2: $paymentResult")
-
-                    processThreeDS2Data(
-                        cryptogramApiData = processFormRequest,
-                        threeDSSDKKey = paymentResult.threeDSSDKKey.requiredField("threeDSSDKKey"),
-                        threeDSServerTransId = paymentResult.threeDSServerTransId.requiredField("threeDSServerTransId"),
-                        isBinding = isBinding
-                    )
-                }
-
                 paymentResult.acsUrl != null -> {
                     LogDebug.logIfDebug("processForm - Payment need 3DSVer1: $paymentResult")
-                    threeDS1FormDelegate.openWebChallenge(
+                    threeDS2WebFormDelegate.openWebChallenge(
                         WebChallengeParam(
                             processFormRequest.mdOrder,
                             paymentResult.acsUrl,
@@ -369,26 +318,8 @@ class PaymentManagerImpl(
                     paReq = paymentResult.data.paReq,
                     termUrl = paymentResult.data.termUrl,
                 )
-                threeDS1FormDelegate.openWebChallenge(
+                threeDS2WebFormDelegate.openWebChallenge(
                     webChallengeParam = webChallengeParam,
-                )
-            } else if (paymentResult.data != null && paymentResult.data.threeDSAcsRefNumber != null
-                && paymentResult.data.threeDSAcsTransactionId != null
-                && paymentResult.data.threeDSAcsSignedContent != null
-                && paymentResult.data.threeDSServerTransId != null
-            ) {
-                threeDS2FormDelegate.openChallengeFlow(
-                    transaction,
-                    createChallengeParameters(
-                        threeDSAcsTransactionId = paymentResult.data.threeDSAcsTransactionId,
-                        threeDSAcsRefNumber = paymentResult.data.threeDSAcsRefNumber,
-                        threeDSAcsSignedContent = paymentResult.data.threeDSAcsSignedContent,
-                        threeDSServerTransId = paymentResult.data.threeDSServerTransId,
-                    ),
-                    createChallengeStatusReceiver(
-                        paymentResult.data.threeDSServerTransId,
-                        threeDS2Service,
-                    )
                 )
             } else {
                 finishWithCheckOrderStatus()
@@ -413,7 +344,6 @@ class PaymentManagerImpl(
     }
 
     internal fun finishWithCheckOrderStatus() {
-        threeDS2FormDelegate.cleanup(transaction, threeDS2Service)
         paymentScope.launchSafe {
             val orderStatus = getSessionStatus()
             val paymentFinishedInfo = getFinishedPaymentInfo(mdOrder)
@@ -431,7 +361,6 @@ class PaymentManagerImpl(
      * Canceling the process of creating a cryptogram.
      */
     internal fun finishWithError(ex: Throwable) {
-        threeDS2FormDelegate.cleanup(transaction, threeDS2Service)
         paymentScope.launch {
             try {
                 val orderStatus = getSessionStatus()
@@ -468,163 +397,9 @@ class PaymentManagerImpl(
     private suspend fun getFinishedPaymentInfo(mdOrder: String): FinishedPaymentInfoResponse =
         paymentApi.getFinishedPaymentInfo(mdOrder)
 
-    @Suppress("ComplexCondition", "LongMethod")
-    private suspend fun processThreeDS2Data(
-        cryptogramApiData: ProcessFormRequest,
-        threeDSSDKKey: String,
-        threeDSServerTransId: String,
-        isBinding: Boolean
-    ) {
-        val dsRoot = when (val use3DSConfig = paymentConfig.use3DSConfig) {
-            Use3DSConfig.NoUse3ds2sdk -> throw SDKException(
-                "Please configure Use3DSConfig.Use3ds2sdk with SDKPaymentConfig to use 3DS2 SDK."
-            )
-
-            is Use3DSConfig.Use3ds2sdk -> use3DSConfig.dsRoot
-        }
-
-        transaction?.close() // Close the previous transaction if there was one.
-        transaction = threeDS2Service.createTransaction(
-            "A000000658",
-            threeDSSDKKey,
-            "2.2.0",
-            dsRoot
-        )
-
-        // Available data, to be sent to the payment gateway.
-        val authRequestParams = transaction!!.authenticationRequestParameters!!
-        val encryptedDeviceInfo: String = authRequestParams.deviceData
-        val sdkTransactionID: String = authRequestParams.sdkTransactionID
-        val sdkAppId: String = authRequestParams.sdkAppID
-        val sdkEphmeralPublicKey: String = authRequestParams.sdkEphemeralPublicKey
-        val sdkReferenceNumber: String = authRequestParams.sdkReferenceNumber
-
-        val paymentThreeDsInfo = PaymentApiImpl.PaymentThreeDSInfo(
-            threeDSSDK = true,
-            threeDSServerTransId = threeDSServerTransId,
-            threeDSSDKEncData = encryptedDeviceInfo,
-            threeDSSDKEphemPubKey = sdkEphmeralPublicKey,
-            threeDSSDKAppId = sdkAppId,
-            threeDSSDKTransId = sdkTransactionID,
-            threeDSSDKReferenceNumber = sdkReferenceNumber
-        )
-        val paymentResult = if (isBinding) {
-            paymentApi.processBindingFormSecond(
-                cryptogramApiData = cryptogramApiData,
-                threeDSParams = paymentThreeDsInfo
-            )
-        } else {
-            paymentApi.processFormSecond(
-                cryptogramApiData = cryptogramApiData,
-                threeDSParams = paymentThreeDsInfo
-            )
-        }
-
-        if (paymentResult.redirect?.startsWith("sdk://done") == true) {
-            finishWithCheckOrderStatus()
-        } else if (!paymentResult.errorTypeName.isNullOrBlank()) {
-            finishWithError(
-                SDKException(
-                    message = paymentResult.errorTypeName,
-                    cause = null
-                )
-            )
-        } else if (paymentResult.threeDSAcsRefNumber != null
-            && paymentResult.threeDSAcsTransactionId != null
-            && paymentResult.threeDSAcsSignedContent != null
-            && paymentResult.threeDSServerTransId != null
-        ) {
-            //
-            threeDS2FormDelegate.openChallengeFlow(
-                transaction,
-                createChallengeParameters(
-                    threeDSAcsTransactionId = paymentResult.threeDSAcsTransactionId,
-                    threeDSAcsRefNumber = paymentResult.threeDSAcsRefNumber,
-                    threeDSAcsSignedContent = paymentResult.threeDSAcsSignedContent,
-                    threeDSServerTransId = threeDSServerTransId,
-                ),
-                createChallengeStatusReceiver(threeDSServerTransId, threeDS2Service)
-            )
-        } else {
-            finishWithError(
-                SDKPaymentApiException(
-                    message = "Wrong api response from second form $paymentResult",
-                    cause = null
-                )
-            )
-        }
-    }
-
     private suspend fun getSessionStatus(): SessionStatusResponse = paymentApi.getSessionStatus(
         mdOrder = mdOrder
     )
-
-    private fun createChallengeParameters(
-        threeDSAcsTransactionId: String,
-        threeDSAcsRefNumber: String,
-        threeDSAcsSignedContent: String,
-        threeDSServerTransId: String,
-    ): ChallengeParameters {
-        val challengeParameters = factory.newChallengeParameters()
-
-        // Parameters for starting Challenge Flow.
-        challengeParameters.acsTransactionID = threeDSAcsTransactionId
-        challengeParameters.acsRefNumber = threeDSAcsRefNumber
-        challengeParameters.acsSignedContent = threeDSAcsSignedContent
-        challengeParameters.set3DSServerTransactionID(threeDSServerTransId)
-
-        return challengeParameters
-    }
-
-    // Listener to handle the Challenge Flow execution process.
-    private suspend fun createChallengeStatusReceiver(
-        threeDSServerTransId: String,
-        threeDS2Service: ThreeDS2Service,
-    ): ChallengeStatusReceiver = object : ChallengeStatusReceiver {
-        override fun cancelled() {
-            LogDebug.logIfDebug("cancelled")
-            threeDS2FormDelegate.cleanup(transaction, threeDS2Service)
-        }
-
-        override fun protocolError(protocolErrorEvent: ProtocolErrorEvent) {
-            LogDebug.logIfDebug("protocolError $protocolErrorEvent")
-            threeDS2FormDelegate.cleanup(transaction, threeDS2Service)
-        }
-
-        override fun runtimeError(runtimeErrorEvent: RuntimeErrorEvent) {
-            LogDebug.logIfDebug("runtimeError $runtimeErrorEvent")
-            threeDS2FormDelegate.cleanup(transaction, threeDS2Service)
-        }
-
-        override fun completed(completionEvent: CompletionEvent) {
-            LogDebug.logIfDebug("completed $completionEvent")
-            threeDS2FormDelegate.cleanup(transaction, threeDS2Service)
-            when (completionEvent.transactionStatus) {
-                "Y" -> {
-                    paymentScope.launchSafe {
-                        paymentApi.finish3dsVer2PaymentAnonymous(threeDSServerTransId)
-                        finishWithCheckOrderStatus()
-                    }
-                }
-
-                "N" -> {
-                    paymentScope.launchSafe {
-                        finishWithError(
-                            SDKTransactionException(
-                                "Transaction not confirmed",
-                                cause = null
-                            )
-                        )
-                    }
-                }
-            }
-        }
-
-        override fun timedout() {
-            LogDebug.logIfDebug("timedout")
-            threeDS2FormDelegate.cleanup(transaction, threeDS2Service)
-        }
-    }
 
     @Suppress("LongParameterList")
     private fun createGooglePayConfig(

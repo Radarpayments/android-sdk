@@ -49,14 +49,11 @@ class TestOrderHelper(
             mdOrder = orderId,
             holder = card.holder,
             saveCard = false,
-            email = null,
+            email = "test@test.com",
             mobilePhone = "+73259856734",
             additionalPayerData = emptyMap()
         )
-        paymentApi.processForm(
-            cryptogramApiData = cryptogramApiData,
-            threeDSSDK = false,
-        )
+        paymentApi.processForm(cryptogramApiData = cryptogramApiData)
         paymentApi.getFinishedPaymentInfo(
             orderId = orderId,
         ).status shouldBe "DEPOSITED"
@@ -118,7 +115,12 @@ class TestOrderHelper(
         val json = JSONObject(body.toMap())
 
         return runCatching {
-            val connection = URL(apiUrl).executePostJsonForSessionId(json.toString(), apiKey, version)
+            val connection = URL(apiUrl)
+                .executePostJsonForSessionId(
+                    json.toString(),
+                    apiKey,
+                    version
+                )
             connection.responseBodyToJsonObject().getString("id")
         }.getOrNull() ?: throw IllegalStateException("Could not register session")
     }

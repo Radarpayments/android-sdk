@@ -435,7 +435,7 @@ class CardNewActivity : BaseActivity() {
 
     private fun prepareAdditionalFields() = FilledAdditionalPayerParams(
         city = prepareAdditionalParam(cityInputLayout, cityInput),
-        country = prepareAdditionalParam(cityInputLayout, cityInput),
+        country = prepareAdditionalParam(countryInputLayout, countryInput),
         addressLine1 = prepareAdditionalParam(
             addressLine1InputLayout,
             addressLine1Input

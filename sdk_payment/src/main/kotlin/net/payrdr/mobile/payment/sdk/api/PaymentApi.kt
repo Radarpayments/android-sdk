@@ -4,7 +4,6 @@ import net.payrdr.mobile.payment.sdk.api.entity.FinishedPaymentInfoResponse
 import net.payrdr.mobile.payment.sdk.api.entity.GPaySettings
 import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormGPayResponse
 import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormResponse
-import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormSecondResponse
 import net.payrdr.mobile.payment.sdk.api.entity.SessionStatusResponse
 import net.payrdr.mobile.payment.sdk.api.entity.UnbindCardResponse
 import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
@@ -31,8 +30,7 @@ interface PaymentApi {
      * @return [ProcessFormResponse] payment status data for first payment try.
      */
     suspend fun processForm(
-        cryptogramApiData: ProcessFormRequest,
-        threeDSSDK: Boolean
+        cryptogramApiData: ProcessFormRequest
     ): ProcessFormResponse
 
     /**
@@ -42,35 +40,8 @@ interface PaymentApi {
      * @return [ProcessFormResponse] payment status data for first payment try.
      */
     suspend fun processBindingForm(
-        cryptogramApiData: ProcessFormRequest,
-        threeDSSDK: Boolean
+        cryptogramApiData: ProcessFormRequest
     ): ProcessFormResponse
-
-    /**
-     * API method for making card payments with 3DS.
-     *
-     * @param cryptogramApiData cryptogram and data for its creation.
-     * @param threeDSParams 3DS parameters.
-     * @return [ProcessFormSecondResponse] payment status data for new card for second payment
-     * try.
-     */
-    suspend fun processFormSecond(
-        cryptogramApiData: ProcessFormRequest,
-        threeDSParams: PaymentApiImpl.PaymentThreeDSInfo
-    ): ProcessFormSecondResponse
-
-    /**
-     * API method for making payments with a binding card with 3DS.
-     *
-     * @param cryptogramApiData cryptogram and data for its creation.
-     * @param threeDSParams 3DS parameters.
-     * @return [ProcessFormSecondResponse] payment status data for binding card for second
-     * payment try.
-     */
-    suspend fun processBindingFormSecond(
-        cryptogramApiData: ProcessFormRequest,
-        threeDSParams: PaymentApiImpl.PaymentThreeDSInfo
-    ): ProcessFormSecondResponse
 
     /**
      * API method for making payments with a GPay payment.

@@ -7,7 +7,6 @@ import org.json.JSONObject
  * DTO for GPay response.
  *
  * @param orderId order identifier.
- * @param is3DSVer2 allow 3ds payment version 2.
  * @param acsUrl automatic configuration server url.
  * @param paReq params request.
  * @param termUrl terminal url.
@@ -19,7 +18,6 @@ import org.json.JSONObject
  */
 data class GPayData(
     val orderId: String,
-    val is3DSVer2: Boolean,
     val acsUrl: String?,
     val paReq: String?,
     val termUrl: String?,
@@ -37,7 +35,6 @@ data class GPayData(
         fun fromJson(jsonObject: JSONObject): GPayData = with(jsonObject) {
             GPayData(
                 orderId = getString("orderId"),
-                is3DSVer2 = optBoolean("is3DSVer2"),
                 acsUrl = optValue("acsUrl"),
                 paReq = optValue("paReq"),
                 termUrl = optValue("termUrl"),

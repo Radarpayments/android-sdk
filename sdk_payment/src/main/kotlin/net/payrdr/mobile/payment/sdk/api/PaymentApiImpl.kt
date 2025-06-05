@@ -6,7 +6,6 @@ import net.payrdr.mobile.payment.sdk.api.entity.FinishedPaymentInfoResponse
 import net.payrdr.mobile.payment.sdk.api.entity.GPaySettings
 import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormGPayResponse
 import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormResponse
-import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormSecondResponse
 import net.payrdr.mobile.payment.sdk.api.entity.SessionStatusResponse
 import net.payrdr.mobile.payment.sdk.api.entity.UnbindCardResponse
 import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
@@ -40,14 +39,13 @@ class PaymentApiImpl(
 
     override suspend fun processForm(
         cryptogramApiData: ProcessFormRequest,
-        threeDSSDK: Boolean
     ): ProcessFormResponse = startRunCatching {
         val body = mutableMapOf(
             "seToken" to cryptogramApiData.paymentToken,
             "MDORDER" to cryptogramApiData.mdOrder,
             "TEXT" to cryptogramApiData.holder,
             "bindingNotNeeded" to "${(!cryptogramApiData.saveCard)}",
-            "threeDSSDK" to "$threeDSSDK",
+            "threeDSSDK" to "false",
         )
         if (cryptogramApiData.additionalPayerData.isEmpty().not()) {
             body["billingPayerData"] = cryptogramApiData.additionalPayerData.mapToJsonString()
@@ -69,13 +67,12 @@ class PaymentApiImpl(
 
     override suspend fun processBindingForm(
         cryptogramApiData: ProcessFormRequest,
-        threeDSSDK: Boolean
     ): ProcessFormResponse = startRunCatching {
         val body = mutableMapOf(
             "seToken" to cryptogramApiData.paymentToken,
             "MDORDER" to cryptogramApiData.mdOrder,
             "TEXT" to cryptogramApiData.holder,
-            "threeDSSDK" to "$threeDSSDK"
+            "threeDSSDK" to "false"
         )
         if (cryptogramApiData.additionalPayerData.isEmpty().not()) {
             body["billingPayerData"] = cryptogramApiData.additionalPayerData.mapToJsonString()
@@ -93,75 +90,6 @@ class PaymentApiImpl(
         val res = connection.responseBodyToJsonObject()
         LogDebug.logIfDebug(res.toString())
         ProcessFormResponse.fromJson(res)
-    }
-
-    override suspend fun processFormSecond(
-        cryptogramApiData: ProcessFormRequest,
-        threeDSParams: PaymentThreeDSInfo
-    ): ProcessFormSecondResponse = startRunCatching {
-        val body = mutableMapOf(
-            "seToken" to cryptogramApiData.paymentToken,
-            "MDORDER" to cryptogramApiData.mdOrder,
-            "TEXT" to cryptogramApiData.holder,
-            "bindingNotNeeded" to "${(!cryptogramApiData.saveCard)}",
-            "threeDSSDK" to threeDSParams.threeDSSDK.toString(),
-            "threeDSServerTransId" to threeDSParams.threeDSServerTransId,
-            "threeDSSDKEncData" to threeDSParams.threeDSSDKEncData,
-            "threeDSSDKEphemPubKey" to threeDSParams.threeDSSDKEphemPubKey,
-            "threeDSSDKAppId" to threeDSParams.threeDSSDKAppId,
-            "threeDSSDKTransId" to threeDSParams.threeDSSDKTransId,
-            "threeDSSDKReferenceNumber" to threeDSParams.threeDSSDKReferenceNumber
-        )
-        if (cryptogramApiData.additionalPayerData.isEmpty().not()) {
-            body["billingPayerData"] = cryptogramApiData.additionalPayerData.mapToJsonString()
-        }
-        if (cryptogramApiData.mobilePhone != null) {
-            body["mobilePhone"] = cryptogramApiData.mobilePhone
-        }
-        if (cryptogramApiData.email != null) {
-            body["email"] = cryptogramApiData.email
-        }
-        val connection = URL("$baseUrl/rest/processform.do").executePostParams(
-            paramBody = body,
-            sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
-        )
-        val res = connection.responseBodyToJsonObject()
-        LogDebug.logIfDebug(res.toString())
-        ProcessFormSecondResponse.fromJson(res)
-    }
-
-    override suspend fun processBindingFormSecond(
-        cryptogramApiData: ProcessFormRequest,
-        threeDSParams: PaymentThreeDSInfo
-    ): ProcessFormSecondResponse = startRunCatching {
-        val body = mutableMapOf(
-            "seToken" to cryptogramApiData.paymentToken,
-            "MDORDER" to cryptogramApiData.mdOrder,
-            "TEXT" to cryptogramApiData.holder,
-            "threeDSSDK" to threeDSParams.threeDSSDK.toString(),
-            "threeDSServerTransId" to threeDSParams.threeDSServerTransId,
-            "threeDSSDKEncData" to threeDSParams.threeDSSDKEncData,
-            "threeDSSDKEphemPubKey" to threeDSParams.threeDSSDKEphemPubKey,
-            "threeDSSDKAppId" to threeDSParams.threeDSSDKAppId,
-            "threeDSSDKTransId" to threeDSParams.threeDSSDKTransId,
-            "threeDSSDKReferenceNumber" to threeDSParams.threeDSSDKReferenceNumber
-        )
-        if (cryptogramApiData.additionalPayerData.isEmpty().not()) {
-            body["billingPayerData"] = cryptogramApiData.additionalPayerData.mapToJsonString()
-        }
-        if (cryptogramApiData.mobilePhone != null) {
-            body["mobilePhone"] = cryptogramApiData.mobilePhone
-        }
-        if (cryptogramApiData.email != null) {
-            body["email"] = cryptogramApiData.email
-        }
-        val connection = URL("$baseUrl/rest/processBindingForm.do").executePostParams(
-            paramBody = body,
-            sslContext = SDKPayment.sdkPaymentConfig.sslContextConfig?.sslContext
-        )
-        val res = connection.responseBodyToJsonObject()
-        LogDebug.logIfDebug(res.toString())
-        ProcessFormSecondResponse.fromJson(res)
     }
 
     override suspend fun gPayProcessForm(

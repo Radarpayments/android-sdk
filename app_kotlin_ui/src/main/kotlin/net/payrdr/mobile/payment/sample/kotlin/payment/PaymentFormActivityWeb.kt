@@ -15,7 +15,6 @@ import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.payment.model.CheckoutConfig
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
-import net.payrdr.mobile.payment.sdk.payment.model.Use3DSConfig
 
 class PaymentFormActivityWeb : AppCompatActivity() {
 
@@ -26,7 +25,6 @@ class PaymentFormActivityWeb : AppCompatActivity() {
         val baseUrl = "https://dev.bpcbt.com/payment"
         val paymentConfig = SDKPaymentConfig(
             baseUrl,
-            use3DSConfig = Use3DSConfig.NoUse3ds2sdk,
             sslContextConfig = MarketApplication.sslContextConfig,
         )
         SDKPayment.init(paymentConfig)
