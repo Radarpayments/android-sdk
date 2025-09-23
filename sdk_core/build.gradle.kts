@@ -108,6 +108,5 @@ dependencies {
     androidTestImplementation(TestLibs.androidx_test_rules)
     androidTestImplementation(TestLibs.androidx_test_espresso_core)
     androidTestImplementation(TestLibs.io_mockk_android)
-    androidTestImplementation(TestLibs.com_squareup_spoon)
     androidTestImplementation(TestLibs.com_squareup_mockwebserver)
 }

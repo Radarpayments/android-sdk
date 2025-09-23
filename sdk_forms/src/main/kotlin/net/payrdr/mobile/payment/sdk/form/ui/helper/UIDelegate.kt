@@ -3,10 +3,13 @@ package net.payrdr.mobile.payment.sdk.form.ui.helper
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.LocaleList
+import android.view.View
+import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
 import net.payrdr.mobile.payment.sdk.form.R
 import net.payrdr.mobile.payment.sdk.form.model.Theme
@@ -32,6 +35,7 @@ internal open class UIDelegate(private val activity: AppCompatActivity) {
             }
         }
         setup(true)
+        enableEdgeToEdge()
     }
 
     fun updateConfiguration(context: Context) {
@@ -148,14 +152,104 @@ internal open class UIDelegate(private val activity: AppCompatActivity) {
             if (themeChanged || isCreate) {
                 activity.window.setWindowAnimations(R.style.PAYRDRWindowAnimationFadeInOut)
                 activity.setUiTheme(currentTheme)
+                supportSystemBarColor()
             } else if (localeChanged && !(themeChanged || isCreate)) {
                 activity.recreate()
             }
         }
     }
 
+    private fun enableEdgeToEdge() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // API 30
+            activity.window.setDecorFitsSystemWindows(false)
+        } else {
+            val decorFitsFlags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+            val decorView: View = activity.window.decorView
+            val sysUiVis = decorView.systemUiVisibility
+            decorView.systemUiVisibility = sysUiVis or decorFitsFlags
+        }
+
+        // API 29
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            activity.window.isNavigationBarContrastEnforced = false
+        }
+    }
+
+    private fun supportSystemBarColor() {
+        // true = dark icons
+        val isLightBars = shouldUseLightBars(currentTheme)
+        when {
+            // API 30
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                activity.window.decorView.post {
+                    val c = activity.window.insetsController
+                        ?: activity.window.decorView.windowInsetsController
+                    val mask = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
+                            WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+                    if (isLightBars) c?.setSystemBarsAppearance(mask, mask)
+                    else c?.setSystemBarsAppearance(0, mask)
+                }
+            }
+
+            // API 26
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+                val decor = activity.window.decorView
+                decor.post {
+                    val flags = if (isLightBars) {
+                        decor.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or
+                                View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                    } else {
+                        decor.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv() and
+                                View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
+                    }
+                    decor.systemUiVisibility = flags
+                }
+            }
+
+            // API 23
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
+
+                activity.window.navigationBarColor =
+                    activity.resources.getColor(R.color.color_nav_bar_old_android)
+
+                val decor = activity.window.decorView
+                decor.post {
+                    val flags = if (isLightBars) {
+                        decor.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                    } else {
+                        decor.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+                    }
+                    decor.systemUiVisibility = flags
+                }
+            }
+
+            else -> {
+                // system bar colors cant be changed for API < 23,
+                // so we set color to statusBar not transparent
+                val color = if (isLightBars) Color.BLACK else Color.WHITE
+                activity.window.statusBarColor = color
+                activity.window.navigationBarColor = color
+            }
+        }
+    }
+
+    private fun shouldUseLightBars(theme: Theme): Boolean = when (theme) {
+        Theme.DEFAULT -> isDarkTheme(activity.resources).not()
+        Theme.LIGHT -> true
+        Theme.DARK -> false
+        Theme.SYSTEM -> isDarkTheme(activity.resources).not()
+    }
+
     companion object {
         private const val BUNDLE_LANGUAGE = "payment.sdk.settings.language"
         private const val BUNDLE_THEME = "payment.sdk.settings.theme"
+
+        fun isDarkTheme(resources: Resources): Boolean {
+            val currentNightMode =
+                resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+            return currentNightMode == Configuration.UI_MODE_NIGHT_YES
+        }
     }
 }

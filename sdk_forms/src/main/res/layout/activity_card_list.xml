@@ -61,6 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scrollbars="none"
+        android:clipToPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,6 +71,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/payrdr_very_large_dimen"
+            android:paddingBottom="8dp"
             android:orientation="vertical">
 
             <TextView
@@ -85,6 +87,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
+                android:clipToPadding="false"
                 android:id="@+id/cardList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

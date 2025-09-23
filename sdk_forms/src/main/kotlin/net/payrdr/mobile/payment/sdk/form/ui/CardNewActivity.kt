@@ -57,6 +57,7 @@ import kotlinx.android.synthetic.main.activity_card_new.stateInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.switchBox
 import kotlinx.android.synthetic.main.activity_card_new.switchBoxText
 import kotlinx.android.synthetic.main.activity_card_new.toolbar
+import kotlinx.android.synthetic.main.activity_card_new.linearLayout
 import kotlinx.android.synthetic.main.activity_card_new.view.arrow_back
 import kotlinx.android.synthetic.main.activity_card_new.view.title
 import kotlinx.coroutines.Dispatchers
@@ -127,6 +128,7 @@ class CardNewActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_new)
+        supportEdgeToEdgeInsets(toolbar, linearLayout)
         toolbar.title.text = resources.getString(R.string.payrdr_title_payment)
         toolbar.arrow_back.setOnClickListener {
             onBackPressed()
@@ -516,7 +518,7 @@ class CardNewActivity : BaseActivity() {
          */
         fun prepareIntent(
             context: Context,
-            config: PaymentConfig
+            config: PaymentConfig,
         ): Intent = Intent(context, CardNewActivity::class.java).apply {
             putExtra(INTENT_EXTRA_CONFIG, config)
         }

@@ -29,6 +29,7 @@ import kotlinx.android.synthetic.main.activity_card_selected.postalCodeInputLayo
 import kotlinx.android.synthetic.main.activity_card_selected.stateInput
 import kotlinx.android.synthetic.main.activity_card_selected.stateInputLayout
 import kotlinx.android.synthetic.main.activity_card_selected.toolbar
+import kotlinx.android.synthetic.main.activity_card_new.linearLayout
 import kotlinx.android.synthetic.main.activity_card_selected.view.arrow_back
 import kotlinx.android.synthetic.main.activity_card_selected.view.title
 import kotlinx.coroutines.Dispatchers
@@ -75,6 +76,7 @@ class CardSelectedActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_selected)
+        supportEdgeToEdgeInsets(toolbar, linearLayout)
         toolbar.title.text = resources.getString(R.string.payrdr_title_payment)
         toolbar.arrow_back.setOnClickListener {
             onBackPressed()

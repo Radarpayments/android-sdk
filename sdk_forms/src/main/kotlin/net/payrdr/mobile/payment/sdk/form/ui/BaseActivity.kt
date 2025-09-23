@@ -3,8 +3,11 @@ package net.payrdr.mobile.payment.sdk.form.ui
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -73,6 +76,46 @@ abstract class BaseActivity : AppCompatActivity() {
             true
         } else {
             super.onOptionsItemSelected(item)
+        }
+    }
+
+    protected fun supportEdgeToEdgeInsets(
+        topInsetView: View,
+        botInsetView: View? = null,
+    ) {
+
+        val root = findViewById<View>(android.R.id.content)
+
+        root.setOnApplyWindowInsetsListener { view, insets ->
+            val topInset = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // API 30
+                insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout()).top
+            } else {
+                insets.systemWindowInsetTop
+            }
+
+            topInsetView.setPadding(
+                topInsetView.paddingLeft,
+                topInset,
+                topInsetView.paddingRight,
+                topInsetView.paddingBottom
+            )
+
+            botInsetView?.let { v ->
+                val botInset = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    // API 30
+                    insets.getInsets(WindowInsets.Type.systemBars()).bottom
+                } else {
+                    insets.systemWindowInsetBottom
+                }
+                v.setPadding(
+                    botInsetView.paddingLeft,
+                    botInsetView.paddingTop,
+                    topInsetView.paddingRight,
+                    botInset
+                )
+            }
+            insets
         }
     }
 }

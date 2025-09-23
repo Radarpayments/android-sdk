@@ -15,13 +15,13 @@ android {
             keyPassword = "123456"
         }
     }
-    compileSdkVersion(33)
+    compileSdkVersion(36)
     buildToolsVersion("30.0.2")
 
     defaultConfig {
         applicationId = "net.payrdr.mobile.payment.sample.kotlin"
         minSdkVersion(21)
-        targetSdkVersion(33)
+        targetSdkVersion(36)
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -68,7 +68,11 @@ dependencies {
     implementation(group = "", name = "sdk_core-release", ext = "aar")
     implementation(group = "", name = "sdk_payment-release", ext = "aar")
     implementation(group = "", name = "sdk_threeds-release", ext = "aar")
-    implementation(group = "", name = "sdk_logs-release", ext = "aar")
+//    implementation(project(":sdk_logs"))
+//    implementation(project(":sdk_threeds"))
+//    implementation(project(":sdk_core"))
+//    implementation(project(":sdk_forms"))
+//    implementation(project(":sdk_payment"))
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
@@ -113,7 +117,6 @@ dependencies {
     androidTestImplementation(TestLibs.androidx_test_rules)
     androidTestImplementation(TestLibs.androidx_test_espresso_core)
     androidTestImplementation(TestLibs.io_mockk_android)
-    androidTestImplementation(TestLibs.com_squareup_spoon)
     androidTestImplementation(TestLibs.com_squareup_mockwebserver)
 }
 

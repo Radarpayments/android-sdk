@@ -21,7 +21,6 @@ object Versions {
     const val androidx_test_core = "1.2.0"
     const val io_mockk = "1.13.2"
     const val kotlinx_coroutines_test = "1.3.7"
-    const val com_squareup_spoon = "2.0.0-SNAPSHOT"
     const val com_squareup_mockwebserver = "4.7.2"
     const val com_squareup_okhttp_tls = "4.7.2"
     const val com_squareup_okhttp = "4.7.2"
@@ -71,7 +70,6 @@ object TestLibs {
     const val androidx_test_rules = "androidx.test:rules:${Versions.androidx_test_rules}"
     const val io_mockk = "io.mockk:mockk:${Versions.io_mockk}"
     const val io_mockk_android = "io.mockk:mockk-android:${Versions.io_mockk}"
-    const val com_squareup_spoon = "com.squareup.spoon:spoon-client:${Versions.com_squareup_spoon}"
     const val com_squareup_mockwebserver =
         "com.squareup.okhttp3:mockwebserver:${Versions.com_squareup_mockwebserver}"
     const val com_squareup_okhttp_tls =
@@ -94,7 +92,7 @@ object TestLibs {
 object BuildVersionsAndroid {
     const val compileSdkVersion = 33
     const val minSdkVersion = 21
-    const val targetSdkVersion = 33
+    const val targetSdkVersion = 35
     const val versionCode = 1
 }
 

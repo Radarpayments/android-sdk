@@ -1,7 +1,6 @@
 package net.payrdr.mobile.payment.sdk.form.ui
 
 import android.content.DialogInterface
-import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -29,6 +28,7 @@ import net.payrdr.mobile.payment.sdk.form.model.GooglePayPaymentConfig
 import net.payrdr.mobile.payment.sdk.form.model.PaymentConfig
 import net.payrdr.mobile.payment.sdk.form.model.Theme
 import net.payrdr.mobile.payment.sdk.form.ui.adapter.CardListAdapter
+import net.payrdr.mobile.payment.sdk.form.ui.helper.UIDelegate
 import net.payrdr.mobile.payment.sdk.form.utils.finishWithUserCancellation
 
 /**
@@ -50,7 +50,7 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = inflater.inflate(R.layout.fragment_bottom_sheet_payment, container, false)
 
     internal fun show(manager: FragmentManager, tag: String?, paymentConfig: PaymentConfig) {
@@ -203,7 +203,7 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
     private fun googlePayButtonTheme(config: GooglePayPaymentConfig): Int =
         when (config.theme) {
             Theme.DEFAULT, Theme.SYSTEM -> {
-                if (isDarkTheme()) ButtonConstants.ButtonTheme.LIGHT
+                if (UIDelegate.isDarkTheme(resources)) ButtonConstants.ButtonTheme.LIGHT
                 else ButtonConstants.ButtonTheme.DARK
             }
 
@@ -215,9 +215,4 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
                 ButtonConstants.ButtonTheme.DARK
             }
         }
-
-    private fun isDarkTheme(): Boolean {
-        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        return currentNightMode == Configuration.UI_MODE_NIGHT_YES
-    }
 }

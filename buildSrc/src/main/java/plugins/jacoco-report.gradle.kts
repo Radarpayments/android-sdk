@@ -38,7 +38,6 @@ package plugins
 //val executionDataTree = fileTree(buildDir) {
 //    include(
 //        //"outputs/code_coverage/**/*.ec",
-//        "spoon-output/debug/coverage/merged-coverage.ec",
 //        "jacoco/jacocoTestReportDebug.exec",
 //        "jacoco/testDebugUnitTest.exec",
 //        "jacoco/test.exec"
@@ -50,7 +49,6 @@ package plugins
 //    tasks.register<JacocoReport>("jacocoAndroidTestReport") {
 //        group = "verification"
 //        description = "Code coverage report for both Android and Unit tests."
-//        dependsOn("testDebugUnitTest", "spoonDebugAndroidTest")
 //        reports {
 //            xml.isEnabled = true
 //            html.isEnabled = true

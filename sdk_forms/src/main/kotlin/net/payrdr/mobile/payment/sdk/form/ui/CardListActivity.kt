@@ -37,6 +37,7 @@ class CardListActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_list)
+        supportEdgeToEdgeInsets(toolbar, cardList)
         toolbar.title.text = resources.getString(R.string.payrdr_title_card_list)
         toolbar.arrow_back.setOnClickListener {
             onBackPressed()

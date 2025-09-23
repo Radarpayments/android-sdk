@@ -16,4 +16,5 @@
     <color name="color_focused_box_stroke">#000000</color>
     <color name="color_background_bottom_sheet">#FFFFFF</color>
     <color name="color_background_bottom_cancel">#F2F2F2</color>
+    <color name="color_nav_bar_old_android">#33000000</color>
 </resources>
