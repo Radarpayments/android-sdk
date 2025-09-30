@@ -51,7 +51,8 @@ class PaymentApiImpl(
             body["billingPayerData"] = cryptogramApiData.additionalPayerData.mapToJsonString()
         }
         if (cryptogramApiData.mobilePhone != null) {
-            body["mobilePhone"] = cryptogramApiData.mobilePhone
+            val orderPayerData = mapOf("mobilePhone" to cryptogramApiData.mobilePhone)
+            body["orderPayerData"] = orderPayerData.mapToJsonString()
         }
         if (cryptogramApiData.email != null) {
             body["email"] = cryptogramApiData.email
@@ -78,7 +79,8 @@ class PaymentApiImpl(
             body["billingPayerData"] = cryptogramApiData.additionalPayerData.mapToJsonString()
         }
         if (cryptogramApiData.mobilePhone != null) {
-            body["mobilePhone"] = cryptogramApiData.mobilePhone
+            val orderPayerData = mapOf("mobilePhone" to cryptogramApiData.mobilePhone)
+            body["orderPayerData"] = orderPayerData.mapToJsonString()
         }
         if (cryptogramApiData.email != null) {
             body["email"] = cryptogramApiData.email
