@@ -45,6 +45,7 @@ jobs:
             app_java_ui/build/outputs/apk/debug/*.apk
             app_kotlin_ui/build/outputs/apk/debug/*.apk
             app_kotlin_core/build/outputs/apk/debug/*.apk
+            sdk_forms/libs/card.io-5.5.1-OS1.aar
           retention-days: 1
 
   testEndToEnd:
