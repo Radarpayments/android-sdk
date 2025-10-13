@@ -7,7 +7,6 @@ object Versions {
     const val appcompat = "1.1.0"
     const val androidx_constraintlayout = "1.1.3"
     const val android_material = "1.6.0"
-    const val io_card_android_sdk = "5.5.1"
     const val com_caverock_androidsvg = "1.4"
     const val com_github_devnied_emvnfccard = "3.0.1"
     const val android_play_services_wallet = "19.4.0"
@@ -42,7 +41,6 @@ object Libs {
     const val androidx_constraintlayout =
         "androidx.constraintlayout:constraintlayout:${Versions.androidx_constraintlayout}"
     const val android_material = "com.google.android.material:material:${Versions.android_material}"
-    const val io_card_android_sdk = "io.card:android-sdk:${Versions.io_card_android_sdk}"
     const val com_caverock_androidsvg = "com.caverock:androidsvg-aar:${Versions.com_caverock_androidsvg}"
     const val com_github_devnied_emvnfccard =
         "com.github.devnied.emvnfccard:library:${Versions.com_github_devnied_emvnfccard}"

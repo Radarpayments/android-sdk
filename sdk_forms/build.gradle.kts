@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -97,11 +98,10 @@ dependencies {
     implementation(Libs.appcompat)
     implementation(Libs.androidx_constraintlayout)
     implementation(Libs.android_material)
-    implementation(Libs.io_card_android_sdk)
+    implementation(group = "", name = "card.io-5.5.1-OS1", ext = "aar")
     implementation(Libs.com_caverock_androidsvg)
     implementation(Libs.com_github_devnied_emvnfccard)
     implementation(Libs.android_play_services_wallet)
-
     testImplementation(TestLibs.junit)
     testImplementation(TestLibs.io_kotest_runner_junit)
     testImplementation(TestLibs.io_kotest_assertion_core)

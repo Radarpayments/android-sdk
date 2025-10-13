@@ -140,7 +140,7 @@ jobs:
         with:
           name: build_files
 
-      - name: Upload sd_logs arr artifacts
+      - name: Upload sdk_logs arr artifacts
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}
@@ -150,7 +150,17 @@ jobs:
           asset_name: sdk_logs-release.aar
           asset_content_type: application/octet-stream
 
-      - name: Upload sd_core arr artifacts
+      - name: Upload rebuild cardio aar artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./sdk_forms/libs/card.io-5.5.1-OS1.aar
+          asset_name: card.io-5.5.1-OS1.aar
+          asset_content_type: application/octet-stream
+
+      - name: Upload sdk_core arr artifacts
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}

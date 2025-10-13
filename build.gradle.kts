@@ -15,7 +15,7 @@ buildscript {
         classpath("io.qameta.allure:allure-gradle:2.8.1")
         classpath(kotlin("gradle-plugin", version = kotlin_version))
         classpath(kotlin("serialization", version = kotlin_version))
-
+        classpath("com.android.tools:r8:8.3.37")
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -32,9 +32,11 @@ allprojects {
         mavenCentral()
         jcenter()
         maven(uri("https://oss.sonatype.org/content/repositories/snapshots"))
+        maven(url = uri("$rootDir/repo"))
         flatDir {
             dirs("libs")
         }
+        flatDir { dirs("$rootDir/sdk_forms/libs") }
     }
 }
 

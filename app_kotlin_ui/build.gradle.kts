@@ -68,6 +68,7 @@ dependencies {
     implementation(group = "", name = "sdk_core-release", ext = "aar")
     implementation(group = "", name = "sdk_payment-release", ext = "aar")
     implementation(group = "", name = "sdk_threeds-release", ext = "aar")
+    implementation(group = "", name = "card.io-5.5.1-OS1", ext = "aar")
 //    implementation(project(":sdk_logs"))
 //    implementation(project(":sdk_threeds"))
 //    implementation(project(":sdk_core"))
@@ -92,7 +93,6 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("com.github.devnied.emvnfccard:library:3.0.1")
     implementation("com.caverock:androidsvg-aar:1.4")
-    implementation("io.card:android-sdk:5.5.1")
     implementation("com.google.android.gms:play-services-wallet:19.4.0")
 
     // 3DS2 SDK
