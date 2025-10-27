@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.activity_card_list.view.arrow_back
 import kotlinx.android.synthetic.main.activity_card_list.view.title
 import net.payrdr.mobile.payment.sdk.form.Constants
 import net.payrdr.mobile.payment.sdk.form.R
+import net.payrdr.mobile.payment.sdk.form.SDKCanceledByUserException
 import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.model.Card
 import net.payrdr.mobile.payment.sdk.form.model.CardDeleteOptions
@@ -22,6 +23,7 @@ import net.payrdr.mobile.payment.sdk.form.model.CryptogramData
 import net.payrdr.mobile.payment.sdk.form.model.PaymentConfig
 import net.payrdr.mobile.payment.sdk.form.model.PaymentDataStatus
 import net.payrdr.mobile.payment.sdk.form.ui.adapter.CardListAdapter
+import net.payrdr.mobile.payment.sdk.form.utils.finishWithError
 import net.payrdr.mobile.payment.sdk.form.utils.finishWithResult
 
 /**
@@ -69,6 +71,10 @@ class CardListActivity : BaseActivity() {
                 openNewCard()
             }
         }
+    }
+
+    override fun onBackPressed() {
+        finishWithError(SDKCanceledByUserException())
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -20,3 +20,10 @@ fun CardListScreen.clickApproveDeleteCard() {
         perform { click() }
     }
 }
+
+fun CardListScreen.clickOnBackButton() {
+    backArrowButton {
+        isVisible()
+        perform { click() }
+    }
+}

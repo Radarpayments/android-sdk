@@ -3,6 +3,7 @@ package net.payrdr.mobile.payment.sdk.screen
 import com.kaspersky.kaspresso.screens.KScreen
 import io.github.kakaocup.kakao.check.KCheckBox
 import io.github.kakaocup.kakao.edit.KEditText
+import io.github.kakaocup.kakao.image.KImageView
 import io.github.kakaocup.kakao.text.KButton
 import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.form.ui.CardNewActivity
@@ -36,6 +37,8 @@ object NewCardScreen : KScreen<NewCardScreen>() {
     val cityInput = KEditText { withId(R.id.cityInput) }
 
     val postalCodeInput = KEditText { withId(R.id.postalCodeInput) }
+
+    val arrowBack = KImageView { withId(R.id.arrow_back) }
 
     val addressLine1Input = KEditText { withId(R.id.addressLine1Input) }
 

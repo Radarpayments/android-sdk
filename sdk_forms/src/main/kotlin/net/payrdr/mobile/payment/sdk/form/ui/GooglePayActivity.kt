@@ -11,11 +11,13 @@ import com.google.android.gms.wallet.WalletConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.payrdr.mobile.payment.sdk.form.Constants
+import net.payrdr.mobile.payment.sdk.form.SDKCanceledByUserException
 import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayUtils
 import net.payrdr.mobile.payment.sdk.form.model.CryptogramData
 import net.payrdr.mobile.payment.sdk.form.model.GooglePayPaymentConfig
 import net.payrdr.mobile.payment.sdk.form.model.PaymentDataStatus
 import net.payrdr.mobile.payment.sdk.form.model.PaymentInfoGooglePay
+import net.payrdr.mobile.payment.sdk.form.utils.finishWithError
 import net.payrdr.mobile.payment.sdk.form.utils.finishWithResult
 import org.json.JSONObject
 import com.google.android.gms.wallet.PaymentData as GPaymentData
@@ -75,7 +77,7 @@ class GooglePayActivity : BaseActivity() {
                     }
 
                     Activity.RESULT_CANCELED -> {
-                        finish()
+                        finishWithError(SDKCanceledByUserException())
                     }
 
                     AutoResolveHelper.RESULT_ERROR -> {

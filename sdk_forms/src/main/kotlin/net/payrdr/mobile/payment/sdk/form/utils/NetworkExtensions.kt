@@ -23,14 +23,20 @@ const val CODE_SUCCESS = 200
  * @return a [JSONObject] instance of a successful response body or an error body.
  */
 fun HttpURLConnection.responseBodyToJsonObject(): JSONObject {
-    val br = BufferedReader(
-        InputStreamReader(
-            if (responseCode == CODE_SUCCESS) inputStream else errorStream
+    try {
+        val code = responseCode
+        val br = BufferedReader(
+            InputStreamReader(
+                if (responseCode == CODE_SUCCESS) inputStream else errorStream
+            )
         )
-    )
-    val responseBody = br.use(BufferedReader::readText)
-    return JSONObject(responseBody)
+        val responseBody = br.use(BufferedReader::readText)
+        return JSONObject(responseBody)
+    } finally {
+        disconnect()
+    }
 }
+
 
 /**
  * Executing a GET request on a URL instance.
@@ -86,12 +92,11 @@ fun URL.executePostParams(
         setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
         doOutput = true
         setChunkedStreamingMode(0)
+        val params = paramBody.map { elem ->
+            "${encode(elem.key, UTF_8.name())}=${encode(elem.value, UTF_8.name())}"
+        }.joinToString(separator = "&")
         OutputStreamWriter(BufferedOutputStream(outputStream)).use {
-            val params = paramBody.map { elem ->
-                "${encode(elem.key, UTF_8.name())}=${encode(elem.value, UTF_8.name())}"
-            }.joinToString(separator = "&")
             it.write(params)
             it.flush()
-            it.close()
         }
     }

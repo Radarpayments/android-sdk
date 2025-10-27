@@ -155,7 +155,7 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
             Logger.info(
                 this.javaClass,
                 Constants.TAG,
-                "Intercepted Request: ${request}",
+                "Intercepted Request: ${request?.url}",
                 null,
                 source = Source.WEB_VIEW
             )

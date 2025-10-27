@@ -186,6 +186,15 @@ class PaymentActivity : AppCompatActivity() {
         paymentManager.checkout(mdOrder!!, intent.getBooleanExtra(IS_GOOGLE_PAY, false), versionApi)
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        this.resultForHandle = ResultForHandle(
+            REQUEST_CODE_CRYPTOGRAM,
+            0,
+            intent
+        )
+        super.onNewIntent(intent)
+    }
+
     override fun onResume() {
         super.onResume()
         resultForHandle?.let {

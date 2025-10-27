@@ -23,4 +23,6 @@ object CardListScreen : KScreen<CardListScreen>() {
     val deleteIcon = KImageView { withId(R.id.delete) }
 
     val deleteDialogButton = KTextView { withText("Remove") }
+
+    val backArrowButton = KImageView { withId(R.id.arrow_back) }
 }

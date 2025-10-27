@@ -365,7 +365,7 @@ class PaymentManagerImpl(
             try {
                 val orderStatus = getSessionStatus()
                 val paymentFinishedInfo = getFinishedPaymentInfo(mdOrder)
-                LogDebug.logIfDebug("getSessionStatus - Remaining sec ${orderStatus.remainingSecs}")
+                LogDebug.logIfDebug("finishWithError getSessionStatus - Remaining sec ${orderStatus.remainingSecs}")
                 val paymentDataResponse = PaymentResult(
                     sessionId = sessionId,
                     isSuccess = paymentFinishedInfo.status.containsAnyOfKeywordIgnoreCase(

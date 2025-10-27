@@ -1,6 +1,7 @@
 package net.payrdr.mobile.payment.sdk.form.ui
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,6 +19,7 @@ import kotlinx.android.synthetic.main.fragment_bottom_sheet_payment.googlePayBut
 import kotlinx.android.synthetic.main.fragment_bottom_sheet_payment.orPayByCardLayout
 import net.payrdr.mobile.payment.sdk.form.Constants
 import net.payrdr.mobile.payment.sdk.form.R
+import net.payrdr.mobile.payment.sdk.form.SDKCanceledByUserException
 import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayUtils
 import net.payrdr.mobile.payment.sdk.form.gpay.GoogleTokenizationSpecificationType.PAYMENT_GATEWAY
@@ -29,7 +31,6 @@ import net.payrdr.mobile.payment.sdk.form.model.PaymentConfig
 import net.payrdr.mobile.payment.sdk.form.model.Theme
 import net.payrdr.mobile.payment.sdk.form.ui.adapter.CardListAdapter
 import net.payrdr.mobile.payment.sdk.form.ui.helper.UIDelegate
-import net.payrdr.mobile.payment.sdk.form.utils.finishWithUserCancellation
 
 /**
  * Bottom Sheet to start the payment process via all payment method.
@@ -90,7 +91,7 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
 
         dismissButton.setOnClickListener {
             dismiss()
-            requireActivity().finishWithUserCancellation()
+            handlePaymentCanceled()
         }
         cardsAdapter.cardSelectListener = object : CardListAdapter.CardSelectListener {
             override fun onCardSelected(card: Card) {
@@ -115,7 +116,7 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
 
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
-        requireActivity().finishWithUserCancellation()
+        handlePaymentCanceled()
     }
 
     private fun openNewCard() {
@@ -198,6 +199,15 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
                 )
                 .build()
         )
+    }
+
+    // open PaymentActivity again, handling exception in onNewIntent
+    private fun handlePaymentCanceled() {
+        val intent = Intent(requireContext(), requireActivity()::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            putExtra(Constants.INTENT_EXTRA_ERROR, SDKCanceledByUserException())
+        }
+        startActivity(intent)
     }
 
     private fun googlePayButtonTheme(config: GooglePayPaymentConfig): Int =

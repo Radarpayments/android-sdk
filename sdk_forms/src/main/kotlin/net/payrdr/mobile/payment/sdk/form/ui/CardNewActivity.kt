@@ -70,6 +70,7 @@ import net.payrdr.mobile.payment.sdk.form.Constants
 import net.payrdr.mobile.payment.sdk.form.Constants.INTENT_EXTRA_CONFIG
 import net.payrdr.mobile.payment.sdk.form.Constants.REQUEST_CODE_SCAN_CARD
 import net.payrdr.mobile.payment.sdk.form.R
+import net.payrdr.mobile.payment.sdk.form.SDKCanceledByUserException
 import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.model.AdditionalField
 import net.payrdr.mobile.payment.sdk.form.model.CameraScannerOptions
@@ -134,6 +135,10 @@ class CardNewActivity : BaseActivity() {
             onBackPressed()
         }
         configure(config)
+    }
+
+    override fun onBackPressed() {
+        finishWithError(SDKCanceledByUserException())
     }
 
     private val onCardNumberStatusChanged: () -> Unit = {

@@ -3,6 +3,7 @@ package net.payrdr.mobile.payment.sdk.screen
 import android.view.View
 import com.kaspersky.kaspresso.screens.KScreen
 import io.github.kakaocup.kakao.common.views.KView
+import io.github.kakaocup.kakao.image.KImageView
 import io.github.kakaocup.kakao.recycler.KRecyclerItem
 import io.github.kakaocup.kakao.recycler.KRecyclerView
 import io.github.kakaocup.kakao.text.KButton
@@ -23,15 +24,24 @@ object BottomSheetScreen : KScreen<BottomSheetScreen>() {
 
     val allPaymentMethods = KView { withId(R.id.allPaymentMethodLayout) }
 
+    val dismissButton = KImageView { withId(R.id.dismissButton) }
+
+    val googlePayButton = KView { withId(R.id.googlePayButton) }
+
     val paymentMethods = KRecyclerView(
         builder = { withId(R.id.cardList) },
         itemTypeBuilder = {
             itemType(::NewCard)
             itemType(::SavedCard)
+            itemType(::AllPaymentMethods)
         }
     )
 
     internal class NewCard(parent: Matcher<View>) : KRecyclerItem<NewCard>(parent)
+
+    internal class AllPaymentMethods(
+        parent: Matcher<View>
+    ) : KRecyclerItem<AllPaymentMethods>(parent)
 
     internal class SavedCard(parent: Matcher<View>) : KRecyclerItem<SavedCard>(parent) {
         val cardNumber: KTextView = KTextView(parent) { withId(R.id.cardNumber) }

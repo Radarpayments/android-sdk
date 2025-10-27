@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 import net.payrdr.mobile.payment.sdk.form.AdditionalFieldsHelper
 import net.payrdr.mobile.payment.sdk.form.Constants
 import net.payrdr.mobile.payment.sdk.form.R
+import net.payrdr.mobile.payment.sdk.form.SDKCanceledByUserException
 import net.payrdr.mobile.payment.sdk.form.SDKForms
 import net.payrdr.mobile.payment.sdk.form.model.AdditionalField
 import net.payrdr.mobile.payment.sdk.form.model.Card
@@ -95,6 +96,10 @@ class CardSelectedActivity : BaseActivity() {
         doneButton.setOnClickListener {
             onDone()
         }
+    }
+
+    override fun onBackPressed() {
+        finishWithError(SDKCanceledByUserException())
     }
 
     private fun configureAdditionalFields() {

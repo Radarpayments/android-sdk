@@ -2,6 +2,7 @@ package net.payrdr.mobile.payment.sdk.screen
 
 import com.kaspersky.kaspresso.screens.KScreen
 import io.github.kakaocup.kakao.edit.KEditText
+import io.github.kakaocup.kakao.image.KImageView
 import io.github.kakaocup.kakao.text.KButton
 import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.form.ui.CardSelectedActivity
@@ -19,4 +20,6 @@ object SelectedCardScreen : KScreen<SelectedCardScreen>() {
     val emailInput = KEditText { withId(R.id.emailInput) }
 
     val doneButton = KButton { withId(R.id.doneButton) }
+
+    val backButtonArrow = KImageView {withId(R.id.arrow_back)}
 }
