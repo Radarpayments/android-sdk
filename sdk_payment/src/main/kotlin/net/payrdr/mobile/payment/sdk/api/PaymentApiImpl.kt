@@ -9,13 +9,13 @@ import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormResponse
 import net.payrdr.mobile.payment.sdk.api.entity.SessionStatusResponse
 import net.payrdr.mobile.payment.sdk.api.entity.UnbindCardResponse
 import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
-import net.payrdr.mobile.payment.sdk.form.utils.executeGet
-import net.payrdr.mobile.payment.sdk.form.utils.executePostJson
-import net.payrdr.mobile.payment.sdk.form.utils.executePostParams
-import net.payrdr.mobile.payment.sdk.form.utils.responseBodyToJsonObject
 import net.payrdr.mobile.payment.sdk.payment.model.GooglePayProcessFormRequest
 import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
+import net.payrdr.mobile.payment.sdk.utils.executeGet
+import net.payrdr.mobile.payment.sdk.utils.executePostJson
+import net.payrdr.mobile.payment.sdk.utils.executePostParams
 import net.payrdr.mobile.payment.sdk.utils.mapToJsonString
+import net.payrdr.mobile.payment.sdk.utils.responseBodyToJsonObject
 import java.net.URL
 
 /**

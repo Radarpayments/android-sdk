@@ -4,10 +4,10 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Until
 import com.kaspersky.kaspresso.annotations.ScreenShooterTest
 import io.kotest.matchers.shouldBe
+import net.payrdr.mobile.payment.sdk.SDKCanceledByUserException
 import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.core.BaseTestCase
 import net.payrdr.mobile.payment.sdk.data.TestCardHelper.cardSuccessFrictionless3DS2
-import net.payrdr.mobile.payment.sdk.form.SDKCanceledByUserException
 import net.payrdr.mobile.payment.sdk.payment.model.CheckoutConfig
 import net.payrdr.mobile.payment.sdk.screen.BottomSheetScreen
 import net.payrdr.mobile.payment.sdk.screen.CardListScreen

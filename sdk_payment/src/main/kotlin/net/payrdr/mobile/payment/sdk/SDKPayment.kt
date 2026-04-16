@@ -5,10 +5,7 @@ import android.content.Intent
 import androidx.fragment.app.Fragment
 import net.payrdr.mobile.payment.sdk.Constants.INTENT_EXTRA_RESULT
 import net.payrdr.mobile.payment.sdk.Constants.REQUEST_CODE_PAYMENT
-import net.payrdr.mobile.payment.sdk.form.SDKException
-import net.payrdr.mobile.payment.sdk.form.SDKForms
-import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
-import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
+import net.payrdr.mobile.payment.sdk.component.impl.RemoteKeyProvider
 import net.payrdr.mobile.payment.sdk.logs.Logger
 import net.payrdr.mobile.payment.sdk.payment.PaymentActivity
 import net.payrdr.mobile.payment.sdk.payment.model.CheckoutConfig
@@ -17,7 +14,6 @@ import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 import net.payrdr.mobile.payment.sdk.utils.SessionIdConverter
 import net.payrdr.mobile.payment.sdk.core.BuildConfig as BuildConfigCore
-import net.payrdr.mobile.payment.sdk.form.BuildConfig as BuildConfigForms
 
 /**
  * The main class for working with the functionality of the payment library from a mobile application.
@@ -202,7 +198,6 @@ object SDKPayment {
 
     fun getSDKVersion(): String {
         LogDebug.logIfDebug("SDKPayment version is: ${BuildConfig.SDK_PAYMENT_VERSION_NUMBER}")
-        LogDebug.logIfDebug("SDKForms version is: ${BuildConfigForms.SDK_FORMS_VERSION_NUMBER}")
         LogDebug.logIfDebug("SDKCore version is: ${BuildConfigCore.SDK_CORE_VERSION_NUMBER}")
         return BuildConfig.SDK_PAYMENT_VERSION_NUMBER
     }

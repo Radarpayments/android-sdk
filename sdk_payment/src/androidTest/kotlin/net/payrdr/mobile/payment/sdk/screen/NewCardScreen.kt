@@ -6,7 +6,7 @@ import io.github.kakaocup.kakao.edit.KEditText
 import io.github.kakaocup.kakao.image.KImageView
 import io.github.kakaocup.kakao.text.KButton
 import net.payrdr.mobile.payment.sdk.R
-import net.payrdr.mobile.payment.sdk.form.ui.CardNewActivity
+import net.payrdr.mobile.payment.sdk.ui.CardNewActivity
 
 object NewCardScreen : KScreen<NewCardScreen>() {
     override val layoutId: Int?

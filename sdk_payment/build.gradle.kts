@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("com.android.library")
     id("io.qameta.allure")
@@ -60,6 +62,7 @@ android {
         exclude("META-INF/licenses/**")
         exclude("META-INF/AL2.0")
         exclude("META-INF/LGPL2.1")
+        exclude("META-INF/sdk_forms_debug.kotlin_module")
     }
 
     testOptions {
@@ -80,7 +83,6 @@ allure {
 }
 
 dependencies {
-    implementation(project(":sdk_forms"))
     implementation(project(":sdk_core"))
     implementation(project(":sdk_logs"))
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
@@ -99,7 +101,11 @@ dependencies {
     implementation(Libs.kotlinx_coroutines_android)
     implementation(Libs.appcompat)
     implementation(Libs.androidx_constraintlayout)
+    implementation(Libs.android_material)
     implementation(Libs.android_play_services_wallet)
+    implementation(Libs.com_caverock_androidsvg)
+    implementation(Libs.com_github_devnied_emvnfccard)
+    implementation(group = "", name = "card.io-5.5.1-OS1", ext = "aar")
 
     testImplementation(TestLibs.junit)
     testImplementation(TestLibs.io_kotest_runner_junit)
@@ -120,4 +126,17 @@ dependencies {
     androidTestImplementation(TestLibs.io_mockk_android)
     androidTestImplementation(TestLibs.com_squareup_mockwebserver)
     androidTestImplementation(TestLibs.com_squareup_okhttp_tls)
+}
+
+tasks {
+    withType<KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs = listOf(
+                "-Xjsr305=strict",
+                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi"
+            )
+            jvmTarget = "1.8"
+        }
+    }
 }

@@ -18,8 +18,8 @@ import androidx.appcompat.app.AppCompatActivity
 import net.payrdr.mobile.payment.sdk.Constants
 import net.payrdr.mobile.payment.sdk.LogDebug
 import net.payrdr.mobile.payment.sdk.R
+import net.payrdr.mobile.payment.sdk.SDKException
 import net.payrdr.mobile.payment.sdk.SDKPayment
-import net.payrdr.mobile.payment.sdk.form.SDKException
 import net.payrdr.mobile.payment.sdk.logs.Logger
 import net.payrdr.mobile.payment.sdk.logs.Source
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult

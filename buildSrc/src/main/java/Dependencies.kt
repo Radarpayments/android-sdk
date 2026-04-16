@@ -97,6 +97,5 @@ object BuildVersionsAndroid {
 
 object SDKBuildVersions {
     const val sdkPaymentVersion = "local-dev-payment"
-    const val sdkFormsVersion = "local-dev-forms"
     const val sdkCoreVersion = "local-dev-core"
 }

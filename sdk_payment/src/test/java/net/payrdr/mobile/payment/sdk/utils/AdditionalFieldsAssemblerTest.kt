@@ -6,7 +6,7 @@ import net.payrdr.mobile.payment.sdk.api.entity.BillingPayerData
 import net.payrdr.mobile.payment.sdk.api.entity.CustomerDetails
 import net.payrdr.mobile.payment.sdk.api.entity.FieldParams
 import net.payrdr.mobile.payment.sdk.api.entity.OrderPayerData
-import net.payrdr.mobile.payment.sdk.form.model.FilledAdditionalPayerParams
+import net.payrdr.mobile.payment.sdk.model.FilledAdditionalPayerParams
 import org.junit.Assert.assertThrows
 import org.junit.Test
 

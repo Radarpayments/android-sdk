@@ -9,7 +9,7 @@ import io.github.kakaocup.kakao.recycler.KRecyclerView
 import io.github.kakaocup.kakao.text.KButton
 import io.github.kakaocup.kakao.text.KTextView
 import net.payrdr.mobile.payment.sdk.R
-import net.payrdr.mobile.payment.sdk.form.ui.PaymentBottomSheetFragment
+import net.payrdr.mobile.payment.sdk.ui.PaymentBottomSheetFragment
 import org.hamcrest.Matcher
 
 object BottomSheetScreen : KScreen<BottomSheetScreen>() {

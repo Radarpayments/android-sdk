@@ -20,7 +20,7 @@ import net.payrdr.mobile.payment.sdk.api.entity.SessionStatusResponse
 import net.payrdr.mobile.payment.sdk.exceptions.SDKAlreadyPaymentException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKDeclinedException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKNotConfigureException
-import net.payrdr.mobile.payment.sdk.form.model.FilledAdditionalPayerParams
+import net.payrdr.mobile.payment.sdk.model.FilledAdditionalPayerParams
 import net.payrdr.mobile.payment.sdk.payment.model.GooglePayProcessFormRequest
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentApiVersion
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult

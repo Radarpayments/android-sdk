@@ -36,7 +36,7 @@ allprojects {
         flatDir {
             dirs("libs")
         }
-        flatDir { dirs("$rootDir/sdk_forms/libs") }
+        flatDir { dirs("$rootDir/sdk_payment/libs") }
     }
 }
 

@@ -1,7 +1,7 @@
 package net.payrdr.mobile.payment.sdk.testUtils.junit
 
-import net.payrdr.mobile.payment.sdk.form.model.Theme
-import net.payrdr.mobile.payment.sdk.form.ui.helper.Locales
+import net.payrdr.mobile.payment.sdk.model.Theme
+import net.payrdr.mobile.payment.sdk.ui.helper.Locales
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement

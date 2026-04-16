@@ -3,9 +3,9 @@
 package net.payrdr.mobile.payment.sample.kotlin
 
 import android.app.Application
-import net.payrdr.mobile.payment.sdk.form.SDKForms
-import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
-import net.payrdr.mobile.payment.sdk.form.component.impl.SSLContextConfig
+import net.payrdr.mobile.payment.sdk.SDKForms
+import net.payrdr.mobile.payment.sdk.SDKFormsConfigBuilder
+import net.payrdr.mobile.payment.sdk.component.impl.SSLContextConfig
 
 @Suppress("UndocumentedPublicClass")
 class MarketApplication : Application() {

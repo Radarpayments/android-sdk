@@ -32,12 +32,10 @@ jobs:
           path: |
             sdk_logs/build/outputs/aar/sdk_logs-release.aar
             sdk_core/build/outputs/aar/sdk_core-release.aar
-            sdk_forms/build/outputs/aar/sdk_forms-release.aar
             sdk_payment/build/outputs/aar/sdk_payment-release.aar
-            app_java_ui/build/outputs/apk/debug/*.apk
             app_kotlin_ui/build/outputs/apk/debug/*.apk
             app_kotlin_core/build/outputs/apk/debug/*.apk
-            sdk_forms/libs/card.io-5.5.1-OS1.aar
+            sdk_payment/libs/card.io-5.5.1-OS1.aar
           retention-days: 1
 
   testEndToEnd:
@@ -67,7 +65,6 @@ jobs:
           disable-animations: true
           profile: Nexus 6
           script: ./gradlew :sdk_core:connectedAndroidTest
-            ./gradlew :sdk_forms:connectedAndroidTest
             ./gradlew :sdk_payment:connectedAndroidTest
             ./script_allure_results_pack.sh
 
@@ -135,7 +132,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./sdk_forms/libs/card.io-5.5.1-OS1.aar
+          asset_path: ./sdk_payment/libs/card.io-5.5.1-OS1.aar
           asset_name: card.io-5.5.1-OS1.aar
           asset_content_type: application/octet-stream
 
@@ -149,16 +146,6 @@ jobs:
           asset_name: sdk_core-release.aar
           asset_content_type: application/octet-stream
 
-      - name: Upload sdk_forms arr artifacts
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./sdk_forms/build/outputs/aar/sdk_forms-release.aar
-          asset_name: sdk_forms-release.aar
-          asset_content_type: application/octet-stream
-
       - name: Upload sdk_payment arr artifacts
         uses: actions/upload-release-asset@v1
         env:
@@ -167,16 +154,6 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./sdk_payment/build/outputs/aar/sdk_payment-release.aar
           asset_name: sdk_payment-release.aar
-          asset_content_type: application/octet-stream
-
-      - name: Upload app_java_ui-debug apk artifacts
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.SECRET_FOR_3DS2_SDK }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./app_java_ui/build/outputs/apk/debug/app_java_ui-debug.apk
-          asset_name: app_java_ui-debug.apk
           asset_content_type: application/octet-stream
 
       - name: Upload app_kotlin_core-debug apk artifacts

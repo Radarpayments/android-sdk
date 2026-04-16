@@ -22,5 +22,4 @@ echo "commonVersion:$commonVersion"
 versionConfig="buildSrc/src/main/java/Dependencies.kt"
 
 sed -i "" "s+sdkPaymentVersion = \".*\"+sdkPaymentVersion = \"$commonVersion\"+g;
-  s+sdkFormsVersion = \".*\"+sdkFormsVersion = \"$commonVersion\"+g;
   s+sdkCoreVersion = \".*\"+sdkCoreVersion = \"$commonVersion\"+g;" $versionConfig

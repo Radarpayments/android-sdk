@@ -1,0 +1,13 @@
+package net.payrdr.mobile.payment.sdk.ui.widget
+
+import android.content.Context
+import android.util.AttributeSet
+import com.google.android.material.textfield.TextInputLayout
+
+/**
+ * Base component for implementing markup for input fields.
+ */
+open class BaseTextInputLayout @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+) : TextInputLayout(context, attrs)
