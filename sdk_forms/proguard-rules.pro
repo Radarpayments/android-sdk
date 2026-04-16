@@ -15,6 +15,3 @@
 -keepclassmembers class net.payrdr.mobile.payment.sample.kotlin.* {
     *** Companion;
 }
--keepclasseswithmembers class net.payrdr.mobile.payment.sample.kotlin.threeds.* {
-    kotlinx.serialization.KSerializer serializer(...);
-}

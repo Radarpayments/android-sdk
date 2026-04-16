@@ -37,7 +37,6 @@ fun HttpURLConnection.responseBodyToJsonObject(): JSONObject {
     }
 }
 
-
 /**
  * Executing a GET request on a URL instance.
  *

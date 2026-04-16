@@ -164,8 +164,10 @@ internal open class UIDelegate(private val activity: AppCompatActivity) {
             // API 30
             activity.window.setDecorFitsSystemWindows(false)
         } else {
-            val decorFitsFlags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+            val decorFitsFlags = (
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                )
             val decorView: View = activity.window.decorView
             val sysUiVis = decorView.systemUiVisibility
             decorView.systemUiVisibility = sysUiVis or decorFitsFlags
@@ -187,7 +189,7 @@ internal open class UIDelegate(private val activity: AppCompatActivity) {
                     val c = activity.window.insetsController
                         ?: activity.window.decorView.windowInsetsController
                     val mask = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
-                            WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+                        WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
                     if (isLightBars) c?.setSystemBarsAppearance(mask, mask)
                     else c?.setSystemBarsAppearance(0, mask)
                 }
@@ -199,10 +201,10 @@ internal open class UIDelegate(private val activity: AppCompatActivity) {
                 decor.post {
                     val flags = if (isLightBars) {
                         decor.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or
-                                View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                            View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
                     } else {
                         decor.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv() and
-                                View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
+                            View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
                     }
                     decor.systemUiVisibility = flags
                 }

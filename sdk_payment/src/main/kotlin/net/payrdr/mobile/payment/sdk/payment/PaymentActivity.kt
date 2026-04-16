@@ -96,30 +96,23 @@ class PaymentActivity : AppCompatActivity() {
             CardSaveOptions.HIDE
         }
 
+        // Example of the label field in [BindingItem]: "654654***3843 12/24".
         private fun List<BindingItem>.toCards(): Set<Card> = map { it.toCard() }.toSet()
 
-        /*
-            Example of the label filed in [BindingItem]: "654654***3843 12/24".
-            TODO replace with two separated fields month and year.
-        */
         @Suppress("TooGenericExceptionCaught")
         private fun BindingItem.toCard(): Card = try {
-            val label = label.split(" ")
-            val expiryDate = label[1].split("/")
+            val parts = label.split(" ")
+            val expiryParts = parts[1].split("/")
             Card(
-                pan = label[0],
+                pan = parts[0],
                 bindingId = id,
                 expiryDate = ExpiryDate(
-                    expiryDate[0].toInt(),
-                    expiryDate[1].toInt()
+                    expiryParts[0].toInt(),
+                    expiryParts[1].toInt()
                 )
             )
         } catch (e: Exception) {
-            Card(
-                pan = label,
-                bindingId = id,
-                expiryDate = null
-            )
+            Card(pan = label, bindingId = id, expiryDate = null)
         }
     }
 
@@ -149,7 +142,6 @@ class PaymentActivity : AppCompatActivity() {
         }
 
         override fun getPaymentConfig() = sdkPaymentConfig
-
     }
 
     private val gPayDelegate = object : GPayDelegate {

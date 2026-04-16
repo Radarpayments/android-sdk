@@ -6,8 +6,8 @@ import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormGPayResponse
 import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormResponse
 import net.payrdr.mobile.payment.sdk.api.entity.SessionStatusResponse
 import net.payrdr.mobile.payment.sdk.api.entity.UnbindCardResponse
-import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
 import net.payrdr.mobile.payment.sdk.payment.model.GooglePayProcessFormRequest
+import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
 
 /**
  * Interface for carrying out a full payment cycle.

@@ -25,8 +25,7 @@ import kotlinx.android.synthetic.main.activity_main.cardListNotRequiredCVCButton
 import kotlinx.android.synthetic.main.activity_main.cardListRequiredCVCButton
 import kotlinx.android.synthetic.main.activity_main.cardNewButton
 import kotlinx.android.synthetic.main.activity_main.cardNfcOffButton
-import kotlinx.android.synthetic.main.activity_main.challengeFlowButton
-import kotlinx.android.synthetic.main.activity_main.challengeFlowManualButton
+
 import kotlinx.android.synthetic.main.activity_main.countryCodeInput
 import kotlinx.android.synthetic.main.activity_main.currencyCodeInput
 import kotlinx.android.synthetic.main.activity_main.darkThemeButton
@@ -51,8 +50,7 @@ import net.payrdr.mobile.payment.sample.kotlin.helpers.copyToClipboard
 import net.payrdr.mobile.payment.sample.kotlin.helpers.log
 import net.payrdr.mobile.payment.sample.kotlin.payment.PaymentFormActivity
 import net.payrdr.mobile.payment.sample.kotlin.payment.PaymentFormActivityWeb
-import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSActivity
-import net.payrdr.mobile.payment.sample.kotlin.threeds.ThreeDSManualActivity
+
 import net.payrdr.mobile.payment.sdk.core.model.ExpiryDate
 import net.payrdr.mobile.payment.sdk.form.GooglePayConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.PaymentConfigBuilder
@@ -210,8 +208,6 @@ class MainActivity : AppCompatActivity() {
         localeFrButton.setOnClickListener { executeLocaleCheckout(french()) }
         localeEsButton.setOnClickListener { executeLocaleCheckout(spanish()) }
         localeUkButton.setOnClickListener { executeLocaleCheckout(ukrainian()) }
-        challengeFlowButton.setOnClickListener { executeThreeDSChallengeFlow() }
-        challengeFlowManualButton.setOnClickListener { executeThreeDSChallengeFlowManual() }
         sdkButton.setOnClickListener { executePaymentCycleSdk() }
         sdkButtonWeb.setOnClickListener { executePaymentCycleSdkWeb() }
 
@@ -246,13 +242,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(this, PaymentFormActivityWeb::class.java))
     }
 
-    private fun executeThreeDSChallengeFlow() {
-        startActivity(Intent(this, ThreeDSActivity::class.java))
-    }
-
-    private fun executeThreeDSChallengeFlowManual() {
-        startActivity(Intent(this, ThreeDSManualActivity::class.java))
-    }
 
     private fun showGPayNotAvailableMessage() {
         googlePayArea.visibility = GONE

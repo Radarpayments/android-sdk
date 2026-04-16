@@ -73,7 +73,6 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
     locales = "en",
 ) {
 
-
     @get:Rule
     val runtimePermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
         Manifest.permission.WRITE_EXTERNAL_STORAGE,

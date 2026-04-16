@@ -85,6 +85,7 @@ object TestLibs {
     const val kaspresso = "com.kaspersky.android-components:kaspresso:${Versions.kaspresso}"
     const val kaspresso_allure_support =
         "com.kaspersky.android-components:kaspresso-allure-support:${Versions.kaspresso}"
+    const val org_json = "org.json:json:20180813"
 }
 
 object BuildVersionsAndroid {
@@ -98,5 +99,4 @@ object SDKBuildVersions {
     const val sdkPaymentVersion = "local-dev-payment"
     const val sdkFormsVersion = "local-dev-forms"
     const val sdkCoreVersion = "local-dev-core"
-    const val sdkThreeDSVersion = "local-dev-threeds"
 }

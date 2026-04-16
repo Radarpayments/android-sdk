@@ -9,7 +9,7 @@ import net.payrdr.mobile.payment.sdk.core.validation.rules.StringRequiredRule
  * Phone number validator.
  * @param context context for getting string resources.
  */
-class PhoneNumberValidator(context: Context):BaseValidator<String>() {
+class PhoneNumberValidator(context: Context) : BaseValidator<String>() {
 
     init {
         addRules(

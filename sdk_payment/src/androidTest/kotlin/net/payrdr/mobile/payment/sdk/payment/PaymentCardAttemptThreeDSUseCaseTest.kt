@@ -400,6 +400,5 @@ class PaymentCardAttemptThreeDSUseCaseTest : BaseTestCase() {
                 }
             }
         }
-
     }
 }

@@ -1,7 +1,5 @@
 package net.payrdr.mobile.payment.sdk.form.component.impl
 
-import java.net.URL
-import javax.net.ssl.SSLContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.payrdr.mobile.payment.sdk.form.Constants
@@ -12,6 +10,8 @@ import net.payrdr.mobile.payment.sdk.form.utils.executePostJson
 import net.payrdr.mobile.payment.sdk.form.utils.responseBodyToJsonObject
 import net.payrdr.mobile.payment.sdk.logs.Logger
 import org.json.JSONObject
+import java.net.URL
+import javax.net.ssl.SSLContext
 
 /**
  * Implementation of the provider of obtaining information about the card from a remote server.

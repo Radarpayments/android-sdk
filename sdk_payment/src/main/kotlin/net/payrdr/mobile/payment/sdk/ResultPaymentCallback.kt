@@ -9,5 +9,4 @@ interface ResultPaymentCallback<PaymentResult> {
      * Called when the operation is successful, the result of which is [result].
      */
     fun onResult(result: PaymentResult)
-
 }

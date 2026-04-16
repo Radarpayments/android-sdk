@@ -308,9 +308,9 @@ class PaymentManagerImpl(
                         cause = null
                     )
                 )
-            } else if (paymentResult.data != null && !paymentResult.data.acsUrl.isNullOrBlank()
-                && !paymentResult.data.paReq.isNullOrBlank()
-                && !paymentResult.data.termUrl.isNullOrBlank()
+            } else if (paymentResult.data != null && !paymentResult.data.acsUrl.isNullOrBlank() &&
+                !paymentResult.data.paReq.isNullOrBlank() &&
+                !paymentResult.data.termUrl.isNullOrBlank()
             ) {
                 val webChallengeParam = WebChallengeParam(
                     mdOrder = paymentResult.data.orderId,

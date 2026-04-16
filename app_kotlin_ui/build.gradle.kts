@@ -67,11 +67,9 @@ dependencies {
     implementation(group = "", name = "sdk_forms-release", ext = "aar")
     implementation(group = "", name = "sdk_core-release", ext = "aar")
     implementation(group = "", name = "sdk_payment-release", ext = "aar")
-    implementation(group = "", name = "sdk_threeds-release", ext = "aar")
     implementation(group = "", name = "card.io-5.5.1-OS1", ext = "aar")
 
 //    implementation(project(":sdk_logs"))
-//    implementation(project(":sdk_threeds"))
 //    implementation(project(":sdk_core"))
 //    implementation(project(":sdk_forms"))
 //    implementation(project(":sdk_payment"))

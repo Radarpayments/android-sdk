@@ -26,5 +26,4 @@ enum class OrderStatus(val statusName: String) {
      * Order was declined.
      */
     DECLINED("DECLINED"),
-
 }

@@ -261,7 +261,7 @@ class PaymentConfigBuilder(private val order: String = "") {
      * @param registeredFrom setting the source.
      * @return the current constructor.
      */
-    fun registeredFrom(registeredFrom: MSDKRegisteredFrom) : PaymentConfigBuilder = apply {
+    fun registeredFrom(registeredFrom: MSDKRegisteredFrom): PaymentConfigBuilder = apply {
         Logger.info(
             this.javaClass,
             Constants.TAG,

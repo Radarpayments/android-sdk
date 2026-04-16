@@ -43,7 +43,7 @@ data class PaymentConfig internal constructor(
     val cardDeleteOptions: CardDeleteOptions,
     val registeredFrom: MSDKRegisteredFrom,
     val fieldsNeedToBeFilledForMastercard: List<AdditionalField>,
-    val fieldsNeedToBeFilledForVisa:List<AdditionalField>
+    val fieldsNeedToBeFilledForVisa: List<AdditionalField>
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
@@ -60,7 +60,7 @@ data class PaymentConfig internal constructor(
         source.readString(),
         1 == source.readInt(),
         CardDeleteOptions.values()[source.readInt()],
-        source.readString()?.let {  MSDKRegisteredFrom.valueOf(it) } ?: MSDKRegisteredFrom.MSDK_CORE,
+        source.readString()?.let { MSDKRegisteredFrom.valueOf(it) } ?: MSDKRegisteredFrom.MSDK_CORE,
         source.createTypedArrayList(AdditionalField.CREATOR) ?: emptyList(),
         source.createTypedArrayList(AdditionalField.CREATOR) ?: emptyList()
     )

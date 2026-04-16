@@ -21,5 +21,5 @@ object SelectedCardScreen : KScreen<SelectedCardScreen>() {
 
     val doneButton = KButton { withId(R.id.doneButton) }
 
-    val backButtonArrow = KImageView {withId(R.id.arrow_back)}
+    val backButtonArrow = KImageView { withId(R.id.arrow_back) }
 }

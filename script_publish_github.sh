@@ -58,8 +58,6 @@ rm -rf android-sdk || true
 stageEcho 'Getting a new version from the GitLab development repository'
 
 rm -r ./.git
-# You can not publish the code of the 3ds module
-rm -r ./sdk_threeds
 
 mkdir payrdr-android-sdk
 rsync -av --delete-after \

@@ -41,7 +41,7 @@ object SDKForms {
      * Handler for deleting bounded cards.
      */
     var deleteCardHandler: DeleteCardHandler? = null
-        get() = field ?: throw  IllegalStateException("Please set Delete Card Handler before unbind card.")
+        get() = field ?: throw IllegalStateException("Please set Delete Card Handler before unbind card.")
 
     /**
      * return SDKForms version

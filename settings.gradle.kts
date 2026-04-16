@@ -1,4 +1,3 @@
-include(":sdk_threeds")
 rootProject.buildFileName = "build.gradle.kts"
 rootProject.name = "PAYRDR Payment SDK"
 include(":sdk_payment")

@@ -21,5 +21,4 @@ interface ActivityDelegate {
      * @return configuration object.
      */
     fun getPaymentConfig(): SDKPaymentConfig
-
 }

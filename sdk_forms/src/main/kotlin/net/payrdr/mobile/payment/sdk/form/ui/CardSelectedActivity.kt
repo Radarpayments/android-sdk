@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View.VISIBLE
 import android.widget.Toast
 import com.caverock.androidsvg.SVG
+import kotlinx.android.synthetic.main.activity_card_new.linearLayout
 import kotlinx.android.synthetic.main.activity_card_selected.addressLine1Input
 import kotlinx.android.synthetic.main.activity_card_selected.addressLine1InputLayout
 import kotlinx.android.synthetic.main.activity_card_selected.addressLine2Input
@@ -29,7 +30,6 @@ import kotlinx.android.synthetic.main.activity_card_selected.postalCodeInputLayo
 import kotlinx.android.synthetic.main.activity_card_selected.stateInput
 import kotlinx.android.synthetic.main.activity_card_selected.stateInputLayout
 import kotlinx.android.synthetic.main.activity_card_selected.toolbar
-import kotlinx.android.synthetic.main.activity_card_new.linearLayout
 import kotlinx.android.synthetic.main.activity_card_selected.view.arrow_back
 import kotlinx.android.synthetic.main.activity_card_selected.view.title
 import kotlinx.coroutines.Dispatchers

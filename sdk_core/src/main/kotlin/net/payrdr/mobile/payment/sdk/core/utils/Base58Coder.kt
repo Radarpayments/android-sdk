@@ -52,5 +52,4 @@ object Base58Coder {
     fun isValidBase58String(input: String): Boolean {
         return input.all { ALPHABET.contains(it) }
     }
-
 }

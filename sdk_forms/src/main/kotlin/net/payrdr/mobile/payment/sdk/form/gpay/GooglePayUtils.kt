@@ -90,9 +90,12 @@ object GooglePayUtils {
                 put("allowedAuthMethods", allowedCardAuthMethods)
                 put("allowedCardNetworks", allowedCardNetworks)
                 put("billingAddressRequired", true)
-                put("billingAddressParameters", JSONObject().apply {
-                    put("format", "FULL")
-                })
+                put(
+                    "billingAddressParameters",
+                    JSONObject().apply {
+                        put("format", "FULL")
+                    }
+                )
             }
 
             put("type", "CARD")

@@ -14,5 +14,4 @@ interface PaymentManager {
      * @param versionApi version of current API for payment.
      */
     fun checkout(order: String, gPayClicked: Boolean, versionApi: PaymentApiVersion)
-
 }

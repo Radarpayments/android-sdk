@@ -29,7 +29,7 @@ class TestOrderHelper(
 
         val card = TestCardHelper.cardSuccessSSL
 
-        val pubKey = RemoteKeyProvider(url = "${baseUrl}/se/keys.do")
+        val pubKey = RemoteKeyProvider(url = "$baseUrl/se/keys.do")
             .provideKey().value
 
         val params = CardParams(
@@ -70,7 +70,7 @@ class TestOrderHelper(
         clientId: String? = null,
         testAdditionalPayerParams: TestAdditionalPayerParams = TestAdditionalPayerParams.DEFAULT
     ): String {
-        val url = "${baseUrl}/rest/register.do"
+        val url = "$baseUrl/rest/register.do"
         val body = mutableMapOf<String, String>()
         body["amount"] = amount.toString()
         body["userName"] = userName
@@ -128,5 +128,4 @@ class TestOrderHelper(
     suspend fun getSessionStatus(mdOrder: String): SessionStatusResponse {
         return paymentApi.getSessionStatus(mdOrder)
     }
-
 }

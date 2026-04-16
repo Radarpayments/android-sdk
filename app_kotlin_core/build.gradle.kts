@@ -53,6 +53,7 @@ android {
 
 dependencies {
     implementation(group = "", name = "sdk_core-release", ext = "aar")
+    implementation(group = "", name = "sdk_logs-release", ext = "aar")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.3.72")
     implementation("androidx.core:core-ktx:1.3.2")

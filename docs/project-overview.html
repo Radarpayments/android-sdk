@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAYRDR Payment SDK — Project Overview</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-secondary: #f6f8fa;
+    --bg-sidebar: #f0f2f5;
+    --text: #1f2328;
+    --text-secondary: #656d76;
+    --border: #d0d7de;
+    --accent: #0969da;
+    --accent-light: #ddf4ff;
+    --code-bg: #f6f8fa;
+    --card-bg: #ffffff;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    --highlight: #fff3bf;
+    --tag-blue: #ddf4ff;
+    --tag-green: #dafbe1;
+    --tag-purple: #fbefff;
+    --tag-orange: #fff1e5;
+    --tag-text-blue: #0969da;
+    --tag-text-green: #1a7f37;
+    --tag-text-purple: #8250df;
+    --tag-text-orange: #bc4c00;
+  }
+  [data-theme="dark"] {
+    --bg: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-sidebar: #161b22;
+    --text: #e6edf3;
+    --text-secondary: #8b949e;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent-light: #1f3a5f;
+    --code-bg: #161b22;
+    --card-bg: #161b22;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    --highlight: #4a3a00;
+    --tag-blue: #1f3a5f;
+    --tag-green: #1a3a2a;
+    --tag-purple: #2d1f3f;
+    --tag-orange: #3a2a1a;
+    --tag-text-blue: #58a6ff;
+    --tag-text-green: #3fb950;
+    --tag-text-purple: #bc8cff;
+    --tag-text-orange: #f0883e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    display: flex;
+    min-height: 100vh;
+  }
+  /* Sidebar */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 260px;
+    height: 100vh;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 20px 0;
+    z-index: 100;
+    transition: transform 0.3s;
+  }
+  .sidebar-header {
+    padding: 0 16px 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  .sidebar-header h2 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .sidebar-header .version {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .sidebar nav a {
+    display: block;
+    padding: 6px 16px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .sidebar nav a:hover {
+    color: var(--accent);
+    background: var(--accent-light);
+  }
+  .sidebar nav a.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    font-weight: 600;
+  }
+  .sidebar nav a.sub {
+    padding-left: 32px;
+    font-size: 12px;
+  }
+  .sidebar nav .nav-section {
+    padding: 12px 16px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+  }
+  /* Main content */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    max-width: 900px;
+    padding: 40px 48px;
+  }
+  /* Top bar */
+  .topbar {
+    position: fixed;
+    top: 0;
+    left: 260px;
+    right: 0;
+    height: 48px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 12px;
+    z-index: 90;
+  }
+  .topbar .search-box {
+    flex: 1;
+    max-width: 400px;
+    position: relative;
+  }
+  .topbar .search-box input {
+    width: 100%;
+    padding: 6px 12px 6px 32px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-secondary);
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+  }
+  .topbar .search-box input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light);
+  }
+  .topbar .search-box::before {
+    content: "\1F50D";
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    opacity: 0.5;
+  }
+  .topbar .search-count {
+    font-size: 12px;
+    color: var(--text-secondary);
+    min-width: 80px;
+  }
+  .theme-toggle {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--text);
+    line-height: 1;
+  }
+  .main-content { margin-top: 68px; }
+  /* Typography */
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .subtitle {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+  }
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 48px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 16px;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  p { margin-bottom: 12px; }
+  /* Tags */
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .tag-blue { background: var(--tag-blue); color: var(--tag-text-blue); }
+  .tag-green { background: var(--tag-green); color: var(--tag-text-green); }
+  .tag-purple { background: var(--tag-purple); color: var(--tag-text-purple); }
+  .tag-orange { background: var(--tag-orange); color: var(--tag-text-orange); }
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--card-shadow);
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title code {
+    font-size: 14px;
+    background: var(--code-bg);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  /* Collapsible */
+  details {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    background: var(--card-bg);
+  }
+  details[open] > summary { border-bottom: 1px solid var(--border); }
+  summary {
+    padding: 12px 16px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: "\25B6";
+    font-size: 10px;
+    transition: transform 0.2s;
+    color: var(--text-secondary);
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details .detail-content { padding: 16px; }
+  /* Code */
+  code {
+    font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    font-size: 13px;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+  th, td {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  th {
+    background: var(--bg-secondary);
+    font-weight: 600;
+  }
+  /* Diagram container */
+  .mermaid {
+    text-align: center;
+    margin: 20px 0;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid var(--border);
+  }
+  /* Highlight for search */
+  mark.search-highlight {
+    background: var(--highlight);
+    color: var(--text);
+    padding: 1px 2px;
+    border-radius: 2px;
+  }
+  /* File path */
+  .filepath {
+    font-family: 'SF Mono', Consolas, monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  /* Dependency arrow list */
+  .dep-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .dep-arrow {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  /* Mobile */
+  .menu-toggle {
+    display: none;
+    position: fixed;
+    top: 8px; left: 8px;
+    z-index: 200;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 18px;
+  }
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .main { margin-left: 0; padding: 20px; }
+    .topbar { left: 0; }
+    .menu-toggle { display: block; }
+  }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">&#9776;</button>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h2>PAYRDR Payment SDK</h2>
+    <div class="version">v3.0.13</div>
+  </div>
+  <nav>
+    <div class="nav-section">Overview</div>
+    <a href="#overview">Project Overview</a>
+    <a href="#architecture">Module Architecture</a>
+
+    <div class="nav-section">SDK Modules</div>
+    <a href="#sdk-core">sdk_core</a>
+    <a href="#sdk-forms">sdk_forms</a>
+    <a href="#sdk-payment">sdk_payment</a>
+    <a href="#sdk-logs">sdk_logs</a>
+
+    <div class="nav-section">Flows</div>
+    <a href="#flow-payment">Full Payment Flow</a>
+    <a href="#flow-token">Token Generation Flow</a>
+
+    <div class="nav-section">Apps & Config</div>
+    <a href="#sample-apps">Sample Applications</a>
+    <a href="#build-config">Build &amp; Configuration</a>
+  </nav>
+</aside>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search documentation..." oninput="performSearch(this.value)">
+  </div>
+  <span class="search-count" id="searchCount"></span>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle dark/light theme">&#9790;</button>
+</div>
+
+<!-- Main content -->
+<div class="main">
+<div class="main-content">
+
+<!-- Section: Overview -->
+<section id="overview">
+  <h1>PAYRDR Payment SDK</h1>
+  <p class="subtitle">Android SDK for secure payment processing with card tokenization, UI forms, Google Pay, and 3DS support.</p>
+  <div class="tags">
+    <span class="tag tag-blue">Kotlin</span>
+    <span class="tag tag-green">Android</span>
+    <span class="tag tag-purple">Gradle KTS</span>
+    <span class="tag tag-orange">minSdk 21</span>
+    <span class="tag tag-blue">targetSdk 35</span>
+  </div>
+
+  <div class="card">
+    <p>The PAYRDR Payment SDK is a modular Android library for integrating payment processing into mobile applications. It provides three levels of integration:</p>
+    <ul style="margin-left: 20px; margin-top: 8px;">
+      <li><strong>Full payment flow</strong> (<code>sdk_payment</code>) &mdash; complete checkout with UI, 3DS, and backend communication</li>
+      <li><strong>Form-based cryptogram</strong> (<code>sdk_forms</code>) &mdash; payment UI components with cryptogram generation</li>
+      <li><strong>Token generation</strong> (<code>sdk_core</code>) &mdash; low-level RSA encryption of card data</li>
+    </ul>
+  </div>
+
+  <h3>Project Structure</h3>
+  <pre><code>android-sdk/
+&#9500;&#9472;&#9472; sdk_core/          # Core cryptography &amp; token generation
+&#9500;&#9472;&#9472; sdk_forms/         # UI components &amp; payment forms
+&#9500;&#9472;&#9472; sdk_payment/       # Payment flow orchestration + 3DS
+&#9500;&#9472;&#9472; sdk_logs/          # Centralized logging
+&#9500;&#9472;&#9472; app_kotlin_ui/     # Sample: full payment flow (Kotlin)
+&#9500;&#9472;&#9472; app_kotlin_core/   # Sample: token generation (Kotlin)
+&#9500;&#9472;&#9472; app_java_ui/       # Sample: payment flow (Java)
+&#9500;&#9472;&#9472; buildSrc/          # Dependency management
+&#9500;&#9472;&#9472; config/            # Git hooks, quality configs
+&#9492;&#9472;&#9472; docs/              # Documentation</code></pre>
+</section>
+
+<!-- Section: Architecture -->
+<section id="architecture">
+  <h2>Module Architecture</h2>
+  <p>The SDK follows a layered architecture. Higher-level modules depend on lower-level ones. Each module can be used independently at its respective abstraction level.</p>
+
+  <div class="mermaid">
+graph TD
+    subgraph SDK Modules
+        payment["sdk_payment<br/><small>Payment orchestration + 3DS</small>"]
+        forms["sdk_forms<br/><small>UI components &amp; forms</small>"]
+        core["sdk_core<br/><small>Cryptography &amp; tokenization</small>"]
+        logs["sdk_logs<br/><small>Logging &amp; analytics</small>"]
+    end
+
+    subgraph Sample Apps
+        app_ui["app_kotlin_ui<br/><small>Full flow demo</small>"]
+        app_core["app_kotlin_core<br/><small>Core-only demo</small>"]
+        app_java["app_java_ui<br/><small>Java integration</small>"]
+    end
+
+    payment --> forms
+    payment --> core
+    payment --> logs
+    forms --> core
+    forms --> logs
+    core --> logs
+
+    app_ui --> payment
+    app_core --> core
+    app_java --> payment
+
+    style payment fill:#1f6feb,stroke:#1f6feb,color:#fff
+    style forms fill:#1f6feb,stroke:#1f6feb,color:#fff
+    style core fill:#1f6feb,stroke:#1f6feb,color:#fff
+    style logs fill:#1f6feb,stroke:#1f6feb,color:#fff
+    style app_ui fill:#238636,stroke:#238636,color:#fff
+    style app_core fill:#238636,stroke:#238636,color:#fff
+    style app_java fill:#238636,stroke:#238636,color:#fff
+  </div>
+
+  <h3>Dependency Hierarchy</h3>
+  <pre><code>sdk_payment
+&#9500;&#9472;&#9472; sdk_forms
+&#9474;   &#9500;&#9472;&#9472; sdk_core
+&#9474;   &#9474;   &#9492;&#9472;&#9472; sdk_logs
+&#9474;   &#9492;&#9472;&#9472; sdk_logs
+&#9500;&#9472;&#9472; sdk_core
+&#9474;   &#9492;&#9472;&#9472; sdk_logs
+&#9492;&#9472;&#9472; sdk_logs</code></pre>
+</section>
+
+<!-- Section: SDK Modules -->
+<section id="sdk-modules">
+  <h2>SDK Modules</h2>
+
+  <!-- sdk_core -->
+  <div id="sdk-core">
+    <details open>
+      <summary><code>sdk_core</code> &mdash; Cryptography &amp; Token Generation</summary>
+      <div class="detail-content">
+        <div class="filepath">sdk_core/src/main/kotlin/net/payrdr/mobile/payment/sdk/core/</div>
+        <p>The foundation module responsible for encrypting card data into payment tokens using RSA cryptography. It has no UI dependencies and can be used standalone for custom payment form implementations.</p>
+
+        <h4>Public API</h4>
+<pre><code>val sdkCore = SDKCore(context)
+
+val params = CardParams(
+    mdOrder = "order-12345",
+    pan = "4111111111111111",
+    cvc = "123",
+    expiryMMYY = "1225",
+    cardHolder = "JOHN DOE",
+    pubKey = "-----BEGIN PUBLIC KEY-----..."
+)
+
+val config = SDKCoreConfig(params)
+val result: TokenResult = sdkCore.generateWithConfig(config)
+
+// result.token  - encrypted payment token
+// result.errors - validation error map (if any)</code></pre>
+
+        <h4>Key Classes</h4>
+        <table>
+          <tr><th>Class</th><th>Purpose</th></tr>
+          <tr><td><code>SDKCore</code></td><td>Main entry point. Validates input, generates encrypted token.</td></tr>
+          <tr><td><code>CardParams</code></td><td>New card payment data (PAN, CVC, expiry, cardholder, order, public key).</td></tr>
+          <tr><td><code>BindingParams</code></td><td>Stored/bound card payment data (binding ID, CVC, public key, order).</td></tr>
+          <tr><td><code>SDKCoreConfig</code></td><td>Configuration wrapper with timestamp and source tracking.</td></tr>
+          <tr><td><code>TokenResult</code></td><td>Result object containing either encrypted token or validation errors.</td></tr>
+        </table>
+
+        <h4>Validation</h4>
+        <p>All card data is validated before encryption:</p>
+        <table>
+          <tr><th>Validator</th><th>What It Checks</th></tr>
+          <tr><td><code>CardNumberValidator</code></td><td>PAN format + Luhn algorithm check</td></tr>
+          <tr><td><code>CardExpiryValidator</code></td><td>Expiry date format and not expired</td></tr>
+          <tr><td><code>CardCodeValidator</code></td><td>CVC/CVV length (3-4 digits)</td></tr>
+          <tr><td><code>CardHolderValidator</code></td><td>Cardholder name format</td></tr>
+          <tr><td><code>OrderNumberValidator</code></td><td>Order ID format</td></tr>
+          <tr><td><code>PubKeyValidator</code></td><td>RSA public key validity</td></tr>
+        </table>
+
+        <h4>Cryptography</h4>
+        <p><code>RSACryptogramCipher</code> encrypts the payment string using the merchant's RSA public key. The payment string is assembled by <code>PaymentStringProcessor</code> from card data, a timestamp, and a UUID. The result is encoded with <code>Base58Coder</code>.</p>
+
+        <div class="dep-list">
+          <span class="dep-arrow">Depends on: sdk_logs</span>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- sdk_forms -->
+  <div id="sdk-forms">
+    <details>
+      <summary><code>sdk_forms</code> &mdash; UI Components &amp; Payment Forms</summary>
+      <div class="detail-content">
+        <div class="filepath">sdk_forms/src/main/kotlin/net/payrdr/mobile/payment/sdk/form/</div>
+        <p>Provides ready-to-use payment form UI: card entry screens, saved card selection, Google Pay integration, NFC/camera scanning, and multi-language support. Handles cryptogram generation internally using <code>sdk_core</code>.</p>
+
+        <h4>Public API</h4>
+<pre><code>// Initialize
+SDKForms.init(SDKConfig(keyProvider, cardInfoProvider))
+
+// Launch payment form
+val config = PaymentConfigBuilder(order, cards)
+    .cardSaveOptions(CardSaveOptions.YES_BY_DEFAULT)
+    .cameraScannerOptions(CameraScannerOptions.ENABLED)
+    .locale(Locales.EN)
+    .build()
+
+SDKForms.cryptogram(activity, config)
+
+// Handle result
+SDKForms.handleCryptogramResult(requestCode, data,
+    object : ResultCryptogramCallback&lt;CryptogramData&gt; {
+        override fun onSuccess(result: CryptogramData) {
+            // result.status, result.paymentInfo
+        }
+        override fun onFail(e: SDKException) { }
+    }
+)</code></pre>
+
+        <h4>Key Classes</h4>
+        <table>
+          <tr><th>Class</th><th>Purpose</th></tr>
+          <tr><td><code>SDKForms</code></td><td>Main entry point (singleton). Init, launch forms, handle results.</td></tr>
+          <tr><td><code>PaymentConfig</code></td><td>Full configuration: order, saved cards, options, locale, theme.</td></tr>
+          <tr><td><code>CryptogramData</code></td><td>Result with status, payment info, and deleted cards list.</td></tr>
+          <tr><td><code>PaymentInfo</code></td><td>Sealed class: <code>PaymentInfoNewCard</code>, <code>PaymentInfoBindCard</code>, <code>PaymentInfoGooglePay</code>.</td></tr>
+          <tr><td><code>Card</code></td><td>Saved card model (masked PAN, binding ID, expiry).</td></tr>
+        </table>
+
+        <h4>UI Activities</h4>
+        <table>
+          <tr><th>Activity</th><th>Purpose</th></tr>
+          <tr><td><code>CardNewActivity</code></td><td>New card entry form with validation</td></tr>
+          <tr><td><code>CardListActivity</code></td><td>Saved cards list for selection</td></tr>
+          <tr><td><code>CardSelectedActivity</code></td><td>Selected card confirmation (CVC entry)</td></tr>
+          <tr><td><code>GooglePayActivity</code></td><td>Google Pay checkout integration</td></tr>
+          <tr><td><code>PaymentBottomSheetFragment</code></td><td>Modal bottom sheet payment form</td></tr>
+        </table>
+
+        <h4>Custom Widgets</h4>
+        <p>Custom input fields with built-in formatting and validation:</p>
+        <p><code>BankCardView</code>, <code>CardNumberEditText</code>, <code>CardExpiryEditText</code>, <code>CardCodeEditText</code>, <code>CardHolderEditText</code>, <code>EmailEditText</code>, <code>PayerPhoneNumberEditText</code></p>
+
+        <h4>Providers</h4>
+        <table>
+          <tr><th>Provider</th><th>Purpose</th></tr>
+          <tr><td><code>KeyProvider</code></td><td>Abstract interface for obtaining RSA encryption key</td></tr>
+          <tr><td><code>RemoteKeyProvider</code></td><td>Fetches key from payment gateway via HTTP</td></tr>
+          <tr><td><code>CachedKeyProvider</code></td><td>Caching wrapper around any KeyProvider</td></tr>
+          <tr><td><code>CardInfoProvider</code></td><td>Abstract interface for card info lookup</td></tr>
+          <tr><td><code>RemoteCardInfoProvider</code></td><td>Fetches card info (brand, logo) from remote</td></tr>
+        </table>
+
+        <h4>Localization</h4>
+        <p>Supported languages: <code>EN</code>, <code>RU</code>, <code>UK</code>, <code>DE</code>, <code>ES</code>, <code>FR</code></p>
+
+        <div class="dep-list">
+          <span class="dep-arrow">Depends on: sdk_core</span>
+          <span class="dep-arrow">Depends on: sdk_logs</span>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- sdk_payment -->
+  <div id="sdk-payment">
+    <details>
+      <summary><code>sdk_payment</code> &mdash; Payment Flow Orchestration</summary>
+      <div class="detail-content">
+        <div class="filepath">sdk_payment/src/main/kotlin/net/payrdr/mobile/payment/sdk/</div>
+        <p>The highest-level module that orchestrates the entire payment process: fetches order status, displays appropriate UI via <code>sdk_forms</code>, generates cryptograms via <code>sdk_core</code>, communicates with the payment backend, and handles 3DS challenges.</p>
+
+        <h4>Public API</h4>
+<pre><code>// Initialize with backend URL
+SDKPayment.init(SDKPaymentConfig(
+    baseURL = "https://gateway.example.com",
+    sslContextConfig = sslContextConfig  // optional custom CA
+))
+
+// Start checkout by order ID
+SDKPayment.checkout(activity, CheckoutConfig.MdOrder("order-12345"))
+
+// Or by session ID
+SDKPayment.checkout(activity, CheckoutConfig.SessionId("session-abc"))
+
+// Handle result
+SDKPayment.handleCheckoutResult(requestCode, data,
+    object : ResultPaymentCallback&lt;PaymentResult&gt; {
+        override fun onResult(result: PaymentResult) {
+            // result.isSuccess, result.exception, result.sessionId
+        }
+    }
+)</code></pre>
+
+        <h4>Key Classes</h4>
+        <table>
+          <tr><th>Class</th><th>Purpose</th></tr>
+          <tr><td><code>SDKPayment</code></td><td>Main entry point (singleton). Init, checkout, handle results.</td></tr>
+          <tr><td><code>SDKPaymentConfig</code></td><td>Configuration with base URL and optional SSL config.</td></tr>
+          <tr><td><code>CheckoutConfig</code></td><td>Sealed class: <code>MdOrder(value)</code> or <code>SessionId(value)</code>.</td></tr>
+          <tr><td><code>PaymentResult</code></td><td>Final result (sessionId, isSuccess, exception).</td></tr>
+          <tr><td><code>PaymentActivity</code></td><td>Internal activity managing the full payment flow.</td></tr>
+        </table>
+
+        <h4>Backend API</h4>
+        <p><code>PaymentApi</code> interface (implemented by <code>PaymentApiImpl</code> using OkHttp):</p>
+        <table>
+          <tr><th>Method</th><th>Purpose</th></tr>
+          <tr><td><code>getSessionStatus(mdOrder)</code></td><td>Fetch order info, saved cards, required fields</td></tr>
+          <tr><td><code>processForm(request)</code></td><td>Submit card payment cryptogram</td></tr>
+          <tr><td><code>processBindingForm(request)</code></td><td>Submit saved card payment</td></tr>
+          <tr><td><code>gPayProcessForm(request)</code></td><td>Submit Google Pay token</td></tr>
+          <tr><td><code>finish3dsVer2PaymentAnonymous(transId)</code></td><td>Complete 3DS v2 authentication</td></tr>
+          <tr><td><code>getFinishedPaymentInfo(orderId)</code></td><td>Get final payment status</td></tr>
+          <tr><td><code>unbindCardAnonymous(bindingId, mdOrder)</code></td><td>Remove saved card</td></tr>
+        </table>
+
+        <h4>Flow Delegates</h4>
+        <table>
+          <tr><th>Delegate</th><th>Responsibility</th></tr>
+          <tr><td><code>CardFormDelegate</code></td><td>Card form UI flow management</td></tr>
+          <tr><td><code>GPayDelegate</code></td><td>Google Pay flow handling</td></tr>
+          <tr><td><code>ThreeDS2WebFormDelegate</code></td><td>3DS v2 web challenge handling</td></tr>
+          <tr><td><code>ActivityDelegate</code></td><td>Activity lifecycle coordination</td></tr>
+        </table>
+
+        <h4>Error Handling</h4>
+        <p>Specific exception types for different failure scenarios:</p>
+        <p><code>SDKPaymentApiException</code>, <code>SDKDeclinedException</code>, <code>SDKAlreadyPaymentException</code>, <code>SDKBadSessionIdException</code>, <code>SDKCryptogramException</code>, <code>SDKNotConfigureException</code>, <code>SDKSessionNotExistException</code>, <code>SDKTransactionException</code></p>
+
+        <div class="dep-list">
+          <span class="dep-arrow">Depends on: sdk_forms</span>
+          <span class="dep-arrow">Depends on: sdk_core</span>
+          <span class="dep-arrow">Depends on: sdk_logs</span>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- sdk_logs -->
+  <div id="sdk-logs">
+    <details>
+      <summary><code>sdk_logs</code> &mdash; Logging &amp; Analytics</summary>
+      <div class="detail-content">
+        <div class="filepath">sdk_logs/src/main/kotlin/net/payrdr/mobile/payment/sdk/logs/</div>
+        <p>Centralized logging module used by all other SDK modules. Provides a pluggable logging interface with built-in Sentry integration for error tracking and log upload.</p>
+
+        <h4>Public API</h4>
+<pre><code>// Add a custom log handler
+Logger.addLogInterface(myCustomLogger)
+
+// Log messages at different levels
+Logger.debug("ClassName.method", "TAG", "Debug message")
+Logger.info("ClassName.method", "TAG", "Info message")
+Logger.warning("ClassName.method", "TAG", "Warning", exception)
+Logger.error("ClassName.method", "TAG", "Error", exception)
+
+// Upload collected logs
+Logger.uploadLogs()</code></pre>
+
+        <h4>Key Classes</h4>
+        <table>
+          <tr><th>Class</th><th>Purpose</th></tr>
+          <tr><td><code>Logger</code></td><td>Singleton facade for all logging operations.</td></tr>
+          <tr><td><code>LogInterface</code></td><td>Interface for custom log implementations.</td></tr>
+          <tr><td><code>SentryLogger</code></td><td>Built-in Sentry integration for error tracking.</td></tr>
+          <tr><td><code>LogUploader</code></td><td>Abstract interface for log upload.</td></tr>
+          <tr><td><code>SentryLogUploader</code></td><td>Sentry-based log uploader implementation.</td></tr>
+        </table>
+
+        <p><strong>No dependencies</strong> &mdash; this is the base module.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- Section: Payment Flows -->
+<section id="payment-flows">
+  <h2>Payment Flows</h2>
+
+  <div id="flow-payment">
+    <h3>Full Payment Flow (SDKPayment)</h3>
+    <p>The complete checkout flow from app initialization to payment result. This is the recommended integration path.</p>
+
+    <div class="mermaid">
+sequenceDiagram
+    participant App
+    participant SDKPayment
+    participant PaymentApi
+    participant SDKForms
+    participant SDKCore
+    participant Backend
+    participant 3DS
+
+    App->>SDKPayment: init(SDKPaymentConfig)
+    App->>SDKPayment: checkout(activity, CheckoutConfig)
+    SDKPayment->>PaymentApi: getSessionStatus(mdOrder)
+    PaymentApi->>Backend: HTTP GET session status
+    Backend-->>PaymentApi: SessionStatusResponse
+    PaymentApi-->>SDKPayment: Order info + saved cards
+
+    alt Has saved cards
+        SDKPayment->>SDKForms: Show CardListActivity
+    else No saved cards
+        SDKPayment->>SDKForms: Show CardNewActivity
+    end
+
+    SDKForms-->>SDKPayment: User selects/enters card
+    SDKPayment->>SDKCore: Generate cryptogram
+    SDKCore->>SDKCore: Validate fields
+    SDKCore->>SDKCore: RSA encrypt card data
+    SDKCore-->>SDKPayment: TokenResult (encrypted token)
+
+    SDKPayment->>PaymentApi: processForm(cryptogram)
+    PaymentApi->>Backend: HTTP POST payment
+    Backend-->>PaymentApi: ProcessFormResponse
+
+    alt 3DS Required
+        SDKPayment->>3DS: Show 3DS challenge (WebView)
+        3DS-->>SDKPayment: Challenge result
+        SDKPayment->>PaymentApi: finish3dsVer2Payment
+    end
+
+    SDKPayment->>PaymentApi: getFinishedPaymentInfo
+    PaymentApi-->>SDKPayment: Final status
+    SDKPayment-->>App: PaymentResult (success/failure)
+    </div>
+  </div>
+
+  <div id="flow-token">
+    <h3>Token Generation Flow (SDKCore)</h3>
+    <p>Direct token generation for apps that provide their own UI. Minimal integration with no network calls.</p>
+
+    <div class="mermaid">
+sequenceDiagram
+    participant App
+    participant SDKCore
+    participant Validators
+    participant Cipher
+
+    App->>SDKCore: generateWithConfig(SDKCoreConfig)
+    SDKCore->>Validators: Validate all fields
+
+    alt Validation fails
+        Validators-->>SDKCore: Error map
+        SDKCore-->>App: TokenResult(errors)
+    else Validation passes
+        Validators-->>SDKCore: OK
+        SDKCore->>SDKCore: Build CardInfo
+        SDKCore->>SDKCore: PaymentStringProcessor.create()
+        SDKCore->>Cipher: RSACryptogramCipher.encode(paymentString, pubKey)
+        Cipher-->>SDKCore: Encrypted token (Base58)
+        SDKCore-->>App: TokenResult(token)
+    end
+    </div>
+  </div>
+</section>
+
+<!-- Section: Sample Applications -->
+<section id="sample-apps">
+  <h2>Sample Applications</h2>
+
+  <div class="card">
+    <div class="card-title"><code>app_kotlin_ui</code> &mdash; Full Payment Flow Demo</div>
+    <div class="filepath">app_kotlin_ui/src/main/kotlin/net/payrdr/mobile/payment/sample/kotlin/</div>
+    <p>Comprehensive demo showing the complete SDKPayment integration. Demonstrates:</p>
+    <ul style="margin-left: 20px; margin-top: 8px;">
+      <li>Full checkout flow with <code>SDKPayment.checkout()</code></li>
+      <li>Google Pay integration</li>
+      <li>3DS challenge handling (automatic and manual)</li>
+      <li>NFC and camera card scanning</li>
+      <li>Theme switching (light/dark)</li>
+      <li>Locale switching (EN, RU, UK, DE, ES, FR)</li>
+      <li>Card save/delete options</li>
+      <li>Custom SSL certificate configuration</li>
+    </ul>
+    <p style="margin-top: 8px;">Key files: <code>MainActivity</code>, <code>PaymentFormActivity</code>, <code>PaymentFormActivityWeb</code>, <code>MarketApplication</code></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><code>app_kotlin_core</code> &mdash; Token Generation Demo</div>
+    <div class="filepath">app_kotlin_core/src/main/kotlin/net/payrdr/mobile/payment/sample/kotlin/core/</div>
+    <p>Minimal demo using only <code>SDKCore</code> for direct token generation. Demonstrates:</p>
+    <ul style="margin-left: 20px; margin-top: 8px;">
+      <li>New card token generation with <code>CardParams</code></li>
+      <li>Bound card token generation with <code>BindingParams</code></li>
+      <li>Real-time field validation</li>
+    </ul>
+    <p style="margin-top: 8px;">Key file: <code>MainActivity</code></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><code>app_java_ui</code> &mdash; Java Integration Example</div>
+    <div class="filepath">app_java_ui/src/main/java/net/payrdr/mobile/payment/sample/java/</div>
+    <p>Demonstrates that the SDK can be consumed from Java code (not just Kotlin). Shows the same payment flow as <code>app_kotlin_ui</code> but written in Java.</p>
+    <p style="margin-top: 8px;">Key files: <code>MainActivity</code>, <code>MarketApplication</code></p>
+  </div>
+</section>
+
+<!-- Section: Build & Configuration -->
+<section id="build-config">
+  <h2>Build &amp; Configuration</h2>
+
+  <details open>
+    <summary>Dependency Versions</summary>
+    <div class="detail-content">
+      <table>
+        <tr><th>Dependency</th><th>Version</th><th>Purpose</th></tr>
+        <tr><td>Kotlin</td><td>1.7.10 (compiler) / 1.4.30 (stdlib)</td><td>Language</td></tr>
+        <tr><td>Kotlinx Coroutines</td><td>1.3.7</td><td>Async operations</td></tr>
+        <tr><td>AndroidX AppCompat</td><td>1.1.0</td><td>UI compatibility</td></tr>
+        <tr><td>Material Components</td><td>1.6.0</td><td>Material Design UI</td></tr>
+        <tr><td>OkHttp</td><td>4.7.2</td><td>HTTP client</td></tr>
+        <tr><td>GSON</td><td>2.8.5</td><td>JSON serialization</td></tr>
+        <tr><td>Card.io</td><td>5.5.1</td><td>Camera card scanning</td></tr>
+        <tr><td>EMVNFCCard</td><td>3.0.1</td><td>NFC card reading</td></tr>
+        <tr><td>Google Pay Services</td><td>19.4.0</td><td>Google Pay</td></tr>
+        <tr><td>AndroidSVG</td><td>1.4</td><td>Card logo rendering</td></tr>
+      </table>
+    </div>
+  </details>
+
+  <details>
+    <summary>Build Targets</summary>
+    <div class="detail-content">
+      <table>
+        <tr><th>Setting</th><th>Value</th></tr>
+        <tr><td>compileSdkVersion</td><td>33</td></tr>
+        <tr><td>minSdkVersion</td><td>21 (Android 5.0)</td></tr>
+        <tr><td>targetSdkVersion</td><td>35</td></tr>
+        <tr><td>Java Compatibility</td><td>1.8</td></tr>
+      </table>
+    </div>
+  </details>
+
+  <details>
+    <summary>Scripts</summary>
+    <div class="detail-content">
+      <table>
+        <tr><th>Script</th><th>Purpose</th></tr>
+        <tr><td><code>copy_sdk_lib_to_samples.sh</code></td><td>Copies built SDK AAR files to sample app dependencies</td></tr>
+        <tr><td><code>script_publish_github.sh</code></td><td>Publishes SDK modules to GitHub Packages</td></tr>
+        <tr><td><code>script_publish_github_release.sh</code></td><td>Creates a GitHub release with artifacts</td></tr>
+        <tr><td><code>script_update_modules_version.sh</code></td><td>Updates version numbers across all modules</td></tr>
+        <tr><td><code>script_check_ktlint.sh</code></td><td>Runs ktlint code style checks</td></tr>
+        <tr><td><code>script_check_detekt.sh</code></td><td>Runs detekt static analysis</td></tr>
+        <tr><td><code>script_pre_commit.sh</code></td><td>Git pre-commit hook runner</td></tr>
+        <tr><td><code>script_allure_results_pack.sh</code></td><td>Packages Allure test reports</td></tr>
+      </table>
+    </div>
+  </details>
+
+  <details>
+    <summary>Testing</summary>
+    <div class="detail-content">
+      <table>
+        <tr><th>Framework</th><th>Version</th><th>Purpose</th></tr>
+        <tr><td>JUnit</td><td>4.13</td><td>Unit test runner</td></tr>
+        <tr><td>MockK</td><td>1.13.2</td><td>Kotlin mocking</td></tr>
+        <tr><td>Kaspresso</td><td>1.5.2</td><td>UI automation (Espresso wrapper)</td></tr>
+        <tr><td>Espresso</td><td>3.2.0</td><td>Android UI testing</td></tr>
+        <tr><td>MockWebServer</td><td>(OkHttp)</td><td>API response mocking</td></tr>
+        <tr><td>Allure</td><td>2.4.0</td><td>Test reporting</td></tr>
+      </table>
+    </div>
+  </details>
+
+  <details>
+    <summary>ProGuard</summary>
+    <div class="detail-content">
+      <p>Two ProGuard configuration files:</p>
+      <ul style="margin-left: 20px; margin-top: 8px;">
+        <li><code>proguard-sdk-ui.pro</code> &mdash; Preserves Kotlin serialization annotations and sample app classes</li>
+        <li><code>proguard-sdk-three-ds.pro</code> &mdash; Protects 3DS2 library, GSON annotations, and crypto libraries (SpongyCastle, NimbusDS)</li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<div style="margin-top: 60px; padding: 20px 0; border-top: 1px solid var(--border); text-align: center; color: var(--text-secondary); font-size: 13px;">
+  PAYRDR Payment SDK Documentation &middot; Generated 2026-04-08
+</div>
+
+</div>
+</div>
+
+<script>
+// Mermaid init
+mermaid.initialize({
+  startOnLoad: true,
+  theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default',
+  securityLevel: 'loose',
+  flowchart: { useMaxWidth: true, htmlLabels: true },
+  sequence: { useMaxWidth: true, showSequenceNumbers: false }
+});
+
+// Theme toggle
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.getElementById('themeToggle').textContent = next === 'dark' ? '\u2600' : '\u263E';
+  // Re-render mermaid diagrams with new theme
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: next === 'dark' ? 'dark' : 'default',
+    securityLevel: 'loose'
+  });
+  document.querySelectorAll('.mermaid').forEach(el => {
+    const code = el.getAttribute('data-original') || el.textContent;
+    if (!el.getAttribute('data-original')) {
+      el.setAttribute('data-original', el.querySelector('svg') ? el.getAttribute('data-original') : code);
+    }
+  });
+  location.reload();
+}
+
+// Load saved theme
+(function() {
+  const saved = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  if (saved === 'dark') {
+    document.getElementById('themeToggle').textContent = '\u2600';
+  }
+})();
+
+// Sidebar active state on scroll
+const navLinks = document.querySelectorAll('.sidebar nav a[href^="#"]');
+const sections = {};
+navLinks.forEach(link => {
+  const id = link.getAttribute('href').slice(1);
+  const el = document.getElementById(id);
+  if (el) sections[id] = { el, link };
+});
+
+function updateActiveNav() {
+  let current = '';
+  const scrollY = window.scrollY + 100;
+  Object.entries(sections).forEach(([id, { el }]) => {
+    if (el.offsetTop <= scrollY) current = id;
+  });
+  navLinks.forEach(l => l.classList.remove('active'));
+  if (current && sections[current]) {
+    sections[current].link.classList.add('active');
+  }
+}
+window.addEventListener('scroll', updateActiveNav);
+updateActiveNav();
+
+// Search functionality
+let searchTimeout;
+function performSearch(query) {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => doSearch(query), 200);
+}
+
+function doSearch(query) {
+  // Remove old highlights
+  document.querySelectorAll('mark.search-highlight').forEach(m => {
+    const parent = m.parentNode;
+    parent.replaceChild(document.createTextNode(m.textContent), m);
+    parent.normalize();
+  });
+
+  const countEl = document.getElementById('searchCount');
+  if (!query || query.length < 2) {
+    countEl.textContent = '';
+    return;
+  }
+
+  const mainContent = document.querySelector('.main-content');
+  const walker = document.createTreeWalker(mainContent, NodeFilter.SHOW_TEXT, null);
+  const nodes = [];
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (node.parentElement.closest('script, style, .mermaid, pre')) continue;
+    if (node.textContent.toLowerCase().includes(query.toLowerCase())) {
+      nodes.push(node);
+    }
+  }
+
+  let count = 0;
+  nodes.forEach(node => {
+    const text = node.textContent;
+    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    if (!regex.test(text)) return;
+
+    const frag = document.createDocumentFragment();
+    let lastIdx = 0;
+    text.replace(regex, (match, p1, offset) => {
+      frag.appendChild(document.createTextNode(text.slice(lastIdx, offset)));
+      const mark = document.createElement('mark');
+      mark.className = 'search-highlight';
+      mark.textContent = match;
+      frag.appendChild(mark);
+      lastIdx = offset + match.length;
+      count++;
+    });
+    frag.appendChild(document.createTextNode(text.slice(lastIdx)));
+    node.parentNode.replaceChild(frag, node);
+  });
+
+  countEl.textContent = count > 0 ? count + ' match' + (count !== 1 ? 'es' : '') : 'No matches';
+
+  // Scroll to first match
+  const first = document.querySelector('mark.search-highlight');
+  if (first) {
+    // Open parent details if collapsed
+    let parent = first.closest('details');
+    while (parent) {
+      parent.open = true;
+      parent = parent.parentElement.closest('details');
+    }
+    first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+// Keyboard shortcut: Ctrl+K or Cmd+K to focus search
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  }
+});
+</script>
+
+</body>
+</html>

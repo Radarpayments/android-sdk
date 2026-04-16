@@ -48,6 +48,7 @@ import kotlinx.android.synthetic.main.activity_card_new.countryInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.doneButton
 import kotlinx.android.synthetic.main.activity_card_new.emailInput
 import kotlinx.android.synthetic.main.activity_card_new.emailInputLayout
+import kotlinx.android.synthetic.main.activity_card_new.linearLayout
 import kotlinx.android.synthetic.main.activity_card_new.phoneNumberInput
 import kotlinx.android.synthetic.main.activity_card_new.phoneNumberInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.postalCodeInput
@@ -57,7 +58,6 @@ import kotlinx.android.synthetic.main.activity_card_new.stateInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.switchBox
 import kotlinx.android.synthetic.main.activity_card_new.switchBoxText
 import kotlinx.android.synthetic.main.activity_card_new.toolbar
-import kotlinx.android.synthetic.main.activity_card_new.linearLayout
 import kotlinx.android.synthetic.main.activity_card_new.view.arrow_back
 import kotlinx.android.synthetic.main.activity_card_new.view.title
 import kotlinx.coroutines.Dispatchers
@@ -315,18 +315,18 @@ class CardNewActivity : BaseActivity() {
         }
         firstFieldCardEntered.observe(this) {
             newCardEntered.value = firstFieldCardEntered.value!!.isNotEmpty() &&
-                    secondFieldCardEntered.value!!.isNotEmpty() &&
-                    firthFieldCardEntered.value!!.isNotEmpty()
+                secondFieldCardEntered.value!!.isNotEmpty() &&
+                firthFieldCardEntered.value!!.isNotEmpty()
         }
         secondFieldCardEntered.observe(this) {
             newCardEntered.value = firstFieldCardEntered.value!!.isNotEmpty() &&
-                    secondFieldCardEntered.value!!.isNotEmpty() &&
-                    firthFieldCardEntered.value!!.isNotEmpty()
+                secondFieldCardEntered.value!!.isNotEmpty() &&
+                firthFieldCardEntered.value!!.isNotEmpty()
         }
         firthFieldCardEntered.observe(this) {
             newCardEntered.value = firstFieldCardEntered.value!!.isNotEmpty() &&
-                    secondFieldCardEntered.value!!.isNotEmpty() &&
-                    firthFieldCardEntered.value!!.isNotEmpty()
+                secondFieldCardEntered.value!!.isNotEmpty() &&
+                firthFieldCardEntered.value!!.isNotEmpty()
         }
 
         cardNumberInput afterTextChanged { number ->
@@ -418,7 +418,7 @@ class CardNewActivity : BaseActivity() {
         workScope.launch(Dispatchers.Main) {
             try {
                 val holder = if (cardHolderInput.text.toString()
-                        .isEmpty()
+                    .isEmpty()
                 ) DEFAULT_CARD_HOLDER else cardHolderInput.text.toString()
                 finishWithResult(
                     CryptogramData(

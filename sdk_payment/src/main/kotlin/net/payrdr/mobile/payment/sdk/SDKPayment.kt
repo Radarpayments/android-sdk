@@ -175,7 +175,7 @@ object SDKPayment {
                 this.javaClass,
                 Constants.TAG,
                 "handleCheckoutResult($data, $paymentCallback): Success " +
-                        "PaymentData(${paymentData.sessionId},${paymentData.isSuccess})",
+                    "PaymentData(${paymentData.sessionId},${paymentData.isSuccess})",
                 null
             )
             paymentCallback.onResult(paymentData)

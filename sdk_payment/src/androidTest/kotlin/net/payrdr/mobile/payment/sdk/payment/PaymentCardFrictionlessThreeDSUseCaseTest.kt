@@ -421,7 +421,6 @@ class PaymentCardFrictionlessThreeDSUseCaseTest : BaseTestCase() {
         }
     }
 
-
     @ScreenShooterTest
     @Test
     fun shouldSaveNewCardFrictionlessThreeDSNoUse3DS2SDK() {

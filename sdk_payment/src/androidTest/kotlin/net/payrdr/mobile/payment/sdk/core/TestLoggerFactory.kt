@@ -4,7 +4,6 @@ import android.util.Log
 import net.payrdr.mobile.payment.sdk.logs.LogInterface
 import net.payrdr.mobile.payment.sdk.logs.Source
 
-
 object TestLoggerFactory {
     fun createLogcatLogger(tagMsg: String): LogInterface {
         return object : LogInterface {

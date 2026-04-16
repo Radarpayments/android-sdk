@@ -16,7 +16,7 @@ import net.payrdr.mobile.payment.sdk.screen.fillOutFormAndSend
 import net.payrdr.mobile.payment.sdk.screen.fillOutWithEmailAndPhoneFieldsAndSend
 import org.junit.Test
 
-class PaymentCardSSLUseCaseTest: BaseTestCase() {
+class PaymentCardSSLUseCaseTest : BaseTestCase() {
 
     @ScreenShooterTest
     @Test

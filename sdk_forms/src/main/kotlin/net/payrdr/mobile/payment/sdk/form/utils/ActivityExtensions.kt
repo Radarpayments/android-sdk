@@ -57,7 +57,6 @@ fun Activity.finishWithError(exception: Exception) {
     finish()
 }
 
-
 /**
  * Stops the [Activity] by user cancellation payment.
  */

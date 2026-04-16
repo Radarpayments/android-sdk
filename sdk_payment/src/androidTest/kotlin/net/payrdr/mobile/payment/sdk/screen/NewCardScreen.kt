@@ -45,5 +45,4 @@ object NewCardScreen : KScreen<NewCardScreen>() {
     val addressLine2Input = KEditText { withId(R.id.addressLine2Input) }
 
     val addressLine3Input = KEditText { withId(R.id.addressLine3Input) }
-
 }

@@ -47,5 +47,4 @@ object BottomSheetScreen : KScreen<BottomSheetScreen>() {
         val cardNumber: KTextView = KTextView(parent) { withId(R.id.cardNumber) }
         val expiryDate: KTextView = KTextView(parent) { withId(R.id.expiryDate) }
     }
-
 }

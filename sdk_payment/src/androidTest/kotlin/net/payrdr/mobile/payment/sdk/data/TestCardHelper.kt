@@ -68,5 +68,4 @@ internal object TestCardHelper {
     internal fun getLabelForSavedBindingItem(testCard: TestCard): String {
         return testCard.pan.take(6) + "**" + testCard.pan.takeLast(4) + " " + testCard.expiry
     }
-
 }

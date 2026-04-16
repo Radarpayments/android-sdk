@@ -52,8 +52,8 @@ class PaymentBottomSheetFragmentTest : DocLocScreenshotTestCase(
                     .getInstance(instrumentation)
                     .executeShellCommand(
                         "appops set --uid " +
-                                "${InstrumentationRegistry.getInstrumentation().targetContext.packageName}" +
-                                " MANAGE_EXTERNAL_STORAGE allow"
+                            "${InstrumentationRegistry.getInstrumentation().targetContext.packageName}" +
+                            " MANAGE_EXTERNAL_STORAGE allow"
                     )
             }
         }

@@ -81,7 +81,6 @@ allure {
 
 dependencies {
     implementation(project(":sdk_forms"))
-    implementation(project(":sdk_threeds"))
     implementation(project(":sdk_core"))
     implementation(project(":sdk_logs"))
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
@@ -110,6 +109,7 @@ dependencies {
     testImplementation(TestLibs.io_mockk)
     testImplementation(TestLibs.kotlinx_coroutines_test)
     testImplementation(TestLibs.test_runner)
+    testImplementation(TestLibs.org_json)
 
     androidTestImplementation(TestLibs.io_kotest_assertion_core)
     androidTestImplementation(TestLibs.kotlinx_coroutines_test)

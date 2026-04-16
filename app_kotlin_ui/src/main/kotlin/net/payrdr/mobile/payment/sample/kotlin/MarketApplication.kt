@@ -3,6 +3,8 @@
 package net.payrdr.mobile.payment.sample.kotlin
 
 import android.app.Application
+import net.payrdr.mobile.payment.sdk.form.SDKForms
+import net.payrdr.mobile.payment.sdk.form.SDKFormsConfigBuilder
 import net.payrdr.mobile.payment.sdk.form.component.impl.SSLContextConfig
 
 @Suppress("UndocumentedPublicClass")
@@ -11,12 +13,11 @@ class MarketApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         //    1) Example without ssl context configuration for sdk_form module:
-        //
-        //    SDKForms.init(
-        //        SDKConfigBuilder()
-        //            .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do")
-        //            .build()
-        //    )
+        SDKForms.init(
+            SDKFormsConfigBuilder()
+                .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do", null)
+                .build()
+        )
 
         //    2) Example of configuration with custom sslContext for sdk_form module :
         //
