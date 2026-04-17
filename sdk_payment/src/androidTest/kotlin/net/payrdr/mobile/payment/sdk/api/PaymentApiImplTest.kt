@@ -139,7 +139,10 @@ class PaymentApiImplTest {
         val processForm = paymentApiImpl.processForm(cryptogramApiData)
 
         assertEquals(0, processForm.errorCode)
-        assertEquals(null, processForm.threeDSServerTransId)
+        assertEquals(null, processForm.acsUrl)
+        assertEquals(null, processForm.paReq)
+        assertEquals(null, processForm.termUrl)
+        assertEquals(null, processForm.threeDSMethodURL)
     }
 
     @Test
