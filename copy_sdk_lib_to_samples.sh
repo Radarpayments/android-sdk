@@ -1,11 +1,10 @@
 #!/bin/bash
 set -e
 
-./gradlew :sdk_logs:build
-./gradlew :sdk_core:build
-./gradlew :sdk_payment:build
+# Extra arguments are passed to Gradle, e.g. -Pandroid.aapt2FromMavenOverride=...
+./gradlew :sdk_logs:assembleRelease :sdk_core:assembleRelease :sdk_payment:assembleRelease "$@"
 
-mkdir -p app_kotlin_ui/libs && cp sdk_payment/libs/card.io-5.5.1-OS1.aar app_kotlin_ui/libs/
+mkdir -p app_kotlin_ui/libs && cp repo/io/github/radarpayments/card-io/5.5.1-OS1/card-io-5.5.1-OS1.aar app_kotlin_ui/libs/card.io-5.5.1-OS1.aar
 
 mkdir -p app_kotlin_core/libs/ && cp sdk_logs/build/outputs/aar/sdk_logs-release.aar app_kotlin_core/libs/
 mkdir -p app_kotlin_ui/libs/ && cp sdk_logs/build/outputs/aar/sdk_logs-release.aar app_kotlin_ui/libs/

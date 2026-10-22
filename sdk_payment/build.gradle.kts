@@ -104,7 +104,7 @@ dependencies {
     implementation(Libs.android_play_services_wallet)
     implementation(Libs.com_caverock_androidsvg)
     implementation(Libs.com_github_devnied_emvnfccard)
-    implementation(group = "", name = "card.io-5.5.1-OS1", ext = "aar")
+    implementation(Libs.card_io)
 
     testImplementation(TestLibs.junit)
     testImplementation(TestLibs.io_kotest_runner_junit)
@@ -139,3 +139,8 @@ tasks {
         }
     }
 }
+
+extra["pomArtifactId"] = "sdk-payment"
+extra["pomName"] = "PAYRDR SDK Payment"
+extra["pomDescription"] = "Payment SDK for the PAYRDR payment gateway: payment form, saved cards, Google Pay, 3-D Secure"
+apply(from = "$rootDir/gradle/publishing.gradle.kts")

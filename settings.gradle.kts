@@ -5,3 +5,5 @@ include(":app_kotlin_core")
 include(":sdk_core")
 include(":app_kotlin_ui")
 include(":sdk_logs")
+include(":card_io")
+

@@ -66,3 +66,8 @@ dependencies {
     implementation(Libs.com_squareup_okhttp)
     implementation(Libs.com_google_gson)
 }
+
+extra["pomArtifactId"] = "sdk-logs"
+extra["pomName"] = "PAYRDR SDK Logs"
+extra["pomDescription"] = "Logging used by the PAYRDR payment SDK"
+apply(from = "$rootDir/gradle/publishing.gradle.kts")

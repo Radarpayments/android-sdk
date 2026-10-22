@@ -110,3 +110,8 @@ dependencies {
     androidTestImplementation(TestLibs.io_mockk_android)
     androidTestImplementation(TestLibs.com_squareup_mockwebserver)
 }
+
+extra["pomArtifactId"] = "sdk-core"
+extra["pomName"] = "PAYRDR SDK Core"
+extra["pomDescription"] = "Card data validation and encryption (seToken) for the PAYRDR payment gateway"
+apply(from = "$rootDir/gradle/publishing.gradle.kts")
