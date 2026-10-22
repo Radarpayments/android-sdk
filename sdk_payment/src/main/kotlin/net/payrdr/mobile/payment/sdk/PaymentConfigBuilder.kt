@@ -20,7 +20,7 @@ import java.util.UUID
  * @param order identifier of the paid order.
  */
 @Suppress("TooManyFunctions")
-class PaymentConfigBuilder(private val order: String = "") {
+internal class PaymentConfigBuilder(private val order: String = "") {
     private var buttonText: String? = null
     private var cards: Set<Card> = emptySet()
     private var cardSaveOptions: CardSaveOptions = CardSaveOptions.HIDE
@@ -33,7 +33,7 @@ class PaymentConfigBuilder(private val order: String = "") {
     private var locale: Locale = Locale.getDefault()
     private var storedPaymentMethodCVCRequired: Boolean = true
     private var cardDeleteOptions: CardDeleteOptions = CardDeleteOptions.NO_DELETE
-    private var registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_FORMS
+    private var registeredFrom: MSDKRegisteredFrom = MSDKRegisteredFrom.MSDK_PAYMENT
     private var paramsNeedToBeFilledForMastercard: List<AdditionalField> = emptyList()
     private var paramsNeedToBeFilledForVisa: List<AdditionalField> = emptyList()
 
@@ -256,7 +256,7 @@ class PaymentConfigBuilder(private val order: String = "") {
     /**
      * Option to manage the source.
      *
-     * Optional, default MSDK_FORMS
+     * Optional, default MSDK_PAYMENT
      *
      * @param registeredFrom setting the source.
      * @return the current constructor.

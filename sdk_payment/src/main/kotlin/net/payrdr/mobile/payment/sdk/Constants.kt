@@ -19,6 +19,5 @@ object Constants {
     internal const val INTENT_EXTRA_TERM_URL = "termUrl"
     internal const val INTENT_EXTRA_PAREQ = "paReq"
     internal const val TAG = "SDK Payment"
-    internal const val FORMS_TAG = "SDK Forms"
     internal const val PAYMENT_API_VERSION = "paymentApiVersion"
 }

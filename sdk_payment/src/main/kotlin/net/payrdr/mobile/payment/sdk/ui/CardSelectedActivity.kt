@@ -15,11 +15,14 @@ import kotlinx.android.synthetic.main.activity_card_selected.addressLine2Input
 import kotlinx.android.synthetic.main.activity_card_selected.addressLine2InputLayout
 import kotlinx.android.synthetic.main.activity_card_selected.addressLine3Input
 import kotlinx.android.synthetic.main.activity_card_selected.addressLine3InputLayout
-import kotlinx.android.synthetic.main.activity_card_selected.bankCardView
 import kotlinx.android.synthetic.main.activity_card_selected.cardCodeInput
+import kotlinx.android.synthetic.main.activity_card_selected.cardExpiryInput
+import kotlinx.android.synthetic.main.activity_card_selected.cardNumberInput
 import kotlinx.android.synthetic.main.activity_card_selected.cardNumberInputLayout
 import kotlinx.android.synthetic.main.activity_card_selected.cityInput
 import kotlinx.android.synthetic.main.activity_card_selected.cityInputLayout
+import kotlinx.android.synthetic.main.activity_card_selected.countryInput
+import kotlinx.android.synthetic.main.activity_card_selected.countryInputLayout
 import kotlinx.android.synthetic.main.activity_card_selected.doneButton
 import kotlinx.android.synthetic.main.activity_card_selected.emailInput
 import kotlinx.android.synthetic.main.activity_card_selected.emailInputLayout
@@ -38,7 +41,6 @@ import net.payrdr.mobile.payment.sdk.AdditionalFieldsHelper
 import net.payrdr.mobile.payment.sdk.Constants
 import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.SDKCanceledByUserException
-import net.payrdr.mobile.payment.sdk.SDKForms
 import net.payrdr.mobile.payment.sdk.model.AdditionalField
 import net.payrdr.mobile.payment.sdk.model.Card
 import net.payrdr.mobile.payment.sdk.model.CryptogramData
@@ -48,12 +50,13 @@ import net.payrdr.mobile.payment.sdk.model.PaymentDataStatus
 import net.payrdr.mobile.payment.sdk.model.PaymentInfoBindCard
 import net.payrdr.mobile.payment.sdk.model.PaymentSystem
 import net.payrdr.mobile.payment.sdk.ui.helper.CardLogoAssetsResolver
-import net.payrdr.mobile.payment.sdk.ui.helper.CardResolver
 import net.payrdr.mobile.payment.sdk.ui.widget.BaseTextInputEditText
 import net.payrdr.mobile.payment.sdk.ui.widget.BaseTextInputLayout
 import net.payrdr.mobile.payment.sdk.utils.finishWithError
 import net.payrdr.mobile.payment.sdk.utils.finishWithResult
+import net.payrdr.mobile.payment.sdk.utils.maskedPanForDisplay
 import net.payrdr.mobile.payment.sdk.utils.onDisplayError
+import net.payrdr.mobile.payment.sdk.utils.toDisplayString
 
 /**
  * Screen of the selected card from the list of card bindings.
@@ -66,16 +69,13 @@ class CardSelectedActivity : BaseActivity() {
     private val card: Card by lazy {
         intent.getParcelableExtra<Card>(Constants.INTENT_EXTRA_CARD)!! as Card
     }
-    private val cardResolver: CardResolver by lazy {
-        CardResolver(
-            bankCardView = bankCardView,
-            cardInfoProvider = SDKForms.sdkConfig.cardInfoProvider
-        )
-    }
     private val mandatoryAdditionalFields = mutableSetOf<BaseTextInputEditText>()
+
+    override val requiresFormsConfig = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (isFinishing) return
         setContentView(R.layout.activity_card_selected)
         supportEdgeToEdgeInsets(toolbar, linearLayout)
         toolbar.title.text = resources.getString(R.string.payrdr_title_payment)
@@ -84,7 +84,9 @@ class CardSelectedActivity : BaseActivity() {
         }
         setStartLogoPaymentSystem()
         configureAdditionalFields()
-        cardResolver.resolve(card.pan)
+        // Read-only stored card data: first and last 4 digits and the expiry date.
+        cardNumberInput.setText(card.pan.maskedPanForDisplay())
+        cardExpiryInput.setText(card.expiryDate?.toDisplayString().orEmpty())
         config.storedPaymentMethodCVCRequired.let { cvcRequired ->
             cardCodeInput.isEnabled = cvcRequired
         }
@@ -168,7 +170,7 @@ class CardSelectedActivity : BaseActivity() {
 
     private fun prepareAdditionalFields() = FilledAdditionalPayerParams(
         city = prepareAdditionalParam(cityInputLayout, cityInput),
-        country = prepareAdditionalParam(cityInputLayout, cityInput),
+        country = prepareAdditionalParam(countryInputLayout, countryInput),
         addressLine1 = prepareAdditionalParam(
             addressLine1InputLayout,
             addressLine1Input

@@ -18,6 +18,29 @@ import javax.net.ssl.SSLContext
 const val CODE_SUCCESS = 200
 
 /**
+ * Timeout for establishing a connection to the server, in milliseconds.
+ */
+const val CONNECT_TIMEOUT_MS = 30_000
+
+/**
+ * Timeout for waiting for data from the server once connected, in milliseconds.
+ */
+const val READ_TIMEOUT_MS = 30_000
+
+/**
+ * Opens a connection with the SDK defaults: request timeouts and an optional custom [SSLContext].
+ * Without timeouts [HttpsURLConnection] waits forever on a stalled network.
+ */
+private fun URL.openSdkConnection(sslContext: SSLContext?): HttpsURLConnection =
+    (openConnection() as HttpsURLConnection).apply {
+        sslContext?.let {
+            sslSocketFactory = it.socketFactory
+        }
+        connectTimeout = CONNECT_TIMEOUT_MS
+        readTimeout = READ_TIMEOUT_MS
+    }
+
+/**
  * Casting the response to the [JSONObject] object.
  *
  * @return a [JSONObject] instance of a successful response body or an error body.
@@ -43,10 +66,7 @@ fun HttpURLConnection.responseBodyToJsonObject(): JSONObject {
  * @return returns [HttpURLConnection].
  */
 fun URL.executeGet(sslContext: SSLContext? = null): HttpsURLConnection =
-    (openConnection() as HttpsURLConnection).apply {
-        sslContext?.let {
-            sslSocketFactory = it.socketFactory
-        }
+    openSdkConnection(sslContext).apply {
         requestMethod = "GET"
         setChunkedStreamingMode(0)
     }
@@ -58,10 +78,7 @@ fun URL.executeGet(sslContext: SSLContext? = null): HttpsURLConnection =
  * @return returns [HttpURLConnection].
  */
 fun URL.executePostJson(jsonBody: String, sslContext: SSLContext? = null): HttpsURLConnection =
-    (openConnection() as HttpsURLConnection).apply {
-        sslContext?.let {
-            sslSocketFactory = it.socketFactory
-        }
+    openSdkConnection(sslContext).apply {
         requestMethod = "POST"
         setRequestProperty("Content-Type", "application/json")
         doOutput = true
@@ -83,10 +100,7 @@ fun URL.executePostParams(
     paramBody: Map<String, String>,
     sslContext: SSLContext? = null
 ): HttpsURLConnection =
-    (openConnection() as HttpsURLConnection).apply {
-        sslContext?.let {
-            sslSocketFactory = it.socketFactory
-        }
+    openSdkConnection(sslContext).apply {
         requestMethod = "POST"
         setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
         doOutput = true

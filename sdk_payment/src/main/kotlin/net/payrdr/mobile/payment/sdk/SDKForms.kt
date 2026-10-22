@@ -22,7 +22,7 @@ import net.payrdr.mobile.payment.sdk.core.BuildConfig as BuildConfigCore
 /**
  * The main class for working with the functionality of the user interface library from a mobile application.
  */
-object SDKForms {
+internal object SDKForms {
 
     @JvmSynthetic
     internal var innerSdkConfig: SDKConfig? = null
@@ -37,11 +37,24 @@ object SDKForms {
         innerSdkConfig = sdkConfig
     }
 
+    private var innerDeleteCardHandler: DeleteCardHandler? = null
+
     /**
      * Handler for deleting bounded cards.
      */
-    var deleteCardHandler: DeleteCardHandler? = null
-        get() = field ?: throw IllegalStateException("Please set Delete Card Handler before unbind card.")
+    var deleteCardHandler: DeleteCardHandler?
+        get() = innerDeleteCardHandler
+            ?: throw IllegalStateException("Please set Delete Card Handler before unbind card.")
+        set(value) {
+            innerDeleteCardHandler = value
+        }
+
+    /**
+     * The handler set by the host or by the payment flow, or null if there is none
+     * (e.g. the card list screen is recreated after process death before the payment screen).
+     */
+    internal val deleteCardHandlerOrNull: DeleteCardHandler?
+        get() = innerDeleteCardHandler
 
     /**
      * return SDKForms version

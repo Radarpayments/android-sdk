@@ -2,10 +2,15 @@ package net.payrdr.mobile.payment.sdk.payment
 
 import androidx.test.filters.MediumTest
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import net.payrdr.mobile.payment.sdk.DeleteCardHandler
+import net.payrdr.mobile.payment.sdk.SDKCanceledByUserException
+import net.payrdr.mobile.payment.sdk.SDKForms
 import net.payrdr.mobile.payment.sdk.api.PaymentApi
 import net.payrdr.mobile.payment.sdk.api.entity.BillingPayerData
 import net.payrdr.mobile.payment.sdk.api.entity.BindingItem
@@ -18,6 +23,7 @@ import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormGPayResponse
 import net.payrdr.mobile.payment.sdk.api.entity.ProcessFormResponse
 import net.payrdr.mobile.payment.sdk.api.entity.SessionStatusResponse
 import net.payrdr.mobile.payment.sdk.exceptions.SDKAlreadyPaymentException
+import net.payrdr.mobile.payment.sdk.exceptions.SDKCryptogramException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKDeclinedException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKNotConfigureException
 import net.payrdr.mobile.payment.sdk.model.FilledAdditionalPayerParams
@@ -26,8 +32,10 @@ import net.payrdr.mobile.payment.sdk.payment.model.PaymentApiVersion
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 import net.payrdr.mobile.payment.sdk.payment.model.WebChallengeParam
+import net.payrdr.mobile.payment.sdk.utils.SessionIdConverter
 import org.junit.Before
 import org.junit.Test
+import java.net.SocketTimeoutException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -519,5 +527,116 @@ class PaymentManagerImplTest {
         latch.await(3, TimeUnit.SECONDS) shouldBe true
         capturedResult!!.isSuccess shouldBe false
         capturedResult!!.exception shouldBe null
+    }
+
+    // ---- restore() / onDestroy() ----
+
+    @Test
+    fun restoreSetsOrderWithoutCheckout() {
+        coEvery { mockApi.getFinishedPaymentInfo(any()) } returns depositedPaymentInfo()
+        val latch = CountDownLatch(1)
+        var capturedResult: PaymentResult? = null
+        every { activityDelegate.finishActivityWithResult(any()) } answers {
+            capturedResult = firstArg()
+            latch.countDown()
+        }
+
+        paymentManager.restore("order-20", PaymentApiVersion.V1)
+        paymentManager.finishWithCheckOrderStatus()
+
+        latch.await(3, TimeUnit.SECONDS) shouldBe true
+        capturedResult!!.sessionId shouldBe "order-20"
+        verify(exactly = 0) { cardFormDelegate.openBottomSheet(any(), any(), any(), any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun restoreConvertsOrderToSessionIdForApiV2() {
+        val order = "8e5b9c6d-1f2a-4b3c-9d8e-7f6a5b4c3d2e"
+        paymentManager.restore(order, PaymentApiVersion.V2)
+
+        val sessionIdField = PaymentManagerImpl::class.java.getDeclaredField("sessionId")
+            .apply { isAccessible = true }
+        sessionIdField.get(paymentManager) shouldBe SessionIdConverter.mdOrderToSessionId(order)
+    }
+
+    @Test
+    fun onDestroyReleasesOwnDeleteCardHandler() {
+        SDKForms.deleteCardHandlerOrNull shouldNotBe null
+
+        paymentManager.onDestroy()
+
+        SDKForms.deleteCardHandlerOrNull shouldBe null
+    }
+
+    @Test
+    fun onDestroyKeepsDeleteCardHandlerSetByAnotherOwner() {
+        val hostHandler = mockk<DeleteCardHandler>(relaxed = true)
+        SDKForms.deleteCardHandler = hostHandler
+
+        paymentManager.onDestroy()
+
+        SDKForms.deleteCardHandlerOrNull shouldBe hostHandler
+    }
+
+    // ---- finishWithError() ----
+
+    @Test
+    fun finishWithErrorReturnsCancellationImmediatelyWithoutServerCalls() {
+        doCheckout("order-17") shouldBe true
+        coEvery { mockApi.getSessionStatus(any()) } throws SocketTimeoutException("timeout")
+        coEvery { mockApi.getFinishedPaymentInfo(any()) } throws SocketTimeoutException("timeout")
+        val cancellation = SDKCanceledByUserException()
+        var capturedResult: PaymentResult? = null
+        every { activityDelegate.finishActivityWithResult(any()) } answers { capturedResult = firstArg() }
+
+        paymentManager.finishWithError(cancellation)
+
+        // Delivered synchronously: no coroutine and no network round trip.
+        capturedResult!!.isSuccess shouldBe false
+        capturedResult!!.exception shouldBe cancellation
+        capturedResult!!.sessionId shouldBe "order-17"
+        coVerify(exactly = 0) { mockApi.getFinishedPaymentInfo(any()) }
+    }
+
+    @Test
+    fun finishWithErrorKeepsOriginalErrorWhenStatusCheckFails() {
+        doCheckout("order-18") shouldBe true
+        val checkError = SocketTimeoutException("timeout")
+        coEvery { mockApi.getSessionStatus(any()) } throws checkError
+        val original = SDKCryptogramException(cause = null)
+
+        val latch = CountDownLatch(1)
+        var capturedResult: PaymentResult? = null
+        every { activityDelegate.finishActivityWithResult(any()) } answers {
+            capturedResult = firstArg()
+            latch.countDown()
+        }
+
+        paymentManager.finishWithError(original)
+
+        latch.await(3, TimeUnit.SECONDS) shouldBe true
+        capturedResult!!.isSuccess shouldBe false
+        capturedResult!!.exception shouldBe original
+        original.suppressed.toList() shouldBe listOf(checkError)
+    }
+
+    @Test
+    fun finishWithErrorWrapsNonSdkErrorKeepingItsMessage() {
+        doCheckout("order-19") shouldBe true
+        coEvery { mockApi.getSessionStatus(any()) } throws SocketTimeoutException("timeout")
+        val original = IllegalStateException("keys are not available")
+
+        val latch = CountDownLatch(1)
+        var capturedResult: PaymentResult? = null
+        every { activityDelegate.finishActivityWithResult(any()) } answers {
+            capturedResult = firstArg()
+            latch.countDown()
+        }
+
+        paymentManager.finishWithError(original)
+
+        latch.await(3, TimeUnit.SECONDS) shouldBe true
+        capturedResult!!.exception!!.message shouldBe "keys are not available"
+        capturedResult!!.exception!!.cause shouldBe original
     }
 }

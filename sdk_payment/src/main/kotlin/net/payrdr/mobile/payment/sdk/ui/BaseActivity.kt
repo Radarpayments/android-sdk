@@ -13,7 +13,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import net.payrdr.mobile.payment.sdk.SDKException
+import net.payrdr.mobile.payment.sdk.SDKForms
+import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.ui.helper.UIDelegate
+import net.payrdr.mobile.payment.sdk.utils.finishWithError
 import net.payrdr.mobile.payment.sdk.utils.setupDefaultResult
 
 /**
@@ -26,11 +30,24 @@ abstract class BaseActivity : AppCompatActivity() {
 
     private val uiSetupDelegate: UIDelegate by lazy { UIDelegate(this) }
 
+    /**
+     * True for screens that read the SDKForms configuration (card info provider). If it is missing
+     * (recreated after process death with nothing to restore) the screen finishes with an error in [onCreate];
+     * such screens must return from their onCreate when [isFinishing] after calling super.
+     */
+    protected open val requiresFormsConfig: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        SDKPayment.restoreConfigIfNeeded(this)
         uiSetupDelegate.onCreate(savedInstanceState)
         uiSetupDelegate.updateConfiguration(this)
         super.onCreate(savedInstanceState)
         setupDefaultResult()
+        if (requiresFormsConfig && SDKForms.innerSdkConfig == null) {
+            finishWithError(
+                SDKException("SDK is not initialized. Please call SDKPayment.init() in Application.onCreate().")
+            )
+        }
     }
 
     override fun onResume() {

@@ -32,7 +32,6 @@ import kotlinx.android.synthetic.main.activity_card_new.addressLine2Input
 import kotlinx.android.synthetic.main.activity_card_new.addressLine2InputLayout
 import kotlinx.android.synthetic.main.activity_card_new.addressLine3Input
 import kotlinx.android.synthetic.main.activity_card_new.addressLine3InputLayout
-import kotlinx.android.synthetic.main.activity_card_new.bankCardView
 import kotlinx.android.synthetic.main.activity_card_new.cardCodeInput
 import kotlinx.android.synthetic.main.activity_card_new.cardCodeInputLayout
 import kotlinx.android.synthetic.main.activity_card_new.cardExpiryInput
@@ -69,7 +68,6 @@ import net.payrdr.mobile.payment.sdk.Constants.INTENT_EXTRA_CONFIG
 import net.payrdr.mobile.payment.sdk.Constants.REQUEST_CODE_SCAN_CARD
 import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.SDKCanceledByUserException
-import net.payrdr.mobile.payment.sdk.SDKForms
 import net.payrdr.mobile.payment.sdk.core.utils.digitsOnly
 import net.payrdr.mobile.payment.sdk.core.utils.toStringExpDate
 import net.payrdr.mobile.payment.sdk.logs.Logger
@@ -86,7 +84,6 @@ import net.payrdr.mobile.payment.sdk.model.PaymentInfoNewCard
 import net.payrdr.mobile.payment.sdk.model.PaymentSystem
 import net.payrdr.mobile.payment.sdk.nfc.NFCReadDelegate
 import net.payrdr.mobile.payment.sdk.ui.helper.CardLogoAssetsResolver
-import net.payrdr.mobile.payment.sdk.ui.helper.CardResolver
 import net.payrdr.mobile.payment.sdk.ui.helper.LocalizationSetting
 import net.payrdr.mobile.payment.sdk.ui.widget.BaseTextInputEditText
 import net.payrdr.mobile.payment.sdk.ui.widget.BaseTextInputLayout
@@ -107,13 +104,6 @@ import java.util.Date
 @Suppress("TooManyFunctions")
 class CardNewActivity : BaseActivity() {
 
-    private val cardResolver: CardResolver by lazy {
-        CardResolver(
-            bankCardView = bankCardView,
-            cardInfoProvider = SDKForms.sdkConfig.cardInfoProvider
-        )
-    }
-
     private val config: PaymentConfig by lazy {
         intent.getParcelableExtra<PaymentConfig>(INTENT_EXTRA_CONFIG) as PaymentConfig
     }
@@ -126,8 +116,11 @@ class CardNewActivity : BaseActivity() {
 
     private var nfcReader: NFCReadDelegate? = null
 
+    override val requiresFormsConfig = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (isFinishing) return
         setContentView(R.layout.activity_card_new)
         supportEdgeToEdgeInsets(toolbar, linearLayout)
         toolbar.title.text = resources.getString(R.string.payrdr_title_payment)
@@ -249,7 +242,6 @@ class CardNewActivity : BaseActivity() {
     @Suppress("LongMethod")
     private fun configure(config: PaymentConfig) {
         configureStateButton()
-        bankCardView.setupUnknownBrand()
         cardNumberInput onInputStatusChanged onCardNumberStatusChanged
         cardExpiryInput onInputStatusChanged jumpToNextInput
         cardCodeInput onInputStatusChanged jumpToNextInput
@@ -261,10 +253,6 @@ class CardNewActivity : BaseActivity() {
         emailInput onDisplayError { emailInputLayout.error = it }
         cardNumberInput afterTextChanged { number ->
             if (number.isEmpty()) hideAllAdditionalFields()
-            cardResolver.resolve(
-                number = number,
-                withDelay = true
-            )
         }
         doneButton.setOnClickListener { onDone() }
         when (config.cardSaveOptions) {
@@ -370,11 +358,10 @@ class CardNewActivity : BaseActivity() {
     @Suppress("TooGenericExceptionCaught")
     private fun setStartLogoPaymentSystem(pan: String) {
         try {
-            if (pan == "") {
-                cardNumberInputLayout.startIconDrawable = null
-            }
             val logoResource = CardLogoAssetsResolver.resolveByPan(this, pan)
-            if (logoResource != null) {
+            if (logoResource == null) {
+                cardNumberInputLayout.startIconDrawable = null
+            } else {
                 val logoSVG = SVG.getFromAsset(resources.assets, logoResource)
                 logoSVG.documentHeight = PAYMENT_SYSTEM_LOGO_HEIGHT
                 logoSVG.documentWidth = PAYMENT_SYSTEM_LOGO_WIDTH

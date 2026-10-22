@@ -5,7 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_payment.paymentPreloader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -24,13 +28,14 @@ import net.payrdr.mobile.payment.sdk.SDKException
 import net.payrdr.mobile.payment.sdk.SDKForms
 import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.api.entity.BindingItem
+import net.payrdr.mobile.payment.sdk.component.KeyProviderException
 import net.payrdr.mobile.payment.sdk.component.impl.RemoteKeyProvider
 import net.payrdr.mobile.payment.sdk.core.SDKCore
 import net.payrdr.mobile.payment.sdk.core.model.BindingParams
 import net.payrdr.mobile.payment.sdk.core.model.CardParams
-import net.payrdr.mobile.payment.sdk.core.model.ExpiryDate
 import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import net.payrdr.mobile.payment.sdk.core.model.SDKCoreConfig
+import net.payrdr.mobile.payment.sdk.core.utils.toExpDate
 import net.payrdr.mobile.payment.sdk.exceptions.SDKCryptogramException
 import net.payrdr.mobile.payment.sdk.model.AdditionalFieldsForPaymentSystem
 import net.payrdr.mobile.payment.sdk.model.Card
@@ -38,6 +43,7 @@ import net.payrdr.mobile.payment.sdk.model.CardDeleteOptions
 import net.payrdr.mobile.payment.sdk.model.CardSaveOptions
 import net.payrdr.mobile.payment.sdk.model.CryptogramData
 import net.payrdr.mobile.payment.sdk.model.GooglePayPaymentConfig
+import net.payrdr.mobile.payment.sdk.model.PaymentInfo
 import net.payrdr.mobile.payment.sdk.model.PaymentInfoBindCard
 import net.payrdr.mobile.payment.sdk.model.PaymentInfoGooglePay
 import net.payrdr.mobile.payment.sdk.model.PaymentInfoNewCard
@@ -55,7 +61,9 @@ import net.payrdr.mobile.payment.sdk.ui.helper.ThemeSetting
  */
 class PaymentActivity : AppCompatActivity() {
     private var resultForHandle: ResultForHandle? = null
-    private val sdkPaymentConfig: SDKPaymentConfig = SDKPayment.sdkPaymentConfig
+    private var isRestored = false
+    private val sdkPaymentConfig: SDKPaymentConfig
+        get() = SDKPayment.sdkPaymentConfig
     private val workScope: CoroutineScope = CoroutineScope(Dispatchers.IO + Job())
 
     /**
@@ -102,14 +110,11 @@ class PaymentActivity : AppCompatActivity() {
         @Suppress("TooGenericExceptionCaught")
         private fun BindingItem.toCard(): Card = try {
             val parts = label.split(" ")
-            val expiryParts = parts[1].split("/")
             Card(
                 pan = parts[0],
                 bindingId = id,
-                expiryDate = ExpiryDate(
-                    expiryParts[0].toInt(),
-                    expiryParts[1].toInt()
-                )
+                // The label carries the expiry as MM/YY.
+                expiryDate = parts[1].toExpDate()
             )
         } catch (e: Exception) {
             Card(pan = label, bindingId = id, expiryDate = null)
@@ -123,6 +128,7 @@ class PaymentActivity : AppCompatActivity() {
     private val threeDS1FormDelegate = object : ThreeDS2WebFormDelegate {
 
         override fun openWebChallenge(webChallengeParam: WebChallengeParam) {
+            hidePaymentPreloader()
             this@PaymentActivity.startActivityForResult(
                 Activity3DS2WebChallenge.prepareIntent(
                     this@PaymentActivity,
@@ -163,19 +169,42 @@ class PaymentActivity : AppCompatActivity() {
     /**
      *  Initialization of the class that implements the payment process.
      */
-    private val paymentManager: PaymentManagerImpl = PaymentManagerImpl(
-        cardFormDelegate,
-        threeDS1FormDelegate,
-        activityDelegate,
-        gPayDelegate,
-    )
+    private val paymentManagerLazy = lazy {
+        PaymentManagerImpl(
+            cardFormDelegate,
+            threeDS1FormDelegate,
+            activityDelegate,
+            gPayDelegate,
+        )
+    }
+    private val paymentManager: PaymentManagerImpl by paymentManagerLazy
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val isSdkInitialized = SDKPayment.restoreConfigIfNeeded(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
         val mdOrder = intent.getStringExtra(MDORDER)
+        if (!isSdkInitialized) {
+            finishWithResult(
+                PaymentResult(
+                    sessionId = mdOrder.orEmpty(),
+                    isSuccess = false,
+                    exception = SDKException(
+                        "SDKPayment is not initialized. Please call SDKPayment.init() in Application.onCreate()."
+                    ),
+                )
+            )
+            return
+        }
         val versionApi = intent.getSerializableExtra(PAYMENT_API_VERSION) as PaymentApiVersion
-        paymentManager.checkout(mdOrder!!, intent.getBooleanExtra(IS_GOOGLE_PAY, false), versionApi)
+        if (savedInstanceState == null) {
+            paymentManager.checkout(mdOrder!!, intent.getBooleanExtra(IS_GOOGLE_PAY, false), versionApi)
+        } else {
+            // Recreated after a configuration change or process death: Android restores the bottom sheet
+            // and the screens above it, starting the checkout again would open a second bottom sheet.
+            paymentManager.restore(mdOrder!!, versionApi)
+            isRestored = true
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -189,6 +218,16 @@ class PaymentActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        // The payment was being processed when the activity was destroyed (e.g. the process died during
+        // the network requests): nothing on screen can continue it, so report the order status instead of
+        // leaving an empty transparent screen over the host app.
+        val restoredWithNothingToContinue = isRestored && resultForHandle == null &&
+            supportFragmentManager.fragments.isEmpty()
+        isRestored = false
+        if (restoredWithNothingToContinue) {
+            showPaymentPreloader()
+            paymentManager.finishWithCheckOrderStatus()
+        }
         resultForHandle?.let {
             val (requestCode, resultCode, data) = it
             resultForHandle = null
@@ -211,49 +250,20 @@ class PaymentActivity : AppCompatActivity() {
                             // The result of the formation of the cryptogram.
                             when {
                                 result.status.isSucceeded() -> {
+                                    showPaymentPreloader()
                                     workScope.launch(Dispatchers.Main) {
-                                        val keyProvider = RemoteKeyProvider("${sdkPaymentConfig.baseURL}/se/keys.do")
-                                        val pubKey = keyProvider.provideKey().value
-                                        when (val info = result.info) {
-                                            is PaymentInfoNewCard -> {
-                                                val config = SDKCoreConfig(
-                                                    registeredFrom = MSDKRegisteredFrom.MSDK_PAYMENT,
-                                                    paymentCardParams = CardParams(
-                                                        pan = info.pan,
-                                                        cvc = info.cvc,
-                                                        expiryMMYY = info.expiryDate,
-                                                        cardHolder = info.holder,
-                                                        mdOrder = info.order,
-                                                        pubKey = pubKey
-                                                    )
-                                                )
-                                                val paymentToken = SDKCore(
-                                                    this@PaymentActivity
-                                                ).generateWithConfig(config)
-                                                paymentNewCard(seToken = paymentToken.token ?: "", info)
-                                            }
-
-                                            is PaymentInfoBindCard -> {
-                                                val config = SDKCoreConfig(
-                                                    registeredFrom = MSDKRegisteredFrom.MSDK_PAYMENT,
-                                                    paymentCardParams = BindingParams(
-                                                        cvc = info.cvc,
-                                                        bindingID = info.bindingId,
-                                                        mdOrder = info.order,
-                                                        pubKey = pubKey
-                                                    )
-                                                )
-                                                val paymentToken = SDKCore(
-                                                    this@PaymentActivity
-                                                ).generateWithConfig(config)
-                                                paymentBindingCard(seToken = paymentToken.token ?: "", info)
-                                            }
-
-                                            is PaymentInfoGooglePay -> {
-                                                gPayPayment(info)
-                                                Log.d("PAYRDRSDK", "GPay seToken: ${info.paymentToken}")
-                                            }
+                                        val keyProvider = RemoteKeyProvider(
+                                            "${sdkPaymentConfig.baseURL}/se/keys.do",
+                                            sdkPaymentConfig.sslContextConfig?.sslContext,
+                                        )
+                                        val pubKey = try {
+                                            keyProvider.provideKey().value
+                                        } catch (e: KeyProviderException) {
+                                            LogDebug.logIfDebug("Key loading error: ${e.message}")
+                                            paymentManager.finishWithError(e)
+                                            return@launch
                                         }
+                                        payWithPubKey(result.info, pubKey)
                                         LogDebug.logIfDebug("seToken created: $result")
                                     }
                                 }
@@ -278,7 +288,9 @@ class PaymentActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        paymentManager.onDestroy()
+        if (paymentManagerLazy.isInitialized()) {
+            paymentManager.onDestroy()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -288,6 +300,45 @@ class PaymentActivity : AppCompatActivity() {
             resultCode,
             data
         )
+    }
+
+    private fun payWithPubKey(info: PaymentInfo?, pubKey: String) {
+        when (info) {
+            is PaymentInfoNewCard -> {
+                val config = SDKCoreConfig(
+                    registeredFrom = MSDKRegisteredFrom.MSDK_PAYMENT,
+                    paymentCardParams = CardParams(
+                        pan = info.pan,
+                        cvc = info.cvc,
+                        expiryMMYY = info.expiryDate,
+                        cardHolder = info.holder,
+                        mdOrder = info.order,
+                        pubKey = pubKey
+                    )
+                )
+                val paymentToken = SDKCore(this).generateWithConfig(config)
+                paymentNewCard(seToken = paymentToken.token ?: "", info)
+            }
+
+            is PaymentInfoBindCard -> {
+                val config = SDKCoreConfig(
+                    registeredFrom = MSDKRegisteredFrom.MSDK_PAYMENT,
+                    paymentCardParams = BindingParams(
+                        cvc = info.cvc,
+                        bindingID = info.bindingId,
+                        mdOrder = info.order,
+                        pubKey = pubKey
+                    )
+                )
+                val paymentToken = SDKCore(this).generateWithConfig(config)
+                paymentBindingCard(seToken = paymentToken.token ?: "", info)
+            }
+
+            is PaymentInfoGooglePay -> {
+                gPayPayment(info)
+                Log.d("PAYRDRSDK", "GPay seToken: ${info.paymentToken}")
+            }
+        }
     }
 
     private fun paymentNewCard(seToken: String, paymentInfo: PaymentInfoNewCard) {
@@ -324,11 +375,35 @@ class PaymentActivity : AppCompatActivity() {
      * @param paymentData - result of [Activity] work.
      */
     private fun finishWithResult(paymentData: PaymentResult) {
+        hidePaymentPreloader()
+        SDKPayment.clearSavedConfig(this)
         val resultIntent = Intent().apply {
             putExtra(INTENT_EXTRA_RESULT, paymentData)
         }
         setResult(Activity.RESULT_OK, resultIntent)
         finish()
+    }
+
+    /**
+     * Shows a full-screen dimmed overlay with a progress indicator while the payment is processed.
+     *
+     * The activity window is floating and transparent, so it is stretched to the full screen
+     * and dims the content behind it for as long as the preloader is visible. The window is not
+     * shrunk back on hide: resizing it makes the old frame with the indicator flash in the corner.
+     */
+    private fun showPaymentPreloader() {
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        window.setDimAmount(PRELOADER_DIM_AMOUNT)
+        paymentPreloader.visibility = View.VISIBLE
+    }
+
+    /**
+     * Hides the preloader shown by [showPaymentPreloader]. Safe to call from any thread.
+     */
+    private fun hidePaymentPreloader() = runOnUiThread {
+        paymentPreloader.visibility = View.GONE
+        window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     }
 
     private data class ResultForHandle(
@@ -338,6 +413,8 @@ class PaymentActivity : AppCompatActivity() {
     )
 
     companion object {
+
+        private const val PRELOADER_DIM_AMOUNT = 0.4f
 
         /**
          * Prepares the [Intent] to start the checkout screen.

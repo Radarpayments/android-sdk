@@ -111,10 +111,14 @@ class AdditionalFieldsHelperTest {
         val layout = mockk<BaseTextInputLayout>()
         val input = mockk<BaseTextInputEditText>()
         val editable = mockk<Editable>()
+        val backing = "   "
         every { layout.visibility } returns View.VISIBLE
         every { input.text } returns editable
-        every { editable.trim() } returns ""
-        every { editable.toString() } returns "   "
+        every { editable.length } returns backing.length
+        every { editable[any()] } answers { backing[firstArg<Int>()] }
+        every { editable.subSequence(any(), any()) } answers {
+            backing.subSequence(firstArg<Int>(), secondArg<Int>())
+        }
 
         AdditionalFieldsHelper.prepareAdditionalParam(layout, input) shouldBe null
     }
@@ -124,10 +128,15 @@ class AdditionalFieldsHelperTest {
         val layout = mockk<BaseTextInputLayout>()
         val input = mockk<BaseTextInputEditText>()
         val editable = mockk<Editable>()
+        val backing = "Moscow"
         every { layout.visibility } returns View.VISIBLE
         every { input.text } returns editable
-        every { editable.trim() } returns "Moscow"
-        every { editable.toString() } returns "Moscow"
+        every { editable.length } returns backing.length
+        every { editable[any()] } answers { backing[firstArg<Int>()] }
+        every { editable.subSequence(any(), any()) } answers {
+            backing.subSequence(firstArg<Int>(), secondArg<Int>())
+        }
+        every { editable.toString() } returns backing
 
         AdditionalFieldsHelper.prepareAdditionalParam(layout, input) shouldBe "Moscow"
     }

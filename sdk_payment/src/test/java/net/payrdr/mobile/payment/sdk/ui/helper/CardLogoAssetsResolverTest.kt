@@ -86,6 +86,21 @@ class CardLogoAssetsResolverTest {
         CardLogoAssetsResolver.resolveByPan(context, "4111111111111111") shouldBe null
     }
 
+    @Test
+    fun shouldReturnNullForMirEvenWithMirAsset() {
+        val context = contextWithAssets(arrayOf("logo-mir.svg"))
+
+        CardLogoAssetsResolver.resolveByPan(context, "2200000000000000") shouldBe null
+    }
+
+    @Test
+    fun shouldResolveUnionPayToCupLogo() {
+        val context = contextWithAssets(arrayOf("logo-cup.svg"))
+
+        CardLogoAssetsResolver.resolveByPan(context, "6200000000000000") shouldBe
+            "payment_system/logo-cup.svg"
+    }
+
     // ---- resolveByName ----
 
     @Test

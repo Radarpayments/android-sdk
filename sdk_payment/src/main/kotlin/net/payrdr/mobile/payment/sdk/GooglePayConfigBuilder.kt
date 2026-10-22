@@ -16,7 +16,7 @@ import java.util.UUID
  * @param gatewayMerchantId merchatntId for gateway
  */
 @Suppress("TooManyFunctions")
-class GooglePayConfigBuilder(
+internal class GooglePayConfigBuilder(
     private val order: String = "",
     private val paymentData: PaymentDataRequest,
     private var gateway: String,

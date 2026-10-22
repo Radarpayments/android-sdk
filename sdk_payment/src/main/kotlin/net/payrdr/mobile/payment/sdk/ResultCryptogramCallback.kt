@@ -3,7 +3,7 @@ package net.payrdr.mobile.payment.sdk
 /**
  * An interface for handling the result of an operation that returns [CryptogramData] or [Exception].
  */
-interface ResultCryptogramCallback<CryptogramData> {
+internal interface ResultCryptogramCallback<CryptogramData> {
 
     /**
      * Called when the operation is successful, the result of which is [result].

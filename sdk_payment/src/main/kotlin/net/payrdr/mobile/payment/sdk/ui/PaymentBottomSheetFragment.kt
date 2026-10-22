@@ -30,6 +30,8 @@ import net.payrdr.mobile.payment.sdk.model.GooglePayPaymentConfig
 import net.payrdr.mobile.payment.sdk.model.PaymentConfig
 import net.payrdr.mobile.payment.sdk.model.Theme
 import net.payrdr.mobile.payment.sdk.ui.adapter.CardListAdapter
+import net.payrdr.mobile.payment.sdk.ui.helper.LocalizationSetting
+import net.payrdr.mobile.payment.sdk.ui.helper.ThemeSetting
 import net.payrdr.mobile.payment.sdk.ui.helper.UIDelegate
 
 /**
@@ -82,6 +84,10 @@ class PaymentBottomSheetFragment : BottomSheetDialogFragment() {
 
         savedInstanceState?.getParcelable<PaymentConfig>(CONFIG_KEY)?.also {
             config = it
+            // Restored after process death: the theme and language set by SDKForms.cryptogram() are gone,
+            // set them again for the screens opened from this sheet.
+            LocalizationSetting.setLanguage(it.locale)
+            ThemeSetting.setTheme(it.theme)
         }
 
         allPaymentMethodLayout.setOnClickListener {

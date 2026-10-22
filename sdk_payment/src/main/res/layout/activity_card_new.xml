@@ -58,15 +58,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-            <net.payrdr.mobile.payment.sdk.ui.widget.BankCardView
-                android:id="@+id/bankCardView"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="@dimen/payrdr_form_card_margin"
-                android:layout_marginTop="@dimen/payrdr_very_large_dimen"
-                android:layout_marginEnd="@dimen/payrdr_form_card_margin"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
             <net.payrdr.mobile.payment.sdk.ui.widget.BaseTextInputLayout
                 android:id="@+id/cardNumberInputLayout"
@@ -74,12 +65,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginStart="@dimen/payrdr_medium_dimen"
-                android:layout_marginTop="@dimen/payrdr_large_dimen"
+                android:layout_marginTop="@dimen/payrdr_very_large_dimen"
                 android:layout_marginEnd="@dimen/payrdr_medium_dimen"
                 android:theme="@style/PAYRDRTextInputLayoutAppearance"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bankCardView">
+                app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
                 <net.payrdr.mobile.payment.sdk.ui.widget.CardNumberEditText
                     android:id="@+id/cardNumberInput"

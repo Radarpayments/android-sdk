@@ -3,7 +3,7 @@ package net.payrdr.mobile.payment.sdk
 /**
  * Handles action deleting a saved card.
  */
-interface DeleteCardHandler {
+internal interface DeleteCardHandler {
 
     /**
      * Unbind card on server.

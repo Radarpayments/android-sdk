@@ -58,16 +58,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-            <net.payrdr.mobile.payment.sdk.ui.widget.BankCardView
-                android:id="@+id/bankCardView"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="@dimen/payrdr_form_card_margin"
-                android:layout_marginTop="@dimen/payrdr_very_large_dimen"
-                android:layout_marginEnd="@dimen/payrdr_form_card_margin"
-
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
             <net.payrdr.mobile.payment.sdk.ui.widget.BaseTextInputLayout
                 android:id="@+id/cardNumberInputLayout"
@@ -75,27 +65,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginStart="@dimen/payrdr_medium_dimen"
-                android:layout_marginTop="@dimen/payrdr_large_dimen"
+                android:layout_marginTop="@dimen/payrdr_very_large_dimen"
                 android:layout_marginEnd="@dimen/payrdr_medium_dimen"
                 android:theme="@style/PAYRDRTextInputLayoutAppearance"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bankCardView">
+                app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-                <net.payrdr.mobile.payment.sdk.ui.widget.CardNumberEditText
+                <!-- Read-only masked number of the stored card, set in CardSelectedActivity.
+                     A plain field: CardNumberEditText would strip the mask characters. -->
+                <net.payrdr.mobile.payment.sdk.ui.widget.BaseTextInputEditText
                     android:id="@+id/cardNumberInput"
                     style="@style/PAYRDREditTextStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:enabled="false"
                     android:hint="@string/payrdr_number_card_hint"
-                    android:imeOptions="actionNext"
-                    android:nextFocusDown="@id/cardExpiryInput"
                     android:paddingBottom="12dp"
-                    android:text="•••• •••• •••• ••••"
-                    android:textColor="@color/payrdr_hint_text_color">
-
-                </net.payrdr.mobile.payment.sdk.ui.widget.CardNumberEditText>
+                    android:textColor="@color/payrdr_hint_text_color" />
             </net.payrdr.mobile.payment.sdk.ui.widget.BaseTextInputLayout>
 
             <net.payrdr.mobile.payment.sdk.ui.widget.BaseTextInputLayout
@@ -112,16 +99,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardNumberInputLayout">
 
-                <net.payrdr.mobile.payment.sdk.ui.widget.CardExpiryEditText
+                <!-- Read-only expiry of the stored card, set in CardSelectedActivity. -->
+                <net.payrdr.mobile.payment.sdk.ui.widget.BaseTextInputEditText
                     android:id="@+id/cardExpiryInput"
                     style="@style/PAYRDREditTextStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:enabled="false"
                     android:hint="@string/payrdr_card_expiry_placeholder"
-                    android:imeOptions="actionNext"
-                    android:nextFocusDown="@id/cardCodeInput"
-                    android:text="••/••"
                     android:textColor="@color/payrdr_hint_text_color" />
 
             </net.payrdr.mobile.payment.sdk.ui.widget.BaseTextInputLayout>

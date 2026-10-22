@@ -113,8 +113,9 @@ internal open class UIDelegate(private val activity: AppCompatActivity) {
 
     @Suppress("DEPRECATION")
     fun getResources(resources: Resources): Resources {
+        // Called before onCreate(): after process death the language is not restored yet, use the default.
+        val locale = LocalizationSetting.getLanguage() ?: getDefaultLanguage()
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val locale = LocalizationSetting.getLanguage()
             val config = resources.configuration
             config.setLocale(locale)
             val localeList = LocaleList(locale)
@@ -123,15 +124,17 @@ internal open class UIDelegate(private val activity: AppCompatActivity) {
             resources
         } else {
             val config = resources.configuration
-            config.locale = LocalizationSetting.getLanguage()
+            config.locale = locale
             val metrics = resources.displayMetrics
             Resources(activity.assets, metrics, config)
         }
     }
 
     private fun setup(isCreate: Boolean) {
-        LocalizationSetting.getLanguage()?.let { locale -> currentLanguage = locale }
-        ThemeSetting.getTheme()?.let { theme -> currentTheme = theme }
+        // Defaults instead of leaving the lateinit fields unset: after process death a newly opened screen
+        // has neither a saved state nor the settings that SDKForms.cryptogram() sets.
+        currentLanguage = getLanguageWithDefault(getDefaultLanguage())
+        currentTheme = getThemeWithDefault(getDefaultTheme())
         checkSettingsChanged(isCreate)
     }
 

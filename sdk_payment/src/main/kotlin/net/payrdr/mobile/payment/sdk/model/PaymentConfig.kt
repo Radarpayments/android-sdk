@@ -60,7 +60,7 @@ data class PaymentConfig internal constructor(
         source.readString(),
         1 == source.readInt(),
         CardDeleteOptions.values()[source.readInt()],
-        source.readString()?.let { MSDKRegisteredFrom.valueOf(it) } ?: MSDKRegisteredFrom.MSDK_CORE,
+        source.readString()?.let { MSDKRegisteredFrom.valueOf(it) } ?: MSDKRegisteredFrom.MSDK_PAYMENT,
         source.createTypedArrayList(AdditionalField.CREATOR) ?: emptyList(),
         source.createTypedArrayList(AdditionalField.CREATOR) ?: emptyList()
     )

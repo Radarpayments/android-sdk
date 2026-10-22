@@ -20,7 +20,7 @@ class CardNumberFormatterTest {
         every {
             resources.getString(R.string.payrdr_card_list_pan_pattern, any<String>())
         } answers {
-            "** ${secondArg<String>()}"
+            "** ${arg<Array<Any>>(1)[0]}"
         }
     }
 

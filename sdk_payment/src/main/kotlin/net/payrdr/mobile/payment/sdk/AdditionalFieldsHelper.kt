@@ -1,9 +1,10 @@
 package net.payrdr.mobile.payment.sdk
 
 import android.view.View.VISIBLE
-import net.payrdr.mobile.payment.sdk.core.utils.digitsOnly
 import net.payrdr.mobile.payment.sdk.model.AdditionalField
 import net.payrdr.mobile.payment.sdk.model.PaymentSystem
+import net.payrdr.mobile.payment.sdk.ui.helper.CardNetwork
+import net.payrdr.mobile.payment.sdk.ui.helper.CardNetworkResolver
 import net.payrdr.mobile.payment.sdk.ui.widget.BaseTextInputEditText
 import net.payrdr.mobile.payment.sdk.ui.widget.BaseTextInputLayout
 import net.payrdr.mobile.payment.sdk.ui.widget.PayerAdditionalInformationEditText
@@ -58,15 +59,12 @@ object AdditionalFieldsHelper {
         }
     }
 
-    fun resolvePaymentSystem(pan: String): PaymentSystem {
-        val cleanPan = pan.digitsOnly()
-        val paymentSystem = PAYMENT_SYSTEMS.filter { cleanPan.matches(it.key) }.toList().firstOrNull()?.second
-        return when (paymentSystem) {
-            "mastercard" -> PaymentSystem.MASTERCARD
-            "visa" -> PaymentSystem.VISA
+    fun resolvePaymentSystem(pan: String): PaymentSystem =
+        when (CardNetworkResolver.resolve(pan)) {
+            CardNetwork.MASTERCARD -> PaymentSystem.MASTERCARD
+            CardNetwork.VISA -> PaymentSystem.VISA
             else -> PaymentSystem.OTHER_SYSTEM
         }
-    }
 
     fun prepareAdditionalParam(
         inputLayout: BaseTextInputLayout,
@@ -75,9 +73,4 @@ object AdditionalFieldsHelper {
         if (inputLayout.visibility != VISIBLE || input.text?.trim().isNullOrEmpty()) return null
         return input.text.toString()
     }
-
-    private val PAYMENT_SYSTEMS = mapOf(
-        "^(5[1-5]|222[1-9]|2[3-6]|27[0-1]|2720)\\d*\$".toRegex() to "mastercard",
-        "^4\\d*\$".toRegex() to "visa",
-    )
 }

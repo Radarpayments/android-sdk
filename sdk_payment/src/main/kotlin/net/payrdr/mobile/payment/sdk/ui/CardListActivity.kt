@@ -13,10 +13,14 @@ import kotlinx.android.synthetic.main.activity_card_list.editCardsList
 import kotlinx.android.synthetic.main.activity_card_list.toolbar
 import kotlinx.android.synthetic.main.activity_card_list.view.arrow_back
 import kotlinx.android.synthetic.main.activity_card_list.view.title
+import kotlinx.coroutines.launch
 import net.payrdr.mobile.payment.sdk.Constants
 import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.SDKCanceledByUserException
 import net.payrdr.mobile.payment.sdk.SDKForms
+import net.payrdr.mobile.payment.sdk.SDKPayment
+import net.payrdr.mobile.payment.sdk.api.PaymentApiImpl
+import net.payrdr.mobile.payment.sdk.logs.Logger
 import net.payrdr.mobile.payment.sdk.model.Card
 import net.payrdr.mobile.payment.sdk.model.CardDeleteOptions
 import net.payrdr.mobile.payment.sdk.model.CryptogramData
@@ -88,12 +92,34 @@ class CardListActivity : BaseActivity() {
         return true
     }
 
+    @Suppress("TooGenericExceptionCaught")
+    private fun deleteCard(bindingId: String) {
+        SDKForms.deleteCardHandlerOrNull?.let { handler ->
+            handler.deleteCard(bindingId)
+            return
+        }
+        // Recreated after process death before the payment screen below it, which sets the handler:
+        // unbind the card directly with the restored payment configuration.
+        val paymentConfig = SDKPayment.sdkPaymentConfigOrNull
+        if (paymentConfig == null) {
+            Logger.error(javaClass, Constants.TAG, "deleteCard(): no delete card handler", null)
+            return
+        }
+        workScope.launch {
+            try {
+                PaymentApiImpl(paymentConfig.baseURL).unbindCardAnonymous(bindingId, config.order)
+            } catch (e: Exception) {
+                Logger.error(javaClass, Constants.TAG, "deleteCard(): unbind failed", e)
+            }
+        }
+    }
+
     private fun deleteCardFromList(card: Card) {
         val dialogClickListener: DialogInterface.OnClickListener =
             DialogInterface.OnClickListener { dialog, which ->
                 when (which) {
                     DialogInterface.BUTTON_POSITIVE -> {
-                        SDKForms.deleteCardHandler?.deleteCard(card.bindingId)
+                        deleteCard(card.bindingId)
                         updateCardsList(card)
                     }
                 }
