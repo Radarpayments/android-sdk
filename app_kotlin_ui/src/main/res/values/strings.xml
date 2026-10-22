@@ -1,11 +1,17 @@
 <resources>
     <string name="app_name">Usage example</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
+    <string name="change_theme">Change theme</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="sample_intro">Register an order on your backend, enter its number (mdOrder) and pay. The SDK opens its payment screens and returns the result to the app.</string>
+    <string name="payment_form_title">Payment with SDKPayment</string>
+    <string name="md_order_hint">Order number (mdOrder)</string>
+    <string name="pay">Pay</string>
+
+    <string name="result_cancelled">⚠️ Action cancelled\n\nUser cancelled the payment</string>
+    <string name="result_success">✅ Payment successful</string>
+    <string name="result_failed">❌ Payment failed</string>
+    <string name="result_payment_id">Payment ID: %1$s</string>
+    <string name="result_exception">Exception: %1$s</string>
+    <string name="result_exception_message">Exception message: %1$s</string>
+    <string name="result_not_available">N/A</string>
 </resources>

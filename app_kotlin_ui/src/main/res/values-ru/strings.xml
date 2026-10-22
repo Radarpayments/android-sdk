@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Пример использования</string>
+    <string name="change_theme">Сменить тему</string>
+
+    <string name="sample_intro">Зарегистрируйте заказ на своём бэкенде, введите его номер (mdOrder) и оплатите. SDK откроет свои экраны оплаты и вернёт результат в приложение.</string>
+    <string name="payment_form_title">Оплата через SDKPayment</string>
+    <string name="md_order_hint">Номер заказа (mdOrder)</string>
+    <string name="pay">Оплатить</string>
+
+    <string name="result_cancelled">⚠️ Действие отменено\n\nПользователь отменил оплату</string>
+    <string name="result_success">✅ Оплата прошла</string>
+    <string name="result_failed">❌ Оплата не прошла</string>
+    <string name="result_payment_id">ID платежа: %1$s</string>
+    <string name="result_exception">Исключение: %1$s</string>
+    <string name="result_exception_message">Сообщение: %1$s</string>
+    <string name="result_not_available">нет</string>
+</resources>

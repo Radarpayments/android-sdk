@@ -6,13 +6,23 @@ plugins {
     id("kotlin-android")
 }
 
+// Keystore passwords are not stored in the repository. Pass them as Gradle properties
+// (-PsampleStorePassword=..., or ~/.gradle/gradle.properties) or environment variables
+// SAMPLE_STORE_PASSWORD / SAMPLE_KEY_PASSWORD. Without them the release build is unsigned.
+val sampleStorePassword: String? =
+    (findProperty("sampleStorePassword") as String?) ?: System.getenv("SAMPLE_STORE_PASSWORD")
+val sampleKeyPassword: String? =
+    (findProperty("sampleKeyPassword") as String?) ?: System.getenv("SAMPLE_KEY_PASSWORD") ?: sampleStorePassword
+
 android {
     signingConfigs {
-        create("release") {
-            storeFile = file("keys.jks")
-            keyAlias = "key"
-            storePassword = "123456"
-            keyPassword = "123456"
+        if (!sampleStorePassword.isNullOrBlank()) {
+            create("release") {
+                storeFile = file("keys.jks")
+                keyAlias = "key"
+                storePassword = sampleStorePassword
+                keyPassword = sampleKeyPassword
+            }
         }
     }
     compileSdkVersion(36)
@@ -31,7 +41,7 @@ android {
         getByName("release") {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.findByName("release")
         }
     }
     sourceSets {
