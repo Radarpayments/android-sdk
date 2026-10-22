@@ -5,15 +5,15 @@ import io.kotest.matchers.shouldBe
 import net.payrdr.mobile.payment.sdk.api.PaymentApi
 import net.payrdr.mobile.payment.sdk.api.PaymentApiImpl
 import net.payrdr.mobile.payment.sdk.api.entity.SessionStatusResponse
+import net.payrdr.mobile.payment.sdk.component.impl.RemoteKeyProvider
 import net.payrdr.mobile.payment.sdk.core.SDKCore
 import net.payrdr.mobile.payment.sdk.core.model.CardParams
 import net.payrdr.mobile.payment.sdk.core.model.SDKCoreConfig
-import net.payrdr.mobile.payment.sdk.form.component.impl.RemoteKeyProvider
-import net.payrdr.mobile.payment.sdk.form.utils.executePostParams
-import net.payrdr.mobile.payment.sdk.form.utils.responseBodyToJsonObject
 import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
 import net.payrdr.mobile.payment.sdk.utils.executePostJsonForSessionId
+import net.payrdr.mobile.payment.sdk.utils.executePostParams
 import net.payrdr.mobile.payment.sdk.utils.mapToJsonString
+import net.payrdr.mobile.payment.sdk.utils.responseBodyToJsonObject
 import org.json.JSONObject
 import java.net.URL
 
@@ -29,7 +29,7 @@ class TestOrderHelper(
 
         val card = TestCardHelper.cardSuccessSSL
 
-        val pubKey = RemoteKeyProvider(url = "${baseUrl}/se/keys.do")
+        val pubKey = RemoteKeyProvider(url = "$baseUrl/se/keys.do")
             .provideKey().value
 
         val params = CardParams(
@@ -65,12 +65,12 @@ class TestOrderHelper(
     fun registerOrder(
         amount: Int = 20000,
         returnUrl: String = "sdk://done",
-        userName: String = "mobile-sdk-api",
-        password: String = "vkyvbG0",
+        userName: String = TestCredentials.merchantLogin,
+        password: String = TestCredentials.merchantPassword,
         clientId: String? = null,
         testAdditionalPayerParams: TestAdditionalPayerParams = TestAdditionalPayerParams.DEFAULT
     ): String {
-        val url = "${baseUrl}/rest/register.do"
+        val url = "$baseUrl/rest/register.do"
         val body = mutableMapOf<String, String>()
         body["amount"] = amount.toString()
         body["userName"] = userName
@@ -102,7 +102,7 @@ class TestOrderHelper(
         amount: Int = 100,
         currency: String = "USD",
         resultUrl: String = "sdk://done",
-        apiKey: String = "9yVrffWNAiHUUVUCQoX4NFHMxmRHYA2yB",
+        apiKey: String = TestCredentials.apiKey,
         version: String = "2023-10-31"
 
     ): String {
@@ -128,5 +128,4 @@ class TestOrderHelper(
     suspend fun getSessionStatus(mdOrder: String): SessionStatusResponse {
         return paymentApi.getSessionStatus(mdOrder)
     }
-
 }

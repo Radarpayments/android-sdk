@@ -1,6 +1,6 @@
 package net.payrdr.mobile.payment.sdk.exceptions
 
-import net.payrdr.mobile.payment.sdk.form.SDKException
+import net.payrdr.mobile.payment.sdk.SDKException
 
 /**
  * An error that occurs when initializing a transaction object with any key.

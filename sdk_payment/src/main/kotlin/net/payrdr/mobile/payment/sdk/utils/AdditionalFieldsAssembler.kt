@@ -4,9 +4,9 @@ import net.payrdr.mobile.payment.sdk.api.entity.BillingPayerData
 import net.payrdr.mobile.payment.sdk.api.entity.CustomerDetails
 import net.payrdr.mobile.payment.sdk.api.entity.FieldParams
 import net.payrdr.mobile.payment.sdk.api.entity.OrderPayerData
-import net.payrdr.mobile.payment.sdk.form.model.AdditionalField
-import net.payrdr.mobile.payment.sdk.form.model.AdditionalFieldsForPaymentSystem
-import net.payrdr.mobile.payment.sdk.form.model.FilledAdditionalPayerParams
+import net.payrdr.mobile.payment.sdk.model.AdditionalField
+import net.payrdr.mobile.payment.sdk.model.AdditionalFieldsForPaymentSystem
+import net.payrdr.mobile.payment.sdk.model.FilledAdditionalPayerParams
 import java.lang.IllegalStateException
 
 /**

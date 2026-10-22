@@ -1,7 +1,7 @@
 package net.payrdr.mobile.payment.sdk.api.entity
 
-import net.payrdr.mobile.payment.sdk.form.utils.asList
-import net.payrdr.mobile.payment.sdk.form.utils.asStringList
+import net.payrdr.mobile.payment.sdk.utils.asList
+import net.payrdr.mobile.payment.sdk.utils.asStringList
 import net.payrdr.mobile.payment.sdk.utils.optValue
 import org.json.JSONObject
 

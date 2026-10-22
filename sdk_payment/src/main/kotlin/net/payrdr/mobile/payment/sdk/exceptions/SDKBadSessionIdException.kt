@@ -1,6 +1,6 @@
 package net.payrdr.mobile.payment.sdk.exceptions
 
-import net.payrdr.mobile.payment.sdk.form.SDKException
+import net.payrdr.mobile.payment.sdk.SDKException
 
 /**
  * Basic error that can be returned when converting session id to order number.

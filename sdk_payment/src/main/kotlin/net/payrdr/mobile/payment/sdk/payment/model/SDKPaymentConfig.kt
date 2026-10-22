@@ -1,6 +1,6 @@
 package net.payrdr.mobile.payment.sdk.payment.model
 
-import net.payrdr.mobile.payment.sdk.form.component.impl.SSLContextConfig
+import net.payrdr.mobile.payment.sdk.component.impl.SSLContextConfig
 
 /**
  * SDK Payment configuration options class .

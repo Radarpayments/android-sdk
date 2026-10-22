@@ -8,6 +8,7 @@
 
     <application
         android:requestLegacyExternalStorage="true"
+        android:theme="@style/Theme.App.Material"
         android:usesCleartextTraffic="true">
         <meta-data
             android:name="com.google.android.gms.ads.AD_MANAGER_APP"
@@ -17,6 +18,8 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"
             android:theme="@style/Theme.App.Material" />
+        <activity android:name=".test.core.CoreTestActivity" />
+        <activity android:name=".test.core.TestActivity" />
     </application>
 
 </manifest>

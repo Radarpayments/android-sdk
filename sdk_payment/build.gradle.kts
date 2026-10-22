@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("com.android.library")
     id("io.qameta.allure")
@@ -80,8 +82,6 @@ allure {
 }
 
 dependencies {
-    implementation(project(":sdk_forms"))
-    implementation(project(":sdk_threeds"))
     implementation(project(":sdk_core"))
     implementation(project(":sdk_logs"))
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
@@ -100,7 +100,11 @@ dependencies {
     implementation(Libs.kotlinx_coroutines_android)
     implementation(Libs.appcompat)
     implementation(Libs.androidx_constraintlayout)
+    implementation(Libs.android_material)
     implementation(Libs.android_play_services_wallet)
+    implementation(Libs.com_caverock_androidsvg)
+    implementation(Libs.com_github_devnied_emvnfccard)
+    implementation(Libs.card_io)
 
     testImplementation(TestLibs.junit)
     testImplementation(TestLibs.io_kotest_runner_junit)
@@ -110,6 +114,7 @@ dependencies {
     testImplementation(TestLibs.io_mockk)
     testImplementation(TestLibs.kotlinx_coroutines_test)
     testImplementation(TestLibs.test_runner)
+    testImplementation(TestLibs.org_json)
 
     androidTestImplementation(TestLibs.io_kotest_assertion_core)
     androidTestImplementation(TestLibs.kotlinx_coroutines_test)
@@ -121,3 +126,21 @@ dependencies {
     androidTestImplementation(TestLibs.com_squareup_mockwebserver)
     androidTestImplementation(TestLibs.com_squareup_okhttp_tls)
 }
+
+tasks {
+    withType<KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs = listOf(
+                "-Xjsr305=strict",
+                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi"
+            )
+            jvmTarget = "1.8"
+        }
+    }
+}
+
+extra["pomArtifactId"] = "sdk-payment"
+extra["pomName"] = "PAYRDR SDK Payment"
+extra["pomDescription"] = "Payment SDK for the PAYRDR payment gateway: payment form, saved cards, Google Pay, 3-D Secure"
+apply(from = "$rootDir/gradle/publishing.gradle.kts")

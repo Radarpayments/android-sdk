@@ -10,7 +10,7 @@ import net.payrdr.mobile.payment.sdk.core.validation.rules.StringRequiredRule
  *
  *  @param context context for getting string resources.
  * */
-class EmailValidator(context: Context): BaseValidator<String>() {
+class EmailValidator(context: Context) : BaseValidator<String>() {
 
     init {
         addRules(

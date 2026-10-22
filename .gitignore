@@ -24,5 +24,6 @@ out/
 /captures
 .externalNativeBuild
 .cxx
+.claude/worktrees
 
 **/libs/sdk-release.aar

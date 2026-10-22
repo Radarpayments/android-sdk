@@ -12,5 +12,4 @@ object ThreeDS1Screen : KScreen<ThreeDS1Screen>() {
         get() = Activity3DS2WebChallenge::class.java
 
     val webView = KWebView { withId(R.id.web_view) }
-
 }

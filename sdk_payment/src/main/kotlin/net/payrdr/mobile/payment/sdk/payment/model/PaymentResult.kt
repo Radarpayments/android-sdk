@@ -2,7 +2,7 @@ package net.payrdr.mobile.payment.sdk.payment.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import net.payrdr.mobile.payment.sdk.form.SDKException
+import net.payrdr.mobile.payment.sdk.SDKException
 
 /**
  * The result of a full payment cycle.

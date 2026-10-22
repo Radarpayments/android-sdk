@@ -19,7 +19,7 @@ import net.payrdr.mobile.payment.sdk.screen.fillOutFormAndSend
 import org.junit.Ignore
 import org.junit.Test
 
-class PaymentThreeDSLogUseCaseTest: BaseTestCase() {
+class PaymentThreeDSLogUseCaseTest : BaseTestCase() {
 
     @ScreenShooterTest
     @Ignore("Need URL and Key")

@@ -6,20 +6,20 @@ import net.payrdr.mobile.payment.sdk.core.component.CryptogramCipher
 import net.payrdr.mobile.payment.sdk.core.component.PaymentStringProcessor
 import net.payrdr.mobile.payment.sdk.core.component.impl.DefaultPaymentStringProcessor
 import net.payrdr.mobile.payment.sdk.core.component.impl.RSACryptogramCipher
-import net.payrdr.mobile.payment.sdk.core.model.BindingParams
 import net.payrdr.mobile.payment.sdk.core.model.BindingInstantParams
+import net.payrdr.mobile.payment.sdk.core.model.BindingParams
 import net.payrdr.mobile.payment.sdk.core.model.CardBindingIdIdentifier
 import net.payrdr.mobile.payment.sdk.core.model.CardInfo
+import net.payrdr.mobile.payment.sdk.core.model.CardInstantParams
 import net.payrdr.mobile.payment.sdk.core.model.CardPanIdentifier
 import net.payrdr.mobile.payment.sdk.core.model.CardParams
-import net.payrdr.mobile.payment.sdk.core.model.CardInstantParams
 import net.payrdr.mobile.payment.sdk.core.model.Key
 import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import net.payrdr.mobile.payment.sdk.core.model.NewPaymentMethodCardParams
+import net.payrdr.mobile.payment.sdk.core.model.NewPaymentMethodStoredCardParams
 import net.payrdr.mobile.payment.sdk.core.model.ParamField
 import net.payrdr.mobile.payment.sdk.core.model.PaymentCardParams
 import net.payrdr.mobile.payment.sdk.core.model.SDKCoreConfig
-import net.payrdr.mobile.payment.sdk.core.model.NewPaymentMethodStoredCardParams
 import net.payrdr.mobile.payment.sdk.core.utils.BindingUtils
 import net.payrdr.mobile.payment.sdk.core.utils.toExpDate
 import net.payrdr.mobile.payment.sdk.core.validation.BaseValidator
@@ -131,8 +131,8 @@ class SDKCore(
     }
 
     private fun createCardInfoForStoredCardPayment(
-        paymentCardParams: PaymentCardParams.StoredCardPaymentParams)
-    : CardInfo {
+        paymentCardParams: PaymentCardParams.StoredCardPaymentParams
+    ): CardInfo {
         val identifier = when (paymentCardParams) {
             is BindingParams -> {
                 CardBindingIdIdentifier(value = paymentCardParams.bindingID)
@@ -259,7 +259,6 @@ class SDKCore(
             TokenResult.withErrors(mapOf(ParamField.UNKNOWN to "unknown"))
         }
     }
-
 
     companion object {
         private const val TAG = "SDK-Core"

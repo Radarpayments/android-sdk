@@ -1,4 +1,9 @@
 #!/bin/bash
-docker run --rm -v "${PWD}"/sdk_forms/src:/app -v "${PWD}"/config/detekt:/config mdenissov/detekt-checker detekt --config /config/detekt.yml  --input /app/ --excludes "**.kts" && \
-docker run --rm -v "${PWD}"/sdk_core/src:/app -v "${PWD}"/config/detekt:/config mdenissov/detekt-checker detekt --config /config/detekt.yml  --input /app/ --excludes "**.kts"  && \
-docker run --rm -v "${PWD}"/sdk_payment/src:/app -v "${PWD}"/config/detekt:/config mdenissov/detekt-checker detekt --config /config/detekt.yml  --input /app/ --excludes "**.kts"
+set -e
+cd "$(dirname "$0")"
+source ./script_lint_tools.sh
+
+DETEKT="$(detekt_jar)"
+java -jar "$DETEKT" --config config/detekt/detekt.yml \
+  --input sdk_core/src,sdk_payment/src \
+  --excludes "**.kts"

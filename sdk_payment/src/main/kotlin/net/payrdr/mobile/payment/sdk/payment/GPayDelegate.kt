@@ -1,6 +1,6 @@
 package net.payrdr.mobile.payment.sdk.payment
 
-import net.payrdr.mobile.payment.sdk.form.model.GooglePayPaymentConfig
+import net.payrdr.mobile.payment.sdk.model.GooglePayPaymentConfig
 
 /**
  * Interface describing the operation of the Google Pay method.

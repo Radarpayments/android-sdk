@@ -1,6 +1,6 @@
 package net.payrdr.mobile.payment.sdk.exceptions
 
-import net.payrdr.mobile.payment.sdk.form.SDKException
+import net.payrdr.mobile.payment.sdk.SDKException
 
 /**
  * Error when Merchant is not configured to be used without 3DS2SDK.

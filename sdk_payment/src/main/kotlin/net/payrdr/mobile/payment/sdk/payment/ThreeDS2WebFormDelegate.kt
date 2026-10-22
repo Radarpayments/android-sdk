@@ -14,5 +14,4 @@ interface ThreeDS2WebFormDelegate {
     fun openWebChallenge(
         webChallengeParam: WebChallengeParam,
     )
-
 }

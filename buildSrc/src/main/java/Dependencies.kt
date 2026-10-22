@@ -9,6 +9,7 @@ object Versions {
     const val android_material = "1.6.0"
     const val com_caverock_androidsvg = "1.4"
     const val com_github_devnied_emvnfccard = "3.0.1"
+    const val card_io = "5.5.1-OS1"
     const val android_play_services_wallet = "19.4.0"
 
     const val junit = "4.13"
@@ -42,6 +43,7 @@ object Libs {
         "androidx.constraintlayout:constraintlayout:${Versions.androidx_constraintlayout}"
     const val android_material = "com.google.android.material:material:${Versions.android_material}"
     const val com_caverock_androidsvg = "com.caverock:androidsvg-aar:${Versions.com_caverock_androidsvg}"
+    const val card_io = "io.github.radarpayments:card-io:${Versions.card_io}"
     const val com_github_devnied_emvnfccard =
         "com.github.devnied.emvnfccard:library:${Versions.com_github_devnied_emvnfccard}"
     const val android_play_services_wallet =
@@ -85,6 +87,7 @@ object TestLibs {
     const val kaspresso = "com.kaspersky.android-components:kaspresso:${Versions.kaspresso}"
     const val kaspresso_allure_support =
         "com.kaspersky.android-components:kaspresso-allure-support:${Versions.kaspresso}"
+    const val org_json = "org.json:json:20180813"
 }
 
 object BuildVersionsAndroid {
@@ -96,7 +99,5 @@ object BuildVersionsAndroid {
 
 object SDKBuildVersions {
     const val sdkPaymentVersion = "local-dev-payment"
-    const val sdkFormsVersion = "local-dev-forms"
     const val sdkCoreVersion = "local-dev-core"
-    const val sdkThreeDSVersion = "local-dev-threeds"
 }

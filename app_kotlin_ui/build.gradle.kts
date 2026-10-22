@@ -6,13 +6,23 @@ plugins {
     id("kotlin-android")
 }
 
+// Keystore passwords are not stored in the repository. Pass them as Gradle properties
+// (-PsampleStorePassword=..., or ~/.gradle/gradle.properties) or environment variables
+// SAMPLE_STORE_PASSWORD / SAMPLE_KEY_PASSWORD. Without them the release build is unsigned.
+val sampleStorePassword: String? =
+    (findProperty("sampleStorePassword") as String?) ?: System.getenv("SAMPLE_STORE_PASSWORD")
+val sampleKeyPassword: String? =
+    (findProperty("sampleKeyPassword") as String?) ?: System.getenv("SAMPLE_KEY_PASSWORD") ?: sampleStorePassword
+
 android {
     signingConfigs {
-        create("release") {
-            storeFile = file("keys.jks")
-            keyAlias = "key"
-            storePassword = "123456"
-            keyPassword = "123456"
+        if (!sampleStorePassword.isNullOrBlank()) {
+            create("release") {
+                storeFile = file("keys.jks")
+                keyAlias = "key"
+                storePassword = sampleStorePassword
+                keyPassword = sampleKeyPassword
+            }
         }
     }
     compileSdkVersion(36)
@@ -31,7 +41,7 @@ android {
         getByName("release") {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.findByName("release")
         }
     }
     sourceSets {
@@ -64,16 +74,12 @@ android {
 
 dependencies {
     implementation(group = "", name = "sdk_logs-release", ext = "aar")
-    implementation(group = "", name = "sdk_forms-release", ext = "aar")
     implementation(group = "", name = "sdk_core-release", ext = "aar")
     implementation(group = "", name = "sdk_payment-release", ext = "aar")
-    implementation(group = "", name = "sdk_threeds-release", ext = "aar")
     implementation(group = "", name = "card.io-5.5.1-OS1", ext = "aar")
 
 //    implementation(project(":sdk_logs"))
-//    implementation(project(":sdk_threeds"))
 //    implementation(project(":sdk_core"))
-//    implementation(project(":sdk_forms"))
 //    implementation(project(":sdk_payment"))
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))

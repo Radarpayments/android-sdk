@@ -6,7 +6,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import net.payrdr.mobile.payment.sdk.DeleteCardHandler
+import net.payrdr.mobile.payment.sdk.GooglePayConfigBuilder
 import net.payrdr.mobile.payment.sdk.LogDebug
+import net.payrdr.mobile.payment.sdk.SDKCanceledByUserException
+import net.payrdr.mobile.payment.sdk.SDKException
+import net.payrdr.mobile.payment.sdk.SDKForms
 import net.payrdr.mobile.payment.sdk.api.PaymentApi
 import net.payrdr.mobile.payment.sdk.api.PaymentApiImpl
 import net.payrdr.mobile.payment.sdk.api.entity.BindingItem
@@ -17,26 +22,21 @@ import net.payrdr.mobile.payment.sdk.exceptions.SDKAlreadyPaymentException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKDeclinedException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKNotConfigureException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKSessionNotExistException
-import net.payrdr.mobile.payment.sdk.form.DeleteCardHandler
-import net.payrdr.mobile.payment.sdk.form.GooglePayConfigBuilder
-import net.payrdr.mobile.payment.sdk.form.SDKException
-import net.payrdr.mobile.payment.sdk.form.SDKForms
-import net.payrdr.mobile.payment.sdk.form.gpay.AllowedPaymentMethods
-import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayAuthMethod
-import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayCardNetwork
-import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayCheckoutOption
-import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayPaymentDataRequest
-import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayPaymentMethod
-import net.payrdr.mobile.payment.sdk.form.gpay.GooglePayTotalPriceStatus
-import net.payrdr.mobile.payment.sdk.form.gpay.GoogleTokenizationSpecificationType
-import net.payrdr.mobile.payment.sdk.form.gpay.MerchantInfo
-import net.payrdr.mobile.payment.sdk.form.gpay.PaymentMethodParameters
-import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecification
-import net.payrdr.mobile.payment.sdk.form.gpay.TokenizationSpecificationParameters
-import net.payrdr.mobile.payment.sdk.form.gpay.TransactionInfo
-import net.payrdr.mobile.payment.sdk.form.model.FilledAdditionalPayerParams
-import net.payrdr.mobile.payment.sdk.form.model.GooglePayPaymentConfig
-import net.payrdr.mobile.payment.sdk.form.utils.requiredField
+import net.payrdr.mobile.payment.sdk.gpay.AllowedPaymentMethods
+import net.payrdr.mobile.payment.sdk.gpay.GooglePayAuthMethod
+import net.payrdr.mobile.payment.sdk.gpay.GooglePayCardNetwork
+import net.payrdr.mobile.payment.sdk.gpay.GooglePayCheckoutOption
+import net.payrdr.mobile.payment.sdk.gpay.GooglePayPaymentDataRequest
+import net.payrdr.mobile.payment.sdk.gpay.GooglePayPaymentMethod
+import net.payrdr.mobile.payment.sdk.gpay.GooglePayTotalPriceStatus
+import net.payrdr.mobile.payment.sdk.gpay.GoogleTokenizationSpecificationType
+import net.payrdr.mobile.payment.sdk.gpay.MerchantInfo
+import net.payrdr.mobile.payment.sdk.gpay.PaymentMethodParameters
+import net.payrdr.mobile.payment.sdk.gpay.TokenizationSpecification
+import net.payrdr.mobile.payment.sdk.gpay.TokenizationSpecificationParameters
+import net.payrdr.mobile.payment.sdk.gpay.TransactionInfo
+import net.payrdr.mobile.payment.sdk.model.FilledAdditionalPayerParams
+import net.payrdr.mobile.payment.sdk.model.GooglePayPaymentConfig
 import net.payrdr.mobile.payment.sdk.payment.model.GooglePayProcessFormRequest
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentApiVersion
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
@@ -47,6 +47,7 @@ import net.payrdr.mobile.payment.sdk.utils.AdditionalFieldsAssembler
 import net.payrdr.mobile.payment.sdk.utils.OrderStatuses
 import net.payrdr.mobile.payment.sdk.utils.SessionIdConverter
 import net.payrdr.mobile.payment.sdk.utils.containsAnyOfKeywordIgnoreCase
+import net.payrdr.mobile.payment.sdk.utils.requiredField
 import java.math.BigDecimal
 
 /**
@@ -75,13 +76,27 @@ class PaymentManagerImpl(
         baseUrl = paymentConfig.baseURL
     )
 
-    init {
-        SDKForms.deleteCardHandler = object : DeleteCardHandler {
-            override fun deleteCard(bindingId: String) {
-                paymentScope.launchSafe {
-                    paymentApi.unbindCardAnonymous(bindingId, mdOrder)
-                }
+    private val deleteCardHandler = object : DeleteCardHandler {
+        override fun deleteCard(bindingId: String) {
+            paymentScope.launchSafe {
+                paymentApi.unbindCardAnonymous(bindingId, mdOrder)
             }
+        }
+    }
+
+    init {
+        SDKForms.deleteCardHandler = deleteCardHandler
+    }
+
+    /**
+     * Restores the order of a payment screen recreated by Android (configuration change or process death)
+     * without starting the checkout again: the bottom sheet and the screens above it are restored by Android.
+     */
+    internal fun restore(order: String, versionApi: PaymentApiVersion) {
+        mdOrder = order
+        sessionId = when (versionApi) {
+            PaymentApiVersion.V1 -> order
+            PaymentApiVersion.V2 -> SessionIdConverter.mdOrderToSessionId(order)
         }
     }
 
@@ -308,9 +323,9 @@ class PaymentManagerImpl(
                         cause = null
                     )
                 )
-            } else if (paymentResult.data != null && !paymentResult.data.acsUrl.isNullOrBlank()
-                && !paymentResult.data.paReq.isNullOrBlank()
-                && !paymentResult.data.termUrl.isNullOrBlank()
+            } else if (paymentResult.data != null && !paymentResult.data.acsUrl.isNullOrBlank() &&
+                !paymentResult.data.paReq.isNullOrBlank() &&
+                !paymentResult.data.termUrl.isNullOrBlank()
             ) {
                 val webChallengeParam = WebChallengeParam(
                     mdOrder = paymentResult.data.orderId,
@@ -341,6 +356,10 @@ class PaymentManagerImpl(
 
     internal fun onDestroy() {
         paymentScope.cancel()
+        // The static handler references this manager and the activity behind it: release them.
+        if (SDKForms.deleteCardHandlerOrNull === deleteCardHandler) {
+            SDKForms.deleteCardHandler = null
+        }
     }
 
     internal fun finishWithCheckOrderStatus() {
@@ -358,9 +377,20 @@ class PaymentManagerImpl(
     }
 
     /**
-     * Canceling the process of creating a cryptogram.
+     * Finishes the payment with the error [ex].
+     *
+     * A user cancellation ([SDKCanceledByUserException]) is returned at once, without a server round trip:
+     * on a bad network that round trip kept the screen blocked until the request timed out and then replaced
+     * the cancellation with a network error. For other errors the order status is checked first; if that check
+     * fails, the original error is still returned and the check failure is attached to it as suppressed.
      */
     internal fun finishWithError(ex: Throwable) {
+        if (ex is SDKCanceledByUserException) {
+            activityDelegate.finishActivityWithResult(
+                PaymentResult(sessionId = sessionId, isSuccess = false, exception = ex)
+            )
+            return
+        }
         paymentScope.launch {
             try {
                 val orderStatus = getSessionStatus()
@@ -371,28 +401,25 @@ class PaymentManagerImpl(
                     isSuccess = paymentFinishedInfo.status.containsAnyOfKeywordIgnoreCase(
                         OrderStatuses.payedStatues
                     ),
-                    exception = if (ex is SDKException) {
-                        ex
-                    } else {
-                        SDKException(message = "", cause = ex)
-                    }
+                    exception = ex.toSDKException()
                 )
                 activityDelegate.finishActivityWithResult(paymentDataResponse)
-            } catch (ex: Exception) {
+            } catch (checkError: Exception) {
+                LogDebug.logIfDebug("finishWithError order status check failed: $checkError")
+                ex.addSuppressed(checkError)
                 activityDelegate.finishActivityWithResult(
                     PaymentResult(
                         sessionId = sessionId,
                         isSuccess = false,
-                        exception = if (ex is SDKException) {
-                            ex
-                        } else {
-                            SDKException(message = "", cause = ex)
-                        }
+                        exception = ex.toSDKException()
                     )
                 )
             }
         }
     }
+
+    private fun Throwable.toSDKException(): SDKException =
+        this as? SDKException ?: SDKException(message = message.orEmpty(), cause = this)
 
     private suspend fun getFinishedPaymentInfo(mdOrder: String): FinishedPaymentInfoResponse =
         paymentApi.getFinishedPaymentInfo(mdOrder)

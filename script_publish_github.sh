@@ -16,7 +16,7 @@ fi
 }
 
 # The address of the repository where the publication should be made.
-#PUBLISH_TARGET_REPO="git@github.com:Runet-Business-Systems/android-sdk.git"
+#PUBLISH_TARGET_REPO="git@github.com:Radarpayments/android-sdk.git"
 
 # Publish repository branch (where changes will be published)
 #PUBLISH_TARGET_BRANCH="master"
@@ -58,8 +58,6 @@ rm -rf android-sdk || true
 stageEcho 'Getting a new version from the GitLab development repository'
 
 rm -r ./.git
-# You can not publish the code of the 3ds module
-rm -r ./sdk_threeds
 
 mkdir payrdr-android-sdk
 rsync -av --delete-after \

@@ -18,8 +18,8 @@ import androidx.appcompat.app.AppCompatActivity
 import net.payrdr.mobile.payment.sdk.Constants
 import net.payrdr.mobile.payment.sdk.LogDebug
 import net.payrdr.mobile.payment.sdk.R
+import net.payrdr.mobile.payment.sdk.SDKException
 import net.payrdr.mobile.payment.sdk.SDKPayment
-import net.payrdr.mobile.payment.sdk.form.SDKException
 import net.payrdr.mobile.payment.sdk.logs.Logger
 import net.payrdr.mobile.payment.sdk.logs.Source
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
@@ -62,12 +62,14 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
                         source = Source.WEB_VIEW
                     )
                     message = "The certificate authority is not trusted."
-                    val sslContextConfig = SDKPayment.sdkPaymentConfig.sslContextConfig
+                    // Null-safe: without a configuration (not restored after process death) the connection
+                    // stays untrusted and is cancelled below instead of crashing.
+                    val sslContextConfig = SDKPayment.sdkPaymentConfigOrNull?.sslContextConfig
                     if (sslContextConfig != null) {
                         try {
                             val trust = sslContextConfig.trustManager as X509TrustManager
                             trust.checkServerTrusted(
-                                arrayOf(SDKPayment.sdkPaymentConfig.sslContextConfig?.customCertificate),
+                                arrayOf(sslContextConfig.customCertificate),
                                 "RSA"
                             )
                             isTrusted = true
@@ -297,6 +299,8 @@ class Activity3DS2WebChallenge : AppCompatActivity() {
 
     @Suppress("TooGenericExceptionCaught")
     override fun onCreate(savedInstanceState: Bundle?) {
+        // This screen can be recreated alone after process death: restore the merchant's SSL configuration.
+        SDKPayment.restoreConfigIfNeeded(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_web_challenge)
         timer = Timer()

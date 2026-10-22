@@ -1,0 +1,209 @@
+name: Release
+
+# Actions → Release → Run workflow, or: gh workflow run release.yml --ref <branch> -f version=3.0.14 -f mode=publish
+#
+# mode:
+#   dry-run  (default) runs every check, builds and signs the Maven bundle, publishes nothing
+#   validate uploads the bundle to the Maven Central Portal, waits for its validation and drops it: nothing is published
+#   publish  publishes to Maven Central (cannot be undone), then creates the tag and the GitHub release with the AARs
+# A pre-release version (3.0.14-rc.1) can be published from any branch, a stable version (3.0.14) only from main.
+# card-io is added to the bundle only while its version is not on Maven Central yet.
+# Pull requests that touch the release pipeline run it as a dry run.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 3.0.14 or 3.0.14-rc.1'
+        required: true
+        type: string
+      mode:
+        description: 'dry-run: build only; validate: check the bundle on Maven Central; publish: release'
+        required: true
+        default: dry-run
+        type: choice
+        options: [ dry-run, validate, publish ]
+  pull_request:
+    paths:
+      - '.github/workflows/release.yml'
+      - '.github/scripts/**'
+      - 'gradle/publishing**'
+      - 'card_io/**'
+      - 'repo/**'
+      - 'buildSrc/**'
+      - '**/build.gradle.kts'
+      - 'settings.gradle.kts'
+
+concurrency:
+  group: release-${{ github.ref }}
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CARD_IO_PATH: io/github/radarpayments/card-io/5.5.1-OS1
+  SIGNING_KEY_FINGERPRINT: 6624D0D08D71522E191A9252018DA6ABF8CB0681
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_MODE: ${{ inputs.mode }}
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            version="0.0.0-pr.${{ github.event.number }}"
+            mode=dry-run
+          else
+            version="$INPUT_VERSION"
+            mode="$INPUT_MODE"
+          fi
+          base="${version%%-*}"
+
+          echo "version=$version mode=$mode ref=$GITHUB_REF"
+
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::'$version' is not a semantic version"; exit 1
+          fi
+          if git rev-parse -q --verify "refs/tags/$version" >/dev/null; then
+            if [[ "$mode" == "dry-run" ]]; then
+              echo "::warning::Tag $version already exists"
+            else
+              echo "::error::Tag $version already exists"; exit 1
+            fi
+          fi
+          if curl -sfI "https://repo1.maven.org/maven2/io/github/radarpayments/sdk-payment/$version/sdk-payment-$version.pom" >/dev/null; then
+            if [[ "$mode" == "dry-run" ]]; then
+              echo "::warning::$version is already on Maven Central"
+            else
+              echo "::error::$version is already on Maven Central"; exit 1
+            fi
+          fi
+          if [[ "$mode" == "publish" && "$version" == "$base" && "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "::error::Stable versions are released only from main. Use a pre-release version like $base-rc.1."; exit 1
+          fi
+
+          {
+            echo "VERSION=$version"
+            echo "MODE=$mode"
+            [[ "$version" != "$base" ]] && echo "PRERELEASE=true" || echo "PRERELEASE=false"
+          } >> "$GITHUB_ENV"
+
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17, cache: gradle }
+
+      - name: Set SDK version
+        run: |
+          sed -i "s/sdkPaymentVersion = \".*\"/sdkPaymentVersion = \"$VERSION\"/; s/sdkCoreVersion = \".*\"/sdkCoreVersion = \"$VERSION\"/" \
+            buildSrc/src/main/java/Dependencies.kt
+          grep -E 'sdk(Payment|Core)Version =' buildSrc/src/main/java/Dependencies.kt
+
+      - name: detekt and ktlint
+        run: ./script_pre_commit.sh
+
+      - name: Unit tests
+        run: ./gradlew --console=plain :sdk_core:testDebugUnitTest :sdk_payment:testDebugUnitTest
+
+      - name: Test results
+        if: always()
+        run: .github/scripts/test-summary.sh sdk_core sdk_payment
+
+      - name: Build SDK AARs and sample apps
+        run: |
+          ./copy_sdk_lib_to_samples.sh --console=plain
+          ./gradlew --console=plain :app_kotlin_core:assembleDebug :app_kotlin_ui:assembleDebug
+
+      - name: Check signing key
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        run: |
+          if [[ -z "$SIGNING_KEY" ]]; then
+            [[ "$MODE" != "dry-run" ]] && { echo "::error::SIGNING_KEY secret is not set"; exit 1; }
+            echo "::warning::SIGNING_KEY is not available, the bundle is not signed"
+            exit 0
+          fi
+          GNUPGHOME=$(mktemp -d)
+          export GNUPGHOME
+          gpg --batch --import <<<"$SIGNING_KEY" 2>/dev/null || true
+          fingerprint=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr/{print $10; exit}')
+          [[ -n "$fingerprint" ]] || { echo "::error::SIGNING_KEY is not a valid armored secret key"; exit 1; }
+          [[ "$fingerprint" == "$SIGNING_KEY_FINGERPRINT" ]] || { echo "::error::SIGNING_KEY is not the release signing key"; exit 1; }
+          echo test | gpg --batch --pinentry-mode loopback --passphrase-fd 3 --sign -o /dev/null 3<<<"$SIGNING_PASSWORD" \
+            || { echo "::error::SIGNING_PASSWORD does not unlock SIGNING_KEY"; exit 1; }
+          rm -rf "$GNUPGHOME"
+
+      - name: Signed Maven publication (local staging directory)
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        run: ./gradlew --console=plain -PsdkVersion="$VERSION" publishAllPublicationsToStagingRepository
+
+      - name: Maven Central bundle
+        run: |
+          cd build/staging-deploy
+          if curl -sfI "https://repo1.maven.org/maven2/$CARD_IO_PATH/card-io-5.5.1-OS1.pom" >/dev/null; then
+            echo "card-io 5.5.1-OS1 is already on Maven Central, not included"
+            rm -rf io/github/radarpayments/card-io
+          fi
+          find . -name 'maven-metadata*' -delete
+          if [[ "$MODE" != "dry-run" ]]; then
+            missing=$(find . -type f ! -name '*.asc' ! -name '*.md5' ! -name '*.sha*' -exec sh -c '[ -f "$1.asc" ] || echo "$1"' _ {} \;)
+            [[ -n "$missing" ]] && { echo "::error::Not signed: $missing"; exit 1; }
+          fi
+          zip -qr ../central-bundle.zip .
+          find . -type f ! -name '*.md5' ! -name '*.sha*' | sort
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-sdk-${{ env.VERSION }}
+          path: |
+            build/central-bundle.zip
+            */build/outputs/aar/*-release.aar
+          retention-days: 14
+
+      - name: Maven Central
+        if: env.MODE != 'dry-run'
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+        run: .github/scripts/central-upload.sh build/central-bundle.zip "$MODE" "android-sdk $VERSION"
+
+      - name: Create tag and GitHub release
+        if: env.MODE == 'publish'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p release
+          cp sdk_logs/build/outputs/aar/sdk_logs-release.aar sdk_core/build/outputs/aar/sdk_core-release.aar \
+            sdk_payment/build/outputs/aar/sdk_payment-release.aar release/
+          cp "repo/$CARD_IO_PATH/card-io-5.5.1-OS1.aar" release/card.io-5.5.1-OS1.aar
+          flags=(--title "$VERSION" --generate-notes --target "$GITHUB_SHA")
+          [[ "$PRERELEASE" == "true" ]] && flags+=(--prerelease)
+          gh release create "$VERSION" release/*.aar "${flags[@]}"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Android SDK $VERSION ($MODE)"
+            case "$MODE" in
+              dry-run) echo "Nothing was published. The bundle and the AARs are in the workflow artifacts." ;;
+              validate) echo "Maven Central accepted the bundle; the deployment was dropped, nothing was published." ;;
+              publish)
+                echo "Maven Central: \`implementation(\"io.github.radarpayments:sdk-payment:$VERSION\")\`"
+                echo ""
+                echo "GitHub release: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$VERSION" ;;
+            esac
+          } >> "$GITHUB_STEP_SUMMARY"
