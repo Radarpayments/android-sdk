@@ -139,8 +139,7 @@ jobs:
           gpg --batch --import <<<"$SIGNING_KEY" 2>/dev/null || true
           fingerprint=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr/{print $10; exit}')
           [[ -n "$fingerprint" ]] || { echo "::error::SIGNING_KEY is not a valid armored secret key"; exit 1; }
-          echo "Signing key $fingerprint"
-          [[ "$fingerprint" == "$SIGNING_KEY_FINGERPRINT" ]] || echo "::warning::Expected signing key $SIGNING_KEY_FINGERPRINT"
+          [[ "$fingerprint" == "$SIGNING_KEY_FINGERPRINT" ]] || { echo "::error::SIGNING_KEY is not the release signing key"; exit 1; }
           echo test | gpg --batch --pinentry-mode loopback --passphrase-fd 3 --sign -o /dev/null 3<<<"$SIGNING_PASSWORD" \
             || { echo "::error::SIGNING_PASSWORD does not unlock SIGNING_KEY"; exit 1; }
           rm -rf "$GNUPGHOME"
