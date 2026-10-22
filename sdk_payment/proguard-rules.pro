@@ -31,8 +31,3 @@
 -keepclasseswithmembers class kotlinx.serialization.json.* {
     kotlinx.serialization.KSerializer serializer(...);
 }
-
--keep,includedescriptorclasses class net.payrdr.mobile.payment.sample.kotlin.**$$serializer { *; }
--keepclassmembers class net.payrdr.mobile.payment.sample.kotlin.* {
-    *** Companion;
-}

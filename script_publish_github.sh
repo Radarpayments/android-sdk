@@ -16,7 +16,7 @@ fi
 }
 
 # The address of the repository where the publication should be made.
-#PUBLISH_TARGET_REPO="git@github.com:Runet-Business-Systems/android-sdk.git"
+#PUBLISH_TARGET_REPO="git@github.com:Radarpayments/android-sdk.git"
 
 # Publish repository branch (where changes will be published)
 #PUBLISH_TARGET_BRANCH="master"

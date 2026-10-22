@@ -62,7 +62,6 @@ android {
         exclude("META-INF/licenses/**")
         exclude("META-INF/AL2.0")
         exclude("META-INF/LGPL2.1")
-        exclude("META-INF/sdk_forms_debug.kotlin_module")
     }
 
     testOptions {
