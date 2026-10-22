@@ -164,7 +164,7 @@ The Maven publication version comes from `-PsdkVersion=<version>` (`local-dev` w
   Secrets: `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD` (Central Portal user token), `SIGNING_KEY`,
   `SIGNING_PASSWORD` (GPG key `6624D0D08D71522E191A9252018DA6ABF8CB0681`).
 - `.github/workflows/ci.yml`: lint, unit tests, AARs, sample apps and an unsigned staging publication on every PR
-  and push to `main` / `MSDK-*`.
+  and push to `main`.
 - `script_publish_github*.sh` belong to the old GitLab mirror flow and are not used.
 
 ---

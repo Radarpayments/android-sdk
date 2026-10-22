@@ -1,12 +1,12 @@
 name: CI
 
-# Runs on every PR and on pushes to main and task branches (MSDK-*). Publishes nothing:
+# Runs on every PR and on pushes to main. Publishes nothing:
 # the AARs and the Maven staging directory are kept only as workflow artifacts.
 
 on:
   pull_request:
   push:
-    branches: [ main, 'MSDK-*' ]
+    branches: [ main ]
   workflow_dispatch:
 
 concurrency:
