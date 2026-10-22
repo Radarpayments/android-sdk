@@ -1,0 +1,72 @@
+name: CI
+
+# Runs on every PR and on pushes to main and task branches (MSDK-*). Publishes nothing:
+# the AARs and the Maven staging directory are kept only as workflow artifacts.
+
+on:
+  pull_request:
+  push:
+    branches: [ main, 'MSDK-*' ]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - name: detekt and ktlint
+        run: ./script_pre_commit.sh
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17, cache: gradle }
+      - name: Unit tests
+        run: ./gradlew --console=plain :sdk_core:testDebugUnitTest :sdk_payment:testDebugUnitTest
+      - name: Test results
+        if: always()
+        run: .github/scripts/test-summary.sh sdk_core sdk_payment
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-reports
+          path: '*/build/reports/tests/'
+          retention-days: 7
+
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17, cache: gradle }
+      - name: Build SDK AARs and copy them to the samples
+        run: ./copy_sdk_lib_to_samples.sh --console=plain
+      - name: Build sample apps
+        run: ./gradlew --console=plain :app_kotlin_core:assembleDebug :app_kotlin_ui:assembleDebug
+      - name: Maven publication (unsigned, local staging directory)
+        run: ./gradlew --console=plain -PsdkVersion=0.0.0-ci publishAllPublicationsToStagingRepository
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdk-${{ github.sha }}
+          path: |
+            */build/outputs/aar/*-release.aar
+            build/staging-deploy/
+          retention-days: 7

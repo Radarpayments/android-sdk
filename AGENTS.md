@@ -9,11 +9,11 @@
 
 **PAYRDR Payment SDK** is a multi-module Android library by BPC (Radarpayments).
 Root namespace: `net.payrdr.mobile.payment.sdk.*`. Current release line: **3.0.x**.
-Distributed as AAR assets attached to GitHub releases — **no Maven Central, no maven-publish configuration**.
+Published to Maven Central as `io.github.radarpayments:sdk-payment`, `sdk-core`, `sdk-logs`, `card-io`; the
+release AARs are also attached to GitHub releases.
 
-> This repo (`Radarpayments/android-sdk`) is a **public mirror** of an upstream private GitLab
-> repo. Commits arrive here as rsync drops labelled `Update <semver>`. Direct edits to `main` may be
-> overwritten by the next mirror sync — confirm with the team before landing changes here.
+> Development happens here, in `Radarpayments/android-sdk` (since October 2026). The older history consists of
+> `Update <semver>` drops mirrored from a private GitLab repo; that mirror flow is no longer used.
 
 ---
 
@@ -23,7 +23,8 @@ Distributed as AAR assets attached to GitHub releases — **no Maven Central, no
 |---|---|---|
 | `sdk_logs` | library | Sentry-based logging utility. No internal deps. |
 | `sdk_core` | library | Card validation, RSA cryptogram generation, payment-string processing, models. Depends on `sdk_logs`. |
-| `sdk_payment` | library | Public entry point: `SDKPayment` object (`init` in `Application`, `checkout`, `handleCheckoutResult`). Payment orchestration (`PaymentActivity`, `PaymentManager`), 3DS1 web challenge via in-process `Activity3DS2WebChallenge`, and the prebuilt UI formerly in `sdk_forms`: card entry / card list / Google Pay / NFC scan (bundles `sdk_payment/libs/card.io-5.5.1-OS1.aar`). Uses `kotlin-android-extensions` synthetics. Depends on `sdk_core`, `sdk_logs`. |
+| `sdk_payment` | library | Public entry point: `SDKPayment` object (`init` in `Application`, `checkout`, `handleCheckoutResult`). Payment orchestration (`PaymentActivity`, `PaymentManager`), 3DS1 web challenge via in-process `Activity3DS2WebChallenge`, and the prebuilt UI formerly in `sdk_forms`: card entry / card list / Google Pay / NFC scan (depends on `card-io`, see `card_io`). Uses `kotlin-android-extensions` synthetics. Depends on `sdk_core`, `sdk_logs`. |
+| `card_io` | publishing only | Publishes the prebuilt card.io AAR (`repo/io/github/radarpayments/card-io/5.5.1-OS1/`, OutSystems fork 5.5.1-OS1 with 16 KB page support, sources at github.com/OutSystems/card.io-Android-source@0fe39f0) as `io.github.radarpayments:card-io`. `repo/` is a local Maven repository, so `sdk_payment` resolves it by coordinates. |
 | `app_kotlin_core` | sample app | Minimal Kotlin sample exercising `sdk_core` only (card field validation). Consumes AARs from `app_kotlin_core/libs/`. |
 | `app_kotlin_ui` | sample app | Kotlin sample using `sdk_payment`: one payment form (`PaymentFormFragment`) that takes an `mdOrder` and calls `SDKPayment.checkout`. Consumes AARs from `app_kotlin_ui/libs/`. |
 | `buildSrc/` | convention | `src/main/java/Dependencies.kt` — single source of truth for versions and coordinates. `src/main/java/plugins/jacoco-report.gradle.kts`. |
@@ -57,10 +58,10 @@ Exception: `sdk_payment/src/test/java/...` uses the raw Java path.
 ```
 
 What this script does:
-- Builds `:sdk_logs :sdk_core :sdk_payment`.
+- Builds the release AARs of `:sdk_logs :sdk_core :sdk_payment` (extra arguments go to Gradle).
 - Copies `sdk_logs-release.aar` and `sdk_core-release.aar` into `app_kotlin_core/libs/`.
 - Copies `sdk_logs`, `sdk_core`, `sdk_payment` release AARs plus the bundled
-  `sdk_payment/libs/card.io-5.5.1-OS1.aar` into `app_kotlin_ui/libs/`.
+  card.io AAR from `repo/` (as `card.io-5.5.1-OS1.aar`) into `app_kotlin_ui/libs/`.
 
 After changing SDK code, rerun the script (or rebuild the module and copy its AAR) — the samples do
 not pick up source changes on their own.
@@ -145,17 +146,26 @@ All shared versions and coordinates live in `buildSrc/src/main/java/Dependencies
 (`Versions`, `Libs`, `TestLibs`, `BuildVersionsAndroid`, `SDKBuildVersions`).
 **Never hard-code versions in module `build.gradle.kts` files.** Sample apps are the only exception.
 
-`SDKBuildVersions` shows `"local-dev-<module>"` on `main`; CI overwrites these via
-`./script_update_modules_version.sh` (using `CI_COMMIT_TAG`, or `Dev(<short sha>)` otherwise).
+`SDKBuildVersions` shows `"local-dev-<module>"` on `main`; `release.yml` replaces them with the released version.
+The Maven publication version comes from `-PsdkVersion=<version>` (`local-dev` without it).
 
 ---
 
 ## Publishing
 
-- Artifacts: AARs uploaded as assets to GitHub releases (no Maven Central).
-- Public mirror: `git@github.com:Radarpayments/android-sdk.git`.
-- Scripts: `script_publish_github.sh`, `script_publish_github_release.sh`.
-- CI: `.github/workflows/main.yml`.
+- Maven Central, namespace `io.github.radarpayments`: `sdk-logs`, `sdk-core`, `sdk-payment` (version = SDK version)
+  and `card-io` (`5.5.1-OS1`, published once). `gradle/publishing.gradle.kts` holds the POM, the sources and
+  placeholder javadoc jars and the signing; it is applied by each published module.
+- Local check: `./gradlew -PsdkVersion=X publishAllPublicationsToStagingRepository` writes the publication to
+  `build/staging-deploy/` (signed when `SIGNING_KEY` / `SIGNING_PASSWORD` are set in the environment).
+- `.github/workflows/release.yml` (manual): `dry-run` builds and signs the bundle, `validate` uploads it to the Central
+  Portal and drops it after validation, `publish` releases to Maven Central (irreversible) and creates the tag and the
+  GitHub release with the AARs. Stable versions only from `main`, `-rc.N` from any branch.
+  Secrets: `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD` (Central Portal user token), `SIGNING_KEY`,
+  `SIGNING_PASSWORD` (GPG key `6624D0D08D71522E191A9252018DA6ABF8CB0681`).
+- `.github/workflows/ci.yml`: lint, unit tests, AARs, sample apps and an unsigned staging publication on every PR
+  and push to `main` / `MSDK-*`.
+- `script_publish_github*.sh` belong to the old GitLab mirror flow and are not used.
 
 ---
 
@@ -175,8 +185,8 @@ All shared versions and coordinates live in `buildSrc/src/main/java/Dependencies
    different rules and will report unrelated issues. To bump, change the version and checksum together
    in `script_lint_tools.sh` and fix the configs.
 
-4. **This repo is a public mirror.** Direct commits to `main` may be overwritten by the next mirror
-   sync. Confirm before landing changes.
+4. **Maven Central versions are permanent.** A published version (including `-rc.N`) can never be changed or
+   deleted. Check the bundle with the `dry-run` and `validate` modes of `release.yml` first.
 
 5. **Old toolchain is intentional.** Do not bump Gradle/AGP/Kotlin or remove `kotlin-android-extensions`
    without explicit instruction.
@@ -204,7 +214,8 @@ descriptive subject; do not imitate the `Update X.Y.Z` form.
 | Card validation entry point | `sdk_core/src/main/kotlin/.../SDKCore.kt` |
 | All versions | `buildSrc/src/main/java/Dependencies.kt` |
 | detekt config | `config/detekt/detekt.yml` |
-| CI workflow | `.github/workflows/main.yml` |
+| CI / release workflows | `.github/workflows/ci.yml`, `.github/workflows/release.yml` |
+| Maven publication | `gradle/publishing.gradle.kts` |
 | Bootstrap script | `copy_sdk_lib_to_samples.sh` |
 | Pre-commit hook source | `config/git/hooks/pre-commit.sh` |
 | Lint tool versions + checksums | `script_lint_tools.sh` |
