@@ -20,36 +20,38 @@ import com.kaspersky.kaspresso.params.ScreenshotParams
 import com.kaspersky.kaspresso.testcases.api.testcase.DocLocScreenshotTestCase
 import com.kaspersky.kaspresso.testcases.models.info.TestInfo
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.mockk
 import io.qameta.allure.android.allureScreenshot
 import io.qameta.allure.android.runners.AllureAndroidJUnit4
+import net.payrdr.mobile.payment.sdk.Constants
 import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.SDKForms
 import net.payrdr.mobile.payment.sdk.SDKFormsConfigBuilder
 import net.payrdr.mobile.payment.sdk.component.CryptogramProcessor
 import net.payrdr.mobile.payment.sdk.component.impl.CachedKeyProvider
 import net.payrdr.mobile.payment.sdk.component.impl.RemoteKeyProvider
-import net.payrdr.mobile.payment.sdk.core.model.CardInfo
-import net.payrdr.mobile.payment.sdk.core.model.CardPanIdentifier
-import net.payrdr.mobile.payment.sdk.core.model.ExpiryDate
-import net.payrdr.mobile.payment.sdk.core.model.MSDKRegisteredFrom
 import net.payrdr.mobile.payment.sdk.model.AdditionalField
 import net.payrdr.mobile.payment.sdk.model.CardSaveOptions
+import net.payrdr.mobile.payment.sdk.model.CryptogramData
 import net.payrdr.mobile.payment.sdk.model.HolderInputOptions
+import net.payrdr.mobile.payment.sdk.model.PaymentInfoNewCard
 import net.payrdr.mobile.payment.sdk.test.PaymentConfigTestProvider.configWithAllAdditionalCardParams
 import net.payrdr.mobile.payment.sdk.test.PaymentConfigTestProvider.defaultConfig
 import net.payrdr.mobile.payment.sdk.test.core.getString
 import net.payrdr.mobile.payment.sdk.test.core.targetContext
 import net.payrdr.mobile.payment.sdk.test.espresso.TextInputLayoutErrorTextMatcher.Companion.hasTextInputLayoutHintText
+import net.payrdr.mobile.payment.sdk.test.junit.ConfigurationLocales
 import net.payrdr.mobile.payment.sdk.test.junit.ConfigurationRule
+import net.payrdr.mobile.payment.sdk.test.junit.ConfigurationThemes
 import net.payrdr.mobile.payment.sdk.ui.screen.NewCardScreen
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 import org.junit.rules.TestName
 import org.junit.runner.RunWith
+import java.util.Calendar
 
 @SmallTest
 @Suppress("LargeClass")
@@ -113,6 +115,8 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
     }
 
     @Test
+    @ConfigurationLocales
+    @ConfigurationThemes
     fun shouldRunWithCorrectLocale() {
         run {
             val config = defaultConfig()
@@ -426,7 +430,7 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 config
             )
-            activityTestRule.launchActivity(launchIntent)
+            val activity = activityTestRule.launchActivity(launchIntent)
             step("") {
                 coEvery {
                     mockCryptogramProcessor.create(any(), any(), any(), any(), any())
@@ -447,7 +451,7 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                     pressKey(KeyEvent.KEYCODE_ENTER)
                     allureScreenshot(name = "shouldRunWithConfiguredSaveCardHide_1", quality = 1)
                     cardExpiryInput {
-                        typeText("1225")
+                        typeText(VALID_EXPIRY_INPUT)
                     }
                     pressKey(KeyEvent.KEYCODE_ENTER)
                     allureScreenshot(name = "shouldRunWithConfiguredSaveCardHide_1", quality = 1)
@@ -466,27 +470,13 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                 }
             }
             step("") {
-                coVerify {
-                    mockCryptogramProcessor.create(
-                        order = eq(config.order),
-                        timestamp = eq(config.timestamp),
-                        uuid = eq(config.uuid),
-                        cardInfo = eq(
-                            CardInfo(
-                                identifier = CardPanIdentifier(
-                                    value = "5586200016956614"
-                                ),
-                                expDate = ExpiryDate(
-                                    expYear = 2025,
-                                    expMonth = 12
-                                ),
-                                cvv = "012",
-                                cardHolder = "MASHA"
-                            )
-                        ),
-                        registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
-                    )
-                }
+                // The form returns the card data; PaymentActivity encrypts it with SDKCore.
+                val info = newCardResult(activity)
+                assertEquals(config.order, info.order)
+                assertEquals("5586200016956614", info.pan)
+                assertEquals(VALID_EXPIRY_TEXT, info.expiryDate)
+                assertEquals("012", info.cvc)
+                assertEquals("MASHA", info.holder)
             }
         }
     }
@@ -503,7 +493,7 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 config
             )
-            activityTestRule.launchActivity(launchIntent)
+            val activity = activityTestRule.launchActivity(launchIntent)
             step("") {
                 coEvery {
                     mockCryptogramProcessor.create(any(), any(), any(), any(), any())
@@ -524,7 +514,7 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                     pressKey(KeyEvent.KEYCODE_ENTER)
                     allureScreenshot(name = "shouldRunWithConfiguredSaveCardHide_1", quality = 1)
                     cardExpiryInput {
-                        typeText("1225")
+                        typeText(VALID_EXPIRY_INPUT)
                     }
                     pressKey(KeyEvent.KEYCODE_ENTER)
                     allureScreenshot(name = "shouldRunWithConfiguredSaveCardHide_1", quality = 1)
@@ -543,26 +533,13 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
                 }
             }
             step("") {
-                coVerify {
-                    mockCryptogramProcessor.create(
-                        timestamp = eq(config.timestamp),
-                        uuid = eq(config.uuid),
-                        cardInfo = eq(
-                            CardInfo(
-                                identifier = CardPanIdentifier(
-                                    value = "5586200016956614"
-                                ),
-                                expDate = ExpiryDate(
-                                    expYear = 2025,
-                                    expMonth = 12
-                                ),
-                                cvv = "012",
-                                cardHolder = "MASHA"
-                            )
-                        ),
-                        registeredFrom = MSDKRegisteredFrom.MSDK_CORE,
-                    )
-                }
+                // The form returns the card data; PaymentActivity encrypts it with SDKCore.
+                val info = newCardResult(activity)
+                assertEquals(config.order, info.order)
+                assertEquals("5586200016956614", info.pan)
+                assertEquals(VALID_EXPIRY_TEXT, info.expiryDate)
+                assertEquals("012", info.cvc)
+                assertEquals("MASHA", info.holder)
             }
         }
     }
@@ -893,4 +870,22 @@ class CardNewActivityTest : DocLocScreenshotTestCase(
             }
         }
     }
+
+    /** [activity] is kept strongly: the rule holds it weakly and may lose it once the screen finishes. */
+    private fun newCardResult(activity: CardNewActivity): PaymentInfoNewCard {
+        val deadline = System.currentTimeMillis() + RESULT_TIMEOUT_MS
+        while (!activity.isFinishing && System.currentTimeMillis() < deadline) {
+            Thread.sleep(RESULT_POLL_MS)
+        }
+        val cryptogram = activityTestRule.activityResult.resultData
+            .getParcelableExtra<CryptogramData>(Constants.INTENT_EXTRA_RESULT)!!
+        return cryptogram.info as PaymentInfoNewCard
+    }
 }
+
+/** A card expiry that stays valid: the hard-coded 12/25 broke these tests once that date passed. */
+private val VALID_EXPIRY_YEAR = Calendar.getInstance().get(Calendar.YEAR) + 5
+private val VALID_EXPIRY_INPUT = "12" + (VALID_EXPIRY_YEAR % 100).toString().padStart(2, '0')
+private val VALID_EXPIRY_TEXT = "12/" + VALID_EXPIRY_INPUT.takeLast(2)
+private const val RESULT_TIMEOUT_MS = 5_000L
+private const val RESULT_POLL_MS = 100L

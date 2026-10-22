@@ -21,8 +21,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLSession
+import javax.net.ssl.SSLSocketFactory
 
 @SmallTest
 @Suppress("MaxLineLength")
@@ -34,6 +36,8 @@ class PaymentApiImplTest {
         GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     private var server: MockWebServer = MockWebServer()
+    private val systemSocketFactory: SSLSocketFactory = HttpsURLConnection.getDefaultSSLSocketFactory()
+    private val systemHostnameVerifier: HostnameVerifier = HttpsURLConnection.getDefaultHostnameVerifier()
     private lateinit var paymentApiImpl: PaymentApi
     private lateinit var paymentToken: String
     private lateinit var mdOrder: String
@@ -73,6 +77,8 @@ class PaymentApiImplTest {
     @After
     fun tearDown() {
         server.shutdown()
+        HttpsURLConnection.setDefaultSSLSocketFactory(systemSocketFactory)
+        HttpsURLConnection.setDefaultHostnameVerifier(systemHostnameVerifier)
     }
 
     @Test

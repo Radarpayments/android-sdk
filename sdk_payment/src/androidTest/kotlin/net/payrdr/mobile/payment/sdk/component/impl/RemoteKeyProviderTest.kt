@@ -36,7 +36,6 @@ class RemoteKeyProviderTest {
 
     @Before
     fun setUp() {
-        server.start()
         val localhost: String = InetAddress.getByName("localhost").canonicalHostName
         val localhostCertificate: HeldCertificate = HeldCertificate.Builder()
             .addSubjectAlternativeName(localhost)
@@ -45,8 +44,8 @@ class RemoteKeyProviderTest {
         val serverCertificates: HandshakeCertificates = HandshakeCertificates.Builder()
             .heldCertificate(localhostCertificate)
             .build()
-        val server = MockWebServer()
         server.useHttps(serverCertificates.sslSocketFactory(), false)
+        server.start()
 
         val pem = localhostCertificate.certificate.certificatePem()
         val sslContext = SSLContextCustomCAFactory.fromPem(pem)

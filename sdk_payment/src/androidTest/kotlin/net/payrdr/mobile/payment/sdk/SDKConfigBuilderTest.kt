@@ -4,7 +4,6 @@ import android.content.Context
 import io.qameta.allure.android.runners.AllureAndroidJUnit4
 import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.component.impl.CachedKeyProvider
-import net.payrdr.mobile.payment.sdk.component.impl.RemoteCardInfoProvider
 import net.payrdr.mobile.payment.sdk.component.impl.RemoteKeyProvider
 import net.payrdr.mobile.payment.sdk.test.core.targetContext
 import org.junit.Test
@@ -32,19 +31,6 @@ class SDKConfigBuilderTest {
                 )
             )
             .build()
-    }
-
-    @Test
-    @Description("succeedBuildWithCustomCardInfoProvider")
-    fun succeedBuildWithCustomCardInfoProvider() {
-        SDKFormsConfigBuilder()
-            .keyProviderUrl("https://dev.bpcbt.com/payment/se/keys.do", null)
-            .cardInfoProvider(
-                RemoteCardInfoProvider(
-                    url = "https://mrbin.io/bins/display",
-                    urlBin = "https://mrbin.io/bins/"
-                )
-            )
     }
 
     @Test(expected = SDKException::class)

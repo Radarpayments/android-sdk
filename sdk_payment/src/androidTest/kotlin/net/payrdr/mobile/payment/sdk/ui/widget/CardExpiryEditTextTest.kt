@@ -14,7 +14,6 @@ import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.test.core.CoreUIViewTest
 import net.payrdr.mobile.payment.sdk.test.espresso.ExactViewMatcher.Companion.exactView
-import net.payrdr.mobile.payment.sdk.test.junit.ConfigurationSingle
 import net.payrdr.mobile.payment.sdk.utils.onDisplayError
 import org.junit.Test
 
@@ -36,7 +35,6 @@ class CardExpiryEditTextTest : CoreUIViewTest<CardExpiryEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldAllowInputOnlyCorrectMonthNumber")
     fun shouldAllowInputOnlyCorrectMonthNumber() {
         onView(exactView(testedView)).perform(typeText("1220"))
@@ -46,7 +44,6 @@ class CardExpiryEditTextTest : CoreUIViewTest<CardExpiryEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldNotAllowInputMoreThenMaxLength")
     fun shouldNotAllowInputMoreThenMaxLength() {
         onView(exactView(testedView)).perform(typeText("12203"))
@@ -56,7 +53,6 @@ class CardExpiryEditTextTest : CoreUIViewTest<CardExpiryEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldAllowInputOnlyCorrectYearNumber")
     fun shouldAllowInputOnlyCorrectYearNumber() {
         onView(exactView(testedView)).perform(typeText("9920"))
@@ -66,7 +62,6 @@ class CardExpiryEditTextTest : CoreUIViewTest<CardExpiryEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldAllowInputOnlyDigits")
     fun shouldAllowInputOnlyDigits() {
         onView(exactView(testedView)).perform(typeText("a1b1 2N0"))
@@ -76,7 +71,6 @@ class CardExpiryEditTextTest : CoreUIViewTest<CardExpiryEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldShowErrorForMaxYearLimit")
     fun shouldShowErrorForMaxYearLimit() {
         onView(exactView(testedView)).perform(typeText("0159"))
@@ -84,7 +78,6 @@ class CardExpiryEditTextTest : CoreUIViewTest<CardExpiryEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldAppendDivider")
     fun shouldAppendDivider() {
         onView(exactView(testedView)).perform(typeText("0122"))
@@ -108,7 +101,6 @@ class CardExpiryEditTextTest : CoreUIViewTest<CardExpiryEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldWorkBackspace")
     fun shouldWorkBackspace() {
         onView(exactView(testedView)).perform(typeText("0122"))

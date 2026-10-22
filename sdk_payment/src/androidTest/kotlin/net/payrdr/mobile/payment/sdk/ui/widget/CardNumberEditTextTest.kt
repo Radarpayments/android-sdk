@@ -20,7 +20,6 @@ import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.test.core.CoreUIViewTest
 import net.payrdr.mobile.payment.sdk.test.espresso.ExactViewMatcher.Companion.exactView
-import net.payrdr.mobile.payment.sdk.test.junit.ConfigurationSingle
 import net.payrdr.mobile.payment.sdk.utils.onDisplayError
 import org.junit.Test
 
@@ -42,7 +41,6 @@ class CardNumberEditTextTest : CoreUIViewTest<CardNumberEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldNotAllowTypeLatin")
     fun shouldNotAllowTypeLatin() {
         onView(exactView(testedView)).perform(typeText("abcDess"))
@@ -51,7 +49,6 @@ class CardNumberEditTextTest : CoreUIViewTest<CardNumberEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldNotAllowTypeCyrillic")
     fun shouldNotAllowTypeCyrillic() {
         onView(exactView(testedView)).perform(replaceText("Ворота"))
@@ -61,7 +58,6 @@ class CardNumberEditTextTest : CoreUIViewTest<CardNumberEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldDisplayCorrectFormat")
     fun shouldDisplayCorrectFormat() {
         onView(exactView(testedView)).perform(typeText("1234"))
@@ -90,7 +86,6 @@ class CardNumberEditTextTest : CoreUIViewTest<CardNumberEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldAcceptMinNumberLength")
     fun shouldAcceptMinNumberLength() {
         onView(exactView(testedView)).perform(typeText("5391119268214792"))
@@ -100,7 +95,6 @@ class CardNumberEditTextTest : CoreUIViewTest<CardNumberEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldAcceptMaxNumberLength")
     fun shouldAcceptMaxNumberLength() {
         onView(exactView(testedView)).perform(typeText("3536360489308537405"))
@@ -110,7 +104,6 @@ class CardNumberEditTextTest : CoreUIViewTest<CardNumberEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldNotAllowTypeMoreThenMaxLength")
     fun shouldNotAllowTypeMoreThenMaxLength() {
         onView(exactView(testedView)).perform(typeText("35363604893085374051"))
@@ -120,7 +113,6 @@ class CardNumberEditTextTest : CoreUIViewTest<CardNumberEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldWorkBackspace")
     fun shouldWorkBackspace() {
         onView(exactView(testedView)).perform(typeText("3536360489308537405"))
@@ -148,7 +140,6 @@ class CardNumberEditTextTest : CoreUIViewTest<CardNumberEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldWorkEdit")
     fun shouldWorkEdit() {
         onView(exactView(testedView)).perform(typeText("35363604"))
@@ -167,7 +158,6 @@ class CardNumberEditTextTest : CoreUIViewTest<CardNumberEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldWorkInsert")
     fun shouldWorkInsert() {
         onView(exactView(testedView)).perform(typeText("35363604"))
@@ -194,7 +184,6 @@ class CardNumberEditTextTest : CoreUIViewTest<CardNumberEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldCheckNumberByLunaAlgorithm")
     fun shouldCheckNumberByLunaAlgorithm() {
         onView(exactView(testedView)).perform(typeText("4485873525931601"))

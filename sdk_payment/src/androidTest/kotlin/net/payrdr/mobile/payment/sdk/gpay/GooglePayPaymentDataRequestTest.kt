@@ -54,8 +54,8 @@ class GooglePayPaymentDataRequestTest {
                     tokenizationSpecification = tokenizationSpecificationCreate {
                         type = PAYMENT_GATEWAY
                         parameters = tokenizationSpecificationParametersCreate {
-                            gateway = "sberbank"
-                            gatewayMerchantId = "sbersafe_test"
+                            gateway = "stripe"
+                            gatewayMerchantId = "stripe_test"
                         }
                     }
                 }
@@ -75,7 +75,7 @@ class GooglePayPaymentDataRequestTest {
 
         assertEquals(
             """
-                {"apiVersion":2,"apiVersionMinor":0,"allowedPaymentMethods":[{"type":"CARD","parameters":{"allowedAuthMethods":["PAN_ONLY","CRYPTOGRAM_3DS"],"allowedCardNetworks":["AMEX","DISCOVER","INTERAC","JCB","MASTERCARD","VISA"]},"tokenizationSpecification":{"type":"PAYMENT_GATEWAY","parameters":{"gateway":"sberbank","gatewayMerchantId":"sbersafe_test"}}}],"transactionInfo":{"totalPrice":"1","totalPriceStatus":"FINAL","countryCode":"US","currencyCode":"USD","checkoutOption":"COMPLETE_IMMEDIATE_PURCHASE"},"merchantInfo":{"merchantId":"01234567890123456789","merchantName":"Example Merchant"}}
+                {"apiVersion":2,"apiVersionMinor":0,"allowedPaymentMethods":[{"type":"CARD","parameters":{"allowedAuthMethods":["PAN_ONLY","CRYPTOGRAM_3DS"],"allowedCardNetworks":["AMEX","DISCOVER","INTERAC","JCB","MASTERCARD","VISA"]},"tokenizationSpecification":{"type":"PAYMENT_GATEWAY","parameters":{"gateway":"stripe","gatewayMerchantId":"stripe_test"}}}],"transactionInfo":{"totalPrice":"1","totalPriceStatus":"FINAL","countryCode":"US","currencyCode":"USD","checkoutOption":"COMPLETE_IMMEDIATE_PURCHASE"},"merchantInfo":{"merchantId":"01234567890123456789","merchantName":"Example Merchant"}}
             """.trimIndent(),
             configJson
         )

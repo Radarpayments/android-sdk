@@ -65,8 +65,8 @@ class TestOrderHelper(
     fun registerOrder(
         amount: Int = 20000,
         returnUrl: String = "sdk://done",
-        userName: String = "mobile-sdk-api",
-        password: String = "vkyvbG0",
+        userName: String = TestCredentials.merchantLogin,
+        password: String = TestCredentials.merchantPassword,
         clientId: String? = null,
         testAdditionalPayerParams: TestAdditionalPayerParams = TestAdditionalPayerParams.DEFAULT
     ): String {
@@ -102,7 +102,7 @@ class TestOrderHelper(
         amount: Int = 100,
         currency: String = "USD",
         resultUrl: String = "sdk://done",
-        apiKey: String = "9yVrffWNAiHUUVUCQoX4NFHMxmRHYA2yB",
+        apiKey: String = TestCredentials.apiKey,
         version: String = "2023-10-31"
 
     ): String {

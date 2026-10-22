@@ -15,7 +15,6 @@ import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.test.core.CoreUIViewTest
 import net.payrdr.mobile.payment.sdk.test.espresso.ExactViewMatcher.Companion.exactView
-import net.payrdr.mobile.payment.sdk.test.junit.ConfigurationSingle
 import net.payrdr.mobile.payment.sdk.utils.onDisplayError
 import org.junit.Test
 
@@ -37,7 +36,6 @@ class CardCodeEditTextTest : CoreUIViewTest<CardCodeEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldNotAllowTypeLatin")
     fun shouldNotAllowTypeLatin() {
         onView(exactView(testedView)).perform(typeText("abcDe"))
@@ -47,7 +45,6 @@ class CardCodeEditTextTest : CoreUIViewTest<CardCodeEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldNotAllowTypeCyrillic")
     fun shouldNotAllowTypeCyrillic() {
         onView(exactView(testedView)).perform(replaceText("абГд"))
@@ -57,7 +54,6 @@ class CardCodeEditTextTest : CoreUIViewTest<CardCodeEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldNotAllowTypeMoreThenMaxLength")
     fun shouldNotAllowTypeMoreThenMaxLength() {
         onView(exactView(testedView)).perform(typeText("1225"))
@@ -67,7 +63,6 @@ class CardCodeEditTextTest : CoreUIViewTest<CardCodeEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldMaskInput")
     fun shouldMaskInput() {
         onView(exactView(testedView)).perform(typeText("012"))
@@ -77,7 +72,6 @@ class CardCodeEditTextTest : CoreUIViewTest<CardCodeEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldWorkBackspace")
     fun shouldWorkBackspace() {
         onView(exactView(testedView)).perform(typeText("012"))

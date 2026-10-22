@@ -21,6 +21,7 @@ import com.kaspersky.kaspresso.testcases.api.testcase.DocLocScreenshotTestCase
 import com.kaspersky.kaspresso.testcases.models.info.TestInfo
 import io.qameta.allure.android.allureScreenshot
 import io.qameta.allure.android.runners.AllureAndroidJUnit4
+import net.payrdr.mobile.payment.sdk.Constants
 import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.SDKForms
 import net.payrdr.mobile.payment.sdk.SDKFormsConfigBuilder
@@ -28,14 +29,19 @@ import net.payrdr.mobile.payment.sdk.component.impl.CachedKeyProvider
 import net.payrdr.mobile.payment.sdk.component.impl.RemoteKeyProvider
 import net.payrdr.mobile.payment.sdk.model.AdditionalField
 import net.payrdr.mobile.payment.sdk.model.Card
+import net.payrdr.mobile.payment.sdk.model.CryptogramData
+import net.payrdr.mobile.payment.sdk.model.PaymentInfoBindCard
 import net.payrdr.mobile.payment.sdk.test.PaymentConfigTestProvider.configWithAllAdditionalCardParams
 import net.payrdr.mobile.payment.sdk.test.PaymentConfigTestProvider.defaultConfig
 import net.payrdr.mobile.payment.sdk.test.core.getString
 import net.payrdr.mobile.payment.sdk.test.core.targetContext
 import net.payrdr.mobile.payment.sdk.test.espresso.TextInputLayoutErrorTextMatcher.Companion.hasTextInputLayoutHintText
+import net.payrdr.mobile.payment.sdk.test.junit.ConfigurationLocales
 import net.payrdr.mobile.payment.sdk.test.junit.ConfigurationRule
+import net.payrdr.mobile.payment.sdk.test.junit.ConfigurationThemes
 import net.payrdr.mobile.payment.sdk.ui.screen.SelectedCardScreen
 import org.hamcrest.core.IsNot.not
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -102,6 +108,8 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
     }
 
     @Test
+    @ConfigurationLocales
+    @ConfigurationThemes
     fun shouldRunWithCorrectLocale() {
         run {
             val config = defaultConfig()
@@ -458,6 +466,57 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
     }
 
     @Test
+    fun shouldReturnCountryAndCityFromTheirOwnFieldsForSavedCard() {
+        run {
+            val config = defaultConfig().copy(
+                fieldsNeedToBeFilledForVisa = listOf(
+                    AdditionalField(fieldName = "BILLING_COUNTRY", isMandatory = true, prefilledValue = null),
+                    AdditionalField(fieldName = "BILLING_CITY", isMandatory = true, prefilledValue = null),
+                )
+            )
+            val launchIntent = CardSelectedActivity.prepareIntent(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                config,
+                Card( // visa
+                    pan = "492980xxxxxx7724",
+                    bindingId = "0a72fe5e-ffb7-44f6-92df-8787e8a8f440"
+                )
+            )
+            // Kept strongly: the rule holds the activity weakly and may lose it once the screen finishes.
+            val activity = activityTestRule.launchActivity(launchIntent)
+            step("shouldReturnCountryAndCityFromTheirOwnFieldsForSavedCard") {
+                SelectedCardScreen {
+                    cardCodeInput {
+                        typeText("235")
+                    }
+                    countryInput {
+                        scrollTo()
+                        typeText("DE")
+                    }
+                    cityInput {
+                        scrollTo()
+                        typeText("Berlin")
+                    }
+                    closeSoftKeyboard()
+                    doneButton {
+                        scrollTo()
+                        click()
+                    }
+                }
+                val deadline = System.currentTimeMillis() + RESULT_TIMEOUT_MS
+                while (!activity.isFinishing && System.currentTimeMillis() < deadline) {
+                    Thread.sleep(RESULT_POLL_MS)
+                }
+                val cryptogram = activityTestRule.activityResult.resultData
+                    .getParcelableExtra<CryptogramData>(Constants.INTENT_EXTRA_RESULT)!!
+                val params = (cryptogram.info as PaymentInfoBindCard).filledAdditionalPayerParams
+                assertEquals("DE", params.country)
+                assertEquals("Berlin", params.city)
+            }
+        }
+    }
+
+    @Test
     fun shouldShowAdditionalCardParamsWithPrefilledValuesForSavedCard() {
         run {
             val config = defaultConfig().copy(
@@ -516,5 +575,10 @@ class CardSelectedActivityTest : DocLocScreenshotTestCase(
                 }
             }
         }
+    }
+
+    private companion object {
+        const val RESULT_TIMEOUT_MS = 5_000L
+        const val RESULT_POLL_MS = 100L
     }
 }

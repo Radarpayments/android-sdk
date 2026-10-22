@@ -15,7 +15,6 @@ import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.R
 import net.payrdr.mobile.payment.sdk.test.core.CoreUIViewTest
 import net.payrdr.mobile.payment.sdk.test.espresso.ExactViewMatcher.Companion.exactView
-import net.payrdr.mobile.payment.sdk.test.junit.ConfigurationSingle
 import org.junit.Test
 
 @SmallTest
@@ -35,7 +34,6 @@ class CardHolderEditTextTest : CoreUIViewTest<CardHolderEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldNotAllowTypeDigitsAtTheStart")
     fun shouldNotAllowTypeDigitsAtTheStart() {
         onView(exactView(testedView)).perform(typeText("123abcDe"))
@@ -45,7 +43,6 @@ class CardHolderEditTextTest : CoreUIViewTest<CardHolderEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldNotAllowTypeDigitsAtTheMiddle")
     fun shouldNotAllowTypeDigitsAtTheMiddle() {
         onView(exactView(testedView)).perform(typeText("Ho23me"))
@@ -55,7 +52,6 @@ class CardHolderEditTextTest : CoreUIViewTest<CardHolderEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldNotAllowTypeDigitsAtTheEnd")
     fun shouldNotAllowTypeDigitsAtTheEnd() {
         onView(exactView(testedView)).perform(typeText("Home23"))
@@ -65,7 +61,6 @@ class CardHolderEditTextTest : CoreUIViewTest<CardHolderEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldNotAllowTypeCyrillicAtTheEnd")
     fun shouldNotAllowTypeCyrillicAtTheEnd() {
         onView(exactView(testedView)).perform(typeText("JUMP"))
@@ -77,7 +72,6 @@ class CardHolderEditTextTest : CoreUIViewTest<CardHolderEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldAllowTypeLatinWithSpace")
     fun shouldAllowTypeLatinWithSpace() {
         onView(exactView(testedView)).perform(typeText("John Doe"))
@@ -87,7 +81,6 @@ class CardHolderEditTextTest : CoreUIViewTest<CardHolderEditText>() {
     }
 
     @Test
-    @ConfigurationSingle
     @Description("shouldWorkBackspace")
     fun shouldWorkBackspace() {
         onView(exactView(testedView)).perform(typeText("John Doe"))

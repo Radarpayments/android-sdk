@@ -3,7 +3,7 @@ package net.payrdr.mobile.payment.sdk.test.junit
 import net.payrdr.mobile.payment.sdk.model.Theme
 
 /**
- * An annotation to run a test with a specified enumeration of topics to test.
+ * Annotation to run the test in several themes instead of the default light one.
  *
  * Usage example:
  *
@@ -14,8 +14,9 @@ import net.payrdr.mobile.payment.sdk.model.Theme
  *
  * The test will be run twice, first in the dark theme "Theme.DARK",
  * then in the light theme "Theme.LIGHT".
+ * Without arguments the test runs in both the light and the dark theme.
  *
- * @param themes an array of topics against which the test should run.
+ * @param themes an array of themes in which the test should run.
  */
 @Target(AnnotationTarget.FUNCTION)
 annotation class ConfigurationThemes(val themes: Array<Theme> = [])

@@ -12,19 +12,18 @@ import java.util.Locale
 /**
  * JUnit rule for running tests with the specified environment settings.
  *
- * The [defaultLocales] and [defaultThemes] lists are used by default for all tests that are run.
+ * By default every test runs once: in [defaultLocales] and [defaultThemes] (English, light theme).
+ * Only tests that check localization or theming should iterate over configurations, via the annotations:
  *
- * If you need to redefine the parameters individually for the test, you can use the annotations:
- *
- * [ConfigurationLocales] - to override the list of locales.
- * [ConfigurationThemes] - to override the list of topics.
+ * [ConfigurationLocales] - to override the list of locales (all available locales if empty).
+ * [ConfigurationThemes] - to override the list of themes (light and dark if empty).
  *
  * @param defaultLocales a list of locales in which tests should run by default.
- * @param defaultThemes list of topics in which tests should run by default.
+ * @param defaultThemes list of themes in which tests should run by default.
  */
 class ConfigurationRule(
-    private val defaultLocales: List<Locale> = Locales.availableLocales(),
-    private val defaultThemes: List<Theme> = listOf(Theme.LIGHT, Theme.DARK)
+    private val defaultLocales: List<Locale> = listOf(Locales.english()),
+    private val defaultThemes: List<Theme> = listOf(Theme.LIGHT)
 ) : TestRule {
 
     /**
@@ -50,20 +49,14 @@ class ConfigurationRule(
                 is ConfigurationLocales -> {
                     testLocales.clear()
                     testLocales.addAll(
-                        annotation.locales.map {
-                            Locale.Builder().setLanguage(it).build()
-                        }
+                        annotation.locales
+                            .map { Locale.Builder().setLanguage(it).build() }
+                            .ifEmpty { Locales.availableLocales() }
                     )
                 }
                 is ConfigurationThemes -> {
                     testThemes.clear()
-                    testThemes.addAll(annotation.themes)
-                }
-                is ConfigurationSingle -> {
-                    testLocales.clear()
-                    testThemes.clear()
-                    testLocales.add(Locales.english())
-                    testThemes.add(Theme.DARK)
+                    testThemes.addAll(annotation.themes.ifEmpty { arrayOf(Theme.LIGHT, Theme.DARK) })
                 }
             }
         }
@@ -82,7 +75,7 @@ class ConfigurationRule(
      *
      * @param base test expression.
      * @param locales the list of locales in which the test will be run.
-     * @param themes list of topics in which the test will be run.
+     * @param themes list of themes in which the test will be run.
      */
     private inner class ConfigurationRuleStatement(
         private val base: Statement,
