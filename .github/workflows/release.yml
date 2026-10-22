@@ -46,6 +46,7 @@ defaults:
 
 env:
   CARD_IO_PATH: io/github/radarpayments/card-io/5.5.1-OS1
+  SIGNING_KEY_FINGERPRINT: 6624D0D08D71522E191A9252018DA6ABF8CB0681
 
 jobs:
   release:
@@ -123,7 +124,7 @@ jobs:
           ./copy_sdk_lib_to_samples.sh --console=plain
           ./gradlew --console=plain :app_kotlin_core:assembleDebug :app_kotlin_ui:assembleDebug
 
-      - name: Signed Maven publication (local staging directory)
+      - name: Check signing key
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
@@ -131,8 +132,24 @@ jobs:
           if [[ -z "$SIGNING_KEY" ]]; then
             [[ "$MODE" != "dry-run" ]] && { echo "::error::SIGNING_KEY secret is not set"; exit 1; }
             echo "::warning::SIGNING_KEY is not available, the bundle is not signed"
+            exit 0
           fi
-          ./gradlew --console=plain -PsdkVersion="$VERSION" publishAllPublicationsToStagingRepository
+          GNUPGHOME=$(mktemp -d)
+          export GNUPGHOME
+          gpg --batch --import <<<"$SIGNING_KEY" 2>/dev/null || true
+          fingerprint=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr/{print $10; exit}')
+          [[ -n "$fingerprint" ]] || { echo "::error::SIGNING_KEY is not a valid armored secret key"; exit 1; }
+          echo "Signing key $fingerprint"
+          [[ "$fingerprint" == "$SIGNING_KEY_FINGERPRINT" ]] || echo "::warning::Expected signing key $SIGNING_KEY_FINGERPRINT"
+          echo test | gpg --batch --pinentry-mode loopback --passphrase-fd 3 --sign -o /dev/null 3<<<"$SIGNING_PASSWORD" \
+            || { echo "::error::SIGNING_PASSWORD does not unlock SIGNING_KEY"; exit 1; }
+          rm -rf "$GNUPGHOME"
+
+      - name: Signed Maven publication (local staging directory)
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        run: ./gradlew --console=plain -PsdkVersion="$VERSION" publishAllPublicationsToStagingRepository
 
       - name: Maven Central bundle
         run: |
