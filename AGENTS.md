@@ -161,6 +161,7 @@ The Maven publication version comes from `-PsdkVersion=<version>` (`local-dev` w
 - `.github/workflows/release.yml` (manual): `dry-run` builds and signs the bundle, `validate` uploads it to the Central
   Portal and drops it after validation, `publish` releases to Maven Central (irreversible) and creates the tag and the
   GitHub release with the AARs. Stable versions only from `main`, `-rc.N` from any branch.
+  Publishing a stable `X.Y.Z` deletes the GitHub releases of `X.Y.Z-rc.*` (tags and Maven Central artifacts stay).
   Secrets: `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD` (Central Portal user token), `SIGNING_KEY`,
   `SIGNING_PASSWORD` (GPG key `6624D0D08D71522E191A9252018DA6ABF8CB0681`).
 - `.github/workflows/ci.yml`: lint, unit tests, AARs, sample apps and an unsigned staging publication on every PR

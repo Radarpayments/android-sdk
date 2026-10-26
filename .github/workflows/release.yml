@@ -7,6 +7,8 @@ name: Release
 #   validate uploads the bundle to the Maven Central Portal, waits for its validation and drops it: nothing is published
 #   publish  publishes to Maven Central (cannot be undone), then creates the tag and the GitHub release with the AARs
 # A pre-release version (3.0.14-rc.1) can be published from any branch, a stable version (3.0.14) only from main.
+# Publishing a stable version deletes the GitHub releases of its pre-releases (3.0.14-rc.*); their tags and
+# Maven Central artifacts stay.
 # card-io is added to the bundle only while its version is not on Maven Central yet.
 # Pull requests that touch the release pipeline run it as a dry run.
 
@@ -192,6 +194,18 @@ jobs:
           flags=(--title "$VERSION" --generate-notes --target "$GITHUB_SHA")
           [[ "$PRERELEASE" == "true" ]] && flags+=(--prerelease)
           gh release create "$VERSION" release/*.aar "${flags[@]}"
+
+      - name: Delete GitHub releases of the pre-releases
+        if: env.MODE == 'publish' && env.PRERELEASE == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release list --limit 100 --json tagName,isPrerelease \
+            --jq ".[] | select(.isPrerelease and (.tagName | startswith(\"$VERSION-\"))) | .tagName" |
+            while read -r tag; do
+              gh release delete "$tag" --yes
+              echo "Deleted the GitHub release $tag, the tag is kept"
+            done
 
       - name: Summary
         if: always()
