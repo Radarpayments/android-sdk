@@ -66,4 +66,36 @@ class FinishedPaymentInfoResponseTest {
         result.formattedAmount shouldBe "100.00 RUB"
         result.actionCodeDescription shouldBe "Approved"
     }
+
+    @Test
+    fun shouldParseDeclineReasonWithNumericActionCode() {
+        val json = JSONObject(
+            """
+            {
+              "status": "DECLINED",
+              "actionCode": 116,
+              "actionCodeDescription": "Operation declined",
+              "displayErrorMessage": "Operation declined, please check your details and try again.",
+              "errorTypeName": "INSUFFICIENT_FUNDS"
+            }
+            """.trimIndent()
+        )
+
+        val result = FinishedPaymentInfoResponse.fromJson(json)
+
+        result.actionCode shouldBe "116"
+        result.displayErrorMessage shouldBe "Operation declined, please check your details and try again."
+        result.errorTypeName shouldBe "INSUFFICIENT_FUNDS"
+    }
+
+    @Test
+    fun shouldParseStringActionCode() {
+        val json = JSONObject("""{"status":"DECLINED","actionCode":"05"}""")
+
+        val result = FinishedPaymentInfoResponse.fromJson(json)
+
+        result.actionCode shouldBe "05"
+        result.displayErrorMessage shouldBe null
+        result.errorTypeName shouldBe null
+    }
 }

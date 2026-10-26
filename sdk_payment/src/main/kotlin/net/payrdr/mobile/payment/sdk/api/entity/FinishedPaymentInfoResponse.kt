@@ -14,6 +14,9 @@ import org.json.JSONObject
  * @param panMasked masked card number.
  * @param formattedAmount formatted order amount in order currency .
  * @param actionCodeDescription order code description .
+ * @param actionCode result code of the last payment attempt, a number or a string depending on the gateway.
+ * @param displayErrorMessage error text for the payer, in the requested language.
+ * @param errorTypeName error type of the last payment attempt, e.g. INSUFFICIENT_FUNDS.
  */
 data class FinishedPaymentInfoResponse(
     val status: String,
@@ -23,7 +26,10 @@ data class FinishedPaymentInfoResponse(
     val refNum: String?,
     val panMasked: String?,
     val formattedAmount: String?,
-    val actionCodeDescription: String?
+    val actionCodeDescription: String?,
+    val actionCode: String? = null,
+    val displayErrorMessage: String? = null,
+    val errorTypeName: String? = null,
 ) {
 
     companion object {
@@ -41,7 +47,10 @@ data class FinishedPaymentInfoResponse(
                 refNum = optValue("refNum"),
                 panMasked = optValue("panMasked"),
                 formattedAmount = optValue("formattedAmount"),
-                actionCodeDescription = optValue("actionCodeDescription")
+                actionCodeDescription = optValue("actionCodeDescription"),
+                actionCode = if (isNull("actionCode")) null else get("actionCode").toString(),
+                displayErrorMessage = optValue("displayErrorMessage"),
+                errorTypeName = optValue("errorTypeName"),
             )
         }
     }

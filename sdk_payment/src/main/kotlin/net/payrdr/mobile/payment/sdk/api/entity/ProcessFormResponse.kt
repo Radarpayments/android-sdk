@@ -7,6 +7,7 @@ import org.json.JSONObject
  * Response DTO for requesting payment by new card.
  *
  * @param errorCode error code.
+ * @param error error text when [errorCode] is not 0.
  * @param acsUrl automatic configuration server url.
  * @param paReq params request.
  * @param termUrl terminal url.
@@ -19,6 +20,7 @@ data class ProcessFormResponse(
     val paReq: String?,
     val termUrl: String?,
     val threeDSMethodURL: String?,
+    val error: String? = null,
 ) {
 
     companion object {
@@ -33,6 +35,7 @@ data class ProcessFormResponse(
                 paReq = optValue("paReq"),
                 termUrl = optValue("termUrl"),
                 threeDSMethodURL = optValue("threeDSMethodURL"),
+                error = optValue("error"),
             )
         }
     }
