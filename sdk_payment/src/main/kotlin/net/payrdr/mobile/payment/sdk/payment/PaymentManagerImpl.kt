@@ -21,7 +21,9 @@ import net.payrdr.mobile.payment.sdk.api.entity.SessionStatusResponse
 import net.payrdr.mobile.payment.sdk.exceptions.SDKAlreadyPaymentException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKDeclinedException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKNotConfigureException
+import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKSessionNotExistException
+import net.payrdr.mobile.payment.sdk.exceptions.SDKTransactionException
 import net.payrdr.mobile.payment.sdk.gpay.AllowedPaymentMethods
 import net.payrdr.mobile.payment.sdk.gpay.GooglePayAuthMethod
 import net.payrdr.mobile.payment.sdk.gpay.GooglePayCardNetwork
@@ -163,11 +165,11 @@ class PaymentManagerImpl(
                             }
 
                             response.status.containsAnyOfKeywordIgnoreCase(OrderStatuses.payedCouldNotBeCompleted) -> {
-                                finishWithError(SDKDeclinedException(cause = null))
+                                finishWithError(response.failureException())
                             }
 
                             else -> {
-                                TODO()
+                                finishWithError(response.failureException())
                             }
                         }
                     }
@@ -274,6 +276,14 @@ class PaymentManagerImpl(
             }
 
             when {
+                paymentResult.errorCode != 0 -> {
+                    LogDebug.logIfDebug("processForm - Error: $paymentResult")
+                    throw SDKPaymentApiException(
+                        message = paymentResult.error ?: "processForm errorCode ${paymentResult.errorCode}",
+                        cause = null
+                    )
+                }
+
                 paymentResult.threeDSMethodURL != null -> {
                     LogDebug.logIfDebug("Merchant is not configured to be used without 3DS2SDK: $paymentResult")
                     throw SDKNotConfigureException(
@@ -367,10 +377,11 @@ class PaymentManagerImpl(
             val orderStatus = getSessionStatus()
             val paymentFinishedInfo = getFinishedPaymentInfo(mdOrder)
             LogDebug.logIfDebug("getSessionStatus - Remaining sec ${orderStatus.remainingSecs}")
+            val isSuccess = paymentFinishedInfo.status.containsAnyOfKeywordIgnoreCase(OrderStatuses.payedStatues)
             val paymentDataResponse = PaymentResult(
                 sessionId = sessionId,
-                isSuccess = paymentFinishedInfo.status.containsAnyOfKeywordIgnoreCase(OrderStatuses.payedStatues),
-                exception = null,
+                isSuccess = isSuccess,
+                exception = if (isSuccess) null else paymentFinishedInfo.failureException(),
             )
             activityDelegate.finishActivityWithResult(paymentDataResponse)
         }
@@ -415,6 +426,22 @@ class PaymentManagerImpl(
                     )
                 )
             }
+        }
+    }
+
+    // Right after a decline the order can still be CREATED: the attempt result is in actionCode.
+    private fun FinishedPaymentInfoResponse.failureException(): SDKException {
+        val declined = status.containsAnyOfKeywordIgnoreCase(OrderStatuses.payedCouldNotBeCompleted) ||
+            (actionCode != null && actionCode != "0")
+        return if (declined) {
+            SDKDeclinedException(
+                message = displayErrorMessage ?: actionCodeDescription.orEmpty(),
+                cause = null,
+                actionCode = actionCode,
+                errorType = errorTypeName,
+            )
+        } else {
+            SDKTransactionException(message = "Payment was not completed, order status: $status", cause = null)
         }
     }
 

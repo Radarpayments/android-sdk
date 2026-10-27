@@ -1,12 +1,14 @@
 name: Release
 
-# Actions → Release → Run workflow, or: gh workflow run release.yml --ref <branch> -f version=3.0.14 -f mode=publish
+# Actions → Release → Run workflow, or: gh workflow run release.yml --ref <branch> -f version=3.1.0 -f mode=publish
 #
 # mode:
 #   dry-run  (default) runs every check, builds and signs the Maven bundle, publishes nothing
 #   validate uploads the bundle to the Maven Central Portal, waits for its validation and drops it: nothing is published
 #   publish  publishes to Maven Central (cannot be undone), then creates the tag and the GitHub release with the AARs
-# A pre-release version (3.0.14-rc.1) can be published from any branch, a stable version (3.0.14) only from main.
+# A pre-release version (3.1.0-rc.1) can be published from any branch, a stable version (3.1.0) only from main.
+# Publishing a stable version deletes the GitHub releases of its pre-releases (3.1.0-rc.*); their tags and
+# Maven Central artifacts stay.
 # card-io is added to the bundle only while its version is not on Maven Central yet.
 # Pull requests that touch the release pipeline run it as a dry run.
 
@@ -14,7 +16,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release, e.g. 3.0.14 or 3.0.14-rc.1'
+        description: 'Version to release, e.g. 3.1.0 or 3.1.0-rc.1'
         required: true
         type: string
       mode:
@@ -53,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -100,7 +102,7 @@ jobs:
             [[ "$version" != "$base" ]] && echo "PRERELEASE=true" || echo "PRERELEASE=false"
           } >> "$GITHUB_ENV"
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with: { distribution: temurin, java-version: 17, cache: gradle }
 
       - name: Set SDK version
@@ -165,7 +167,7 @@ jobs:
           zip -qr ../central-bundle.zip .
           find . -type f ! -name '*.md5' ! -name '*.sha*' | sort
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: android-sdk-${{ env.VERSION }}
           path: |
@@ -192,6 +194,18 @@ jobs:
           flags=(--title "$VERSION" --generate-notes --target "$GITHUB_SHA")
           [[ "$PRERELEASE" == "true" ]] && flags+=(--prerelease)
           gh release create "$VERSION" release/*.aar "${flags[@]}"
+
+      - name: Delete GitHub releases of the pre-releases
+        if: env.MODE == 'publish' && env.PRERELEASE == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release list --limit 100 --json tagName,isPrerelease \
+            --jq ".[] | select(.isPrerelease and (.tagName | startswith(\"$VERSION-\"))) | .tagName" |
+            while read -r tag; do
+              gh release delete "$tag" --yes
+              echo "Deleted the GitHub release $tag, the tag is kept"
+            done
 
       - name: Summary
         if: always()

@@ -17,6 +17,7 @@ import net.payrdr.mobile.payment.sdk.utils.executePostParams
 import net.payrdr.mobile.payment.sdk.utils.mapToJsonString
 import net.payrdr.mobile.payment.sdk.utils.responseBodyToJsonObject
 import java.net.URL
+import java.util.Locale
 
 /**
  * Implementation of API methods for a full payment cycle.
@@ -125,7 +126,7 @@ class PaymentApiImpl(
 
     override suspend fun getFinishedPaymentInfo(orderId: String): FinishedPaymentInfoResponse =
         startRunCatching {
-            val body = mapOf("orderId" to orderId)
+            val body = mapOf("orderId" to orderId, "language" to Locale.getDefault().language)
             val connection = URL("$baseUrl/rest/getFinishedPaymentInfo.do")
                 .executePostParams(
                     paramBody = body,

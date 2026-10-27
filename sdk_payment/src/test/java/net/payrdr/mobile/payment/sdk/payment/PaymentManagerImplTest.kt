@@ -26,6 +26,8 @@ import net.payrdr.mobile.payment.sdk.exceptions.SDKAlreadyPaymentException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKCryptogramException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKDeclinedException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKNotConfigureException
+import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
+import net.payrdr.mobile.payment.sdk.exceptions.SDKTransactionException
 import net.payrdr.mobile.payment.sdk.model.FilledAdditionalPayerParams
 import net.payrdr.mobile.payment.sdk.payment.model.GooglePayProcessFormRequest
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentApiVersion
@@ -526,7 +528,116 @@ class PaymentManagerImplTest {
 
         latch.await(3, TimeUnit.SECONDS) shouldBe true
         capturedResult!!.isSuccess shouldBe false
-        capturedResult!!.exception shouldBe null
+        (capturedResult!!.exception is SDKTransactionException) shouldBe true
+    }
+
+    @Test
+    fun finishWithCheckOrderStatusMapsDeclinedToDeclinedExceptionWithGatewayReason() {
+        doCheckout("order-20") shouldBe true
+
+        coEvery { mockApi.getFinishedPaymentInfo(any()) } returns declinedPaymentInfo().copy(
+            actionCode = "116",
+            displayErrorMessage = "Operation declined, please check your details and try again.",
+            errorTypeName = "INSUFFICIENT_FUNDS"
+        )
+
+        val result = finishWithCheckOrderStatusResult()
+
+        result.isSuccess shouldBe false
+        val exception = result.exception as SDKDeclinedException
+        exception.message shouldBe "Operation declined, please check your details and try again."
+        exception.actionCode shouldBe "116"
+        exception.errorType shouldBe "INSUFFICIENT_FUNDS"
+    }
+
+    @Test
+    fun finishWithCheckOrderStatusMapsCreatedWithActionCodeToDeclinedException() {
+        doCheckout("order-21") shouldBe true
+
+        coEvery { mockApi.getFinishedPaymentInfo(any()) } returns FinishedPaymentInfoResponse(
+            status = "CREATED",
+            paymentDate = null, approvalCode = null, terminalId = null,
+            refNum = null, panMasked = null, formattedAmount = null,
+            actionCodeDescription = "Some payment data is invalid",
+            actionCode = "71015",
+            errorTypeName = "DATA_INPUT_ERROR"
+        )
+
+        val result = finishWithCheckOrderStatusResult()
+
+        result.isSuccess shouldBe false
+        val exception = result.exception as SDKDeclinedException
+        exception.message shouldBe "Some payment data is invalid"
+        exception.actionCode shouldBe "71015"
+        exception.errorType shouldBe "DATA_INPUT_ERROR"
+    }
+
+    @Test
+    fun processNewCardWithErrorCodeFinishesWithPaymentApiException() {
+        doCheckout("order-22") shouldBe true
+
+        coEvery { mockApi.processForm(any()) } returns ProcessFormResponse(
+            errorCode = 5,
+            acsUrl = null, paReq = null, termUrl = null, threeDSMethodURL = null,
+            error = "Invalid payer data: Mobile phone (Invalid value)"
+        )
+        coEvery { mockApi.getFinishedPaymentInfo(any()) } returns FinishedPaymentInfoResponse(
+            status = "CREATED",
+            paymentDate = null, approvalCode = null, terminalId = null,
+            refNum = null, panMasked = null, formattedAmount = null, actionCodeDescription = null
+        )
+
+        val latch = CountDownLatch(1)
+        var capturedResult: PaymentResult? = null
+        every { activityDelegate.finishActivityWithResult(any()) } answers {
+            capturedResult = firstArg()
+            latch.countDown()
+        }
+
+        paymentManager.processNewCard("seToken", "order-22", "JOHN DOE", false, emptyFilledParams())
+
+        latch.await(3, TimeUnit.SECONDS) shouldBe true
+        capturedResult!!.isSuccess shouldBe false
+        (capturedResult!!.exception is SDKPaymentApiException) shouldBe true
+        capturedResult!!.exception!!.message shouldBe "Invalid payer data: Mobile phone (Invalid value)"
+        verify(exactly = 0) { threeDS2WebFormDelegate.openWebChallenge(any()) }
+    }
+
+    @Test
+    fun checkoutExpiredSessionWithUnfinishedOrderFinishesWithTransactionException() {
+        coEvery { mockApi.getSessionStatus(any()) } returns minimalSessionStatus(remainingSecs = null)
+        coEvery { mockApi.getFinishedPaymentInfo(any()) } returns FinishedPaymentInfoResponse(
+            status = "CREATED",
+            paymentDate = null, approvalCode = null, terminalId = null,
+            refNum = null, panMasked = null, formattedAmount = null, actionCodeDescription = null
+        )
+
+        val latch = CountDownLatch(1)
+        var capturedResult: PaymentResult? = null
+        every { activityDelegate.finishActivityWithResult(any()) } answers {
+            capturedResult = firstArg()
+            latch.countDown()
+        }
+
+        paymentManager.checkout("order-23", gPayClicked = false, versionApi = PaymentApiVersion.V1)
+
+        latch.await(3, TimeUnit.SECONDS) shouldBe true
+        capturedResult!!.isSuccess shouldBe false
+        (capturedResult!!.exception is SDKTransactionException) shouldBe true
+    }
+
+    private fun finishWithCheckOrderStatusResult(): PaymentResult {
+        val latch = CountDownLatch(1)
+        var capturedResult: PaymentResult? = null
+        every { activityDelegate.finishActivityWithResult(any()) } answers {
+            capturedResult = firstArg()
+            latch.countDown()
+        }
+
+        paymentManager.finishWithCheckOrderStatus()
+
+        latch.await(3, TimeUnit.SECONDS) shouldBe true
+        return capturedResult!!
     }
 
     // ---- restore() / onDestroy() ----

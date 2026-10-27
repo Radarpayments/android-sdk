@@ -73,10 +73,23 @@ class ProcessFormResponseTest {
         val result = ProcessFormResponse.fromJson(json)
 
         result.errorCode shouldBe 2
+        result.error shouldBe null
         result.acsUrl shouldBe null
         result.threeDSMethodURL shouldBe null
         result.paReq shouldBe null
         result.termUrl shouldBe null
+    }
+
+    @Test
+    fun shouldParseErrorText() {
+        val json = JSONObject(
+            """{"errorCode":5,"error":"Invalid payer data: Mobile phone (Invalid value)"}"""
+        )
+
+        val result = ProcessFormResponse.fromJson(json)
+
+        result.errorCode shouldBe 5
+        result.error shouldBe "Invalid payer data: Mobile phone (Invalid value)"
     }
 
     @Test

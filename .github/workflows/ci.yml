@@ -25,8 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
         with: { distribution: temurin, java-version: 17 }
       - name: detekt and ktlint
         run: ./script_pre_commit.sh
@@ -35,15 +35,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
         with: { distribution: temurin, java-version: 17, cache: gradle }
       - name: Unit tests
         run: ./gradlew --console=plain :sdk_core:testDebugUnitTest :sdk_payment:testDebugUnitTest
       - name: Test results
         if: always()
         run: .github/scripts/test-summary.sh sdk_core sdk_payment
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: test-reports
@@ -54,8 +54,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
         with: { distribution: temurin, java-version: 17, cache: gradle }
       - name: Build SDK AARs and copy them to the samples
         run: ./copy_sdk_lib_to_samples.sh --console=plain
@@ -63,7 +63,7 @@ jobs:
         run: ./gradlew --console=plain :app_kotlin_core:assembleDebug :app_kotlin_ui:assembleDebug
       - name: Maven publication (unsigned, local staging directory)
         run: ./gradlew --console=plain -PsdkVersion=0.0.0-ci publishAllPublicationsToStagingRepository
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: sdk-${{ github.sha }}
           path: |
