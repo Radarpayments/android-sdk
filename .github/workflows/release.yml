@@ -1,13 +1,13 @@
 name: Release
 
-# Actions → Release → Run workflow, or: gh workflow run release.yml --ref <branch> -f version=3.0.14 -f mode=publish
+# Actions → Release → Run workflow, or: gh workflow run release.yml --ref <branch> -f version=3.1.0 -f mode=publish
 #
 # mode:
 #   dry-run  (default) runs every check, builds and signs the Maven bundle, publishes nothing
 #   validate uploads the bundle to the Maven Central Portal, waits for its validation and drops it: nothing is published
 #   publish  publishes to Maven Central (cannot be undone), then creates the tag and the GitHub release with the AARs
-# A pre-release version (3.0.14-rc.1) can be published from any branch, a stable version (3.0.14) only from main.
-# Publishing a stable version deletes the GitHub releases of its pre-releases (3.0.14-rc.*); their tags and
+# A pre-release version (3.1.0-rc.1) can be published from any branch, a stable version (3.1.0) only from main.
+# Publishing a stable version deletes the GitHub releases of its pre-releases (3.1.0-rc.*); their tags and
 # Maven Central artifacts stay.
 # card-io is added to the bundle only while its version is not on Maven Central yet.
 # Pull requests that touch the release pipeline run it as a dry run.
@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release, e.g. 3.0.14 or 3.0.14-rc.1'
+        description: 'Version to release, e.g. 3.1.0 or 3.1.0-rc.1'
         required: true
         type: string
       mode:
