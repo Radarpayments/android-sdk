@@ -15,11 +15,11 @@ The SDK is published on Maven Central:
 
 ```kotlin
 dependencies {
-    implementation("io.github.radarpayments:sdk-payment:3.1.0")
+    implementation("io.github.radarpayments:sdk-payment:3.1.1")
 }
 ```
 
-All other dependencies come transitively. For your own UI, use `io.github.radarpayments:sdk-core:3.1.0` only.
+All other dependencies come transitively. For your own UI, use `io.github.radarpayments:sdk-core:3.1.1` only.
 
 If another library in your app also ships `libc++_shared.so` (React Native, Flutter, game engines), add:
 

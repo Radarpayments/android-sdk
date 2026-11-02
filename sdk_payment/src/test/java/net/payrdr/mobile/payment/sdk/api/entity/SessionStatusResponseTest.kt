@@ -218,6 +218,27 @@ class SessionStatusResponseTest {
     }
 
     @Test
+    fun shouldParseMerchantCountry() {
+        val json = minimalJson().apply {
+            getJSONObject("merchantInfo").put(
+                "merchantCountry",
+                JSONObject("""{"countryCode": "196", "countryCodeAlpha2": "CY"}""")
+            )
+        }
+
+        val result = SessionStatusResponse.fromJson(json)
+
+        result.merchantInfo.countryCode shouldBe "CY"
+    }
+
+    @Test
+    fun shouldParseMerchantCountryWhenAbsent() {
+        val result = SessionStatusResponse.fromJson(minimalJson())
+
+        result.merchantInfo.countryCode shouldBe null
+    }
+
+    @Test
     fun shouldParseNullableBillingAndCustomerDetailsWhenAbsent() {
         val result = SessionStatusResponse.fromJson(minimalJson())
 
