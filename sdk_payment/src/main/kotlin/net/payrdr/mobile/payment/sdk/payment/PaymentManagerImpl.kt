@@ -144,6 +144,8 @@ class PaymentManagerImpl(
                     merchantIdGPay = gPaySettings.merchantId,
                     amount = sessionStatusResponse.amount!!,
                     currencyCodeInput = sessionStatusResponse.currencyAlphaCode!!,
+                    countryCodeInput = sessionStatusResponse.merchantInfo.countryCode
+                        ?.takeIf { it.length == 2 } ?: DEFAULT_COUNTRY_CODE,
                     getawayMerchantIdConfig = sessionStatusResponse.merchantInfo.merchantLogin,
                     merchantFullName = sessionStatusResponse.merchantInfo.merchantFullName,
                     isTestEnvironment = gPaySettings.environment == "TEST",
@@ -462,6 +464,7 @@ class PaymentManagerImpl(
         merchantIdGPay: String,
         amount: String,
         currencyCodeInput: String,
+        countryCodeInput: String,
         getawayMerchantIdConfig: String,
         merchantFullName: String,
         isTestEnvironment: Boolean,
@@ -499,7 +502,7 @@ class PaymentManagerImpl(
             transactionInfo = TransactionInfo.transactionInfoCreate {
                 totalPrice = BigDecimal.valueOf(amount.trim().split(" ")[0].toDoubleOrNull() ?: 0.0)
                 totalPriceStatus = GooglePayTotalPriceStatus.FINAL
-                countryCode = "RU"
+                countryCode = countryCodeInput
                 currencyCode = currencyCodeInput
                 checkoutOption = GooglePayCheckoutOption.COMPLETE_IMMEDIATE_PURCHASE
             }
@@ -533,5 +536,6 @@ class PaymentManagerImpl(
 
     companion object {
         private const val DEFAULT_VALUE_CARDHOLDER: String = "CARDHOLDER"
+        private const val DEFAULT_COUNTRY_CODE: String = "US"
     }
 }

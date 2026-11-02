@@ -16,6 +16,7 @@ import net.payrdr.mobile.payment.sdk.api.entity.BillingPayerData
 import net.payrdr.mobile.payment.sdk.api.entity.BindingItem
 import net.payrdr.mobile.payment.sdk.api.entity.CustomerDetails
 import net.payrdr.mobile.payment.sdk.api.entity.FinishedPaymentInfoResponse
+import net.payrdr.mobile.payment.sdk.api.entity.GPaySettings
 import net.payrdr.mobile.payment.sdk.api.entity.MerchantInfo
 import net.payrdr.mobile.payment.sdk.api.entity.OrderPayerData
 import net.payrdr.mobile.payment.sdk.api.entity.PayerDataParamsNeedToBeFilled
@@ -29,12 +30,14 @@ import net.payrdr.mobile.payment.sdk.exceptions.SDKNotConfigureException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKTransactionException
 import net.payrdr.mobile.payment.sdk.model.FilledAdditionalPayerParams
+import net.payrdr.mobile.payment.sdk.model.GooglePayPaymentConfig
 import net.payrdr.mobile.payment.sdk.payment.model.GooglePayProcessFormRequest
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentApiVersion
 import net.payrdr.mobile.payment.sdk.payment.model.PaymentResult
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 import net.payrdr.mobile.payment.sdk.payment.model.WebChallengeParam
 import net.payrdr.mobile.payment.sdk.utils.SessionIdConverter
+import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import java.net.SocketTimeoutException
@@ -325,6 +328,42 @@ class PaymentManagerImplTest {
 
         latch.await(3, TimeUnit.SECONDS) shouldBe true
         capturedParam!!.acsUrl shouldBe "https://acs.bank.com/3ds"
+    }
+
+    // ---- Google Pay country ----
+
+    private fun googlePayCountryCode(merchantCountryCode: String?): String {
+        val session = minimalSessionStatus().copy(
+            merchantInfo = minimalSessionStatus().merchantInfo.copy(countryCode = merchantCountryCode),
+            merchantOptions = listOf("GOOGLEPAY"),
+            amount = "10.00",
+            currencyAlphaCode = "EUR"
+        )
+        coEvery { mockApi.getSessionStatus(any()) } returns session
+        coEvery { mockApi.getPaymentSettings(any()) } returns GPaySettings("TEST", "gpay-merchant", "bpcpay")
+        val latch = CountDownLatch(1)
+        var config: GooglePayPaymentConfig? = null
+        every { gPayDelegate.openGPayForm(any()) } answers {
+            config = firstArg()
+            latch.countDown()
+        }
+
+        paymentManager.checkout("order-gpay", gPayClicked = true, versionApi = PaymentApiVersion.V1)
+
+        latch.await(3, TimeUnit.SECONDS) shouldBe true
+        return JSONObject(config!!.paymentData.toJson())
+            .getJSONObject("transactionInfo")
+            .getString("countryCode")
+    }
+
+    @Test
+    fun googlePayUsesMerchantCountry() {
+        googlePayCountryCode("CY") shouldBe "CY"
+    }
+
+    @Test
+    fun googlePayFallsBackToUsWithoutMerchantCountry() {
+        googlePayCountryCode(null) shouldBe "US"
     }
 
     // ---- gPayProcessForm() routing ----

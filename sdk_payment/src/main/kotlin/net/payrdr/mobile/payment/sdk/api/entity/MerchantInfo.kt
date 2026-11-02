@@ -12,6 +12,7 @@ import org.json.JSONObject
  * @param merchantLogin the login of merchant in system.
  * @param captchaMode is available captcha.
  * @param custom if merchant has a custom rules.
+ * @param countryCode the merchant's country, ISO 3166-1 alpha-2.
  */
 data class MerchantInfo(
     val merchantUrl: String,
@@ -19,7 +20,8 @@ data class MerchantInfo(
     val mcc: String? = null,
     val merchantLogin: String,
     val captchaMode: String,
-    val custom: Boolean
+    val custom: Boolean,
+    val countryCode: String? = null
 ) {
 
     companion object {
@@ -34,7 +36,8 @@ data class MerchantInfo(
                 mcc = optValue("mcc"),
                 merchantLogin = getString("merchantLogin"),
                 captchaMode = getString("captchaMode"),
-                custom = optBoolean("custom")
+                custom = optBoolean("custom"),
+                countryCode = optJSONObject("merchantCountry")?.optValue("countryCodeAlpha2")
             )
         }
     }
