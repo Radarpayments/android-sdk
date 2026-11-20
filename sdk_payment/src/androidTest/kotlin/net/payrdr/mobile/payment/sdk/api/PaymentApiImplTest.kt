@@ -8,12 +8,14 @@ import io.qameta.allure.kotlin.Description
 import kotlinx.coroutines.runBlocking
 import net.payrdr.mobile.payment.sdk.SDKPayment
 import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
+import net.payrdr.mobile.payment.sdk.payment.model.GooglePayProcessFormRequest
 import net.payrdr.mobile.payment.sdk.payment.model.ProcessFormRequest
 import net.payrdr.mobile.payment.sdk.payment.model.SDKPaymentConfig
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
+import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -149,6 +151,43 @@ class PaymentApiImplTest {
         assertEquals(null, processForm.paReq)
         assertEquals(null, processForm.termUrl)
         assertEquals(null, processForm.threeDSMethodURL)
+    }
+
+    @Test
+    @Description("shouldSendPayerDataToGooglePayPaymentOrder")
+    fun shouldSendPayerDataToGooglePayPaymentOrder() = runBlocking {
+        server.enqueue(MockResponse().setBody("""{"success":true,"data":{"orderId":"$mdOrder"}}"""))
+        val token = "eyJzaWduYXR1cmUiOiJNRVFDSUQ+/x=="
+
+        val response = paymentApiImpl.gPayProcessForm(
+            GooglePayProcessFormRequest(
+                paymentToken = token,
+                mdOrder = mdOrder,
+                email = "payer@example.com",
+                phone = "+35799123456"
+            )
+        )
+
+        val request = server.takeRequest()
+        val body = JSONObject(request.body.readUtf8())
+        assertEquals("/payment/google/paymentOrder.do", request.path)
+        assertEquals(token, body.getString("paymentToken"))
+        assertEquals(mdOrder, body.getString("mdOrder"))
+        assertEquals("payer@example.com", body.getJSONObject("additionalParameters").getString("email"))
+        assertEquals("+35799123456", body.getJSONObject("additionalParameters").getString("phone"))
+        assertEquals(mdOrder, response.data?.orderId)
+    }
+
+    @Test
+    @Description("shouldNotSendEmptyAdditionalParametersToGooglePayPaymentOrder")
+    fun shouldNotSendEmptyAdditionalParametersToGooglePayPaymentOrder() = runBlocking {
+        server.enqueue(MockResponse().setBody("""{"success":true,"data":{"orderId":"$mdOrder"}}"""))
+
+        paymentApiImpl.gPayProcessForm(GooglePayProcessFormRequest(paymentToken = "token", mdOrder = mdOrder))
+
+        val body = JSONObject(server.takeRequest().body.readUtf8())
+        assertEquals(false, body.has("additionalParameters"))
+        assertEquals("token", body.getString("paymentToken"))
     }
 
     @Test

@@ -16,6 +16,7 @@ class GooglePayPaymentDataRequest {
     var merchantInfo = MerchantInfo()
     var transactionInfo = TransactionInfo()
     var allowedPaymentMethods = AllowedPaymentMethods()
+    var emailRequired = false
 
     fun toJson(): JSONObject = JSONObject().apply {
         put("apiVersion", apiVersion)
@@ -23,6 +24,7 @@ class GooglePayPaymentDataRequest {
         put("allowedPaymentMethods", allowedPaymentMethods.toJson())
         put("transactionInfo", transactionInfo.toJson())
         put("merchantInfo", merchantInfo.toJson())
+        if (emailRequired) put("emailRequired", true)
     }
 
     companion object {
@@ -100,6 +102,8 @@ class PaymentMethod {
 class PaymentMethodParameters {
     var allowedAuthMethods: MutableSet<GooglePayAuthMethod> = mutableSetOf()
     var allowedCardNetworks: MutableSet<GooglePayCardNetwork> = mutableSetOf()
+    var billingAddressRequired = false
+    var billingAddressParameters: BillingAddressParameters? = null
 
     fun toJson(): JSONObject = JSONObject().apply {
         put(
@@ -118,11 +122,28 @@ class PaymentMethodParameters {
                 }
             }
         )
+        if (billingAddressRequired) put("billingAddressRequired", true)
+        billingAddressParameters?.let { put("billingAddressParameters", it.toJson()) }
     }
 
     companion object {
         fun paymentMethodParametersCreate(block: PaymentMethodParameters.() -> Unit): PaymentMethodParameters =
             PaymentMethodParameters().apply(block)
+    }
+}
+
+class BillingAddressParameters {
+    var format: GooglePayBillingAddressFormat = GooglePayBillingAddressFormat.MIN
+    var phoneNumberRequired = false
+
+    fun toJson(): JSONObject = JSONObject().apply {
+        put("format", format.value)
+        put("phoneNumberRequired", phoneNumberRequired)
+    }
+
+    companion object {
+        fun billingAddressParametersCreate(block: BillingAddressParameters.() -> Unit): BillingAddressParameters =
+            BillingAddressParameters().apply(block)
     }
 }
 

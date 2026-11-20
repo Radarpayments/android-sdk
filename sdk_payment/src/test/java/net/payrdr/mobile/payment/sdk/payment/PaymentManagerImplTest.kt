@@ -332,7 +332,7 @@ class PaymentManagerImplTest {
 
     // ---- Google Pay country ----
 
-    private fun googlePayCountryCode(merchantCountryCode: String?): String {
+    private fun googlePayRequest(merchantCountryCode: String? = "CY"): JSONObject {
         val session = minimalSessionStatus().copy(
             merchantInfo = minimalSessionStatus().merchantInfo.copy(countryCode = merchantCountryCode),
             merchantOptions = listOf("GOOGLEPAY"),
@@ -352,9 +352,10 @@ class PaymentManagerImplTest {
 
         latch.await(3, TimeUnit.SECONDS) shouldBe true
         return JSONObject(config!!.paymentData.toJson())
-            .getJSONObject("transactionInfo")
-            .getString("countryCode")
     }
+
+    private fun googlePayCountryCode(merchantCountryCode: String?): String =
+        googlePayRequest(merchantCountryCode).getJSONObject("transactionInfo").getString("countryCode")
 
     @Test
     fun googlePayUsesMerchantCountry() {
@@ -364,6 +365,18 @@ class PaymentManagerImplTest {
     @Test
     fun googlePayFallsBackToUsWithoutMerchantCountry() {
         googlePayCountryCode(null) shouldBe "US"
+    }
+
+    @Test
+    fun googlePayRequestsPayerEmailAndPhone() {
+        val request = googlePayRequest()
+        val parameters = request.getJSONArray("allowedPaymentMethods").getJSONObject(0).getJSONObject("parameters")
+        val billingAddressParameters = parameters.getJSONObject("billingAddressParameters")
+
+        request.getBoolean("emailRequired") shouldBe true
+        parameters.getBoolean("billingAddressRequired") shouldBe true
+        billingAddressParameters.getString("format") shouldBe "MIN"
+        billingAddressParameters.getBoolean("phoneNumberRequired") shouldBe true
     }
 
     // ---- gPayProcessForm() routing ----
