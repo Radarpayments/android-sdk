@@ -65,14 +65,17 @@ class GooglePayActivity : BaseActivity() {
                     Activity.RESULT_OK -> {
                         val paymentData: GPaymentData? = GPaymentData.getFromIntent(data!!)
                         paymentData?.let {
-                            val json = it.toJson()
-                            val paymentMethodData = JSONObject(json)
+                            val json = JSONObject(it.toJson())
+                            val paymentToken = json
                                 .getJSONObject("paymentMethodData")
-                            val paymentToken = paymentMethodData
                                 .getJSONObject("tokenizationData")
                                 .getString("token")
 
-                            handlePaymentData(paymentToken)
+                            handlePaymentData(
+                                token = paymentToken,
+                                email = GooglePayUtils.getPayerEmail(json),
+                                phone = GooglePayUtils.getPayerPhone(json)
+                            )
                         }
                     }
 
@@ -90,7 +93,7 @@ class GooglePayActivity : BaseActivity() {
         }
     }
 
-    private fun handlePaymentData(token: String) {
+    private fun handlePaymentData(token: String, email: String?, phone: String?) {
         workScope.launch(Dispatchers.Main) {
             val paymentToken = Base64.encodeToString(token.toByteArray(), Base64.NO_WRAP)
             finishWithResult(
@@ -98,7 +101,9 @@ class GooglePayActivity : BaseActivity() {
                     status = PaymentDataStatus.SUCCEEDED,
                     info = PaymentInfoGooglePay(
                         order = config.order,
-                        paymentToken = paymentToken
+                        paymentToken = paymentToken,
+                        email = email,
+                        phone = phone
                     )
                 )
             )

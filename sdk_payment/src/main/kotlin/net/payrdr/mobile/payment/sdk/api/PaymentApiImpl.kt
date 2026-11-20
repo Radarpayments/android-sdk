@@ -98,9 +98,7 @@ class PaymentApiImpl(
     override suspend fun gPayProcessForm(
         cryptogramGPayApiData: GooglePayProcessFormRequest
     ): ProcessFormGPayResponse = startRunCatching {
-        val jsonBody =
-            "{\"paymentToken\":\"${cryptogramGPayApiData.paymentToken}\"," +
-                "\"mdOrder\":\"${cryptogramGPayApiData.mdOrder}\"}"
+        val jsonBody = cryptogramGPayApiData.toJson().toString()
         LogDebug.logIfDebug(jsonBody)
         val connection = URL("$baseUrl/google/paymentOrder.do").executePostJson(
             jsonBody = jsonBody,

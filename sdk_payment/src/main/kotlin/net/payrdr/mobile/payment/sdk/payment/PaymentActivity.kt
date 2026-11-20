@@ -363,7 +363,9 @@ class PaymentActivity : AppCompatActivity() {
         paymentManager.gPayProcessForm(
             cryptogramGPayApiData = GooglePayProcessFormRequest(
                 paymentToken = paymentInfoGooglePay.paymentToken,
-                mdOrder = paymentInfoGooglePay.order
+                mdOrder = paymentInfoGooglePay.order,
+                email = paymentInfoGooglePay.email,
+                phone = paymentInfoGooglePay.phone
             )
         )
     }

@@ -8,15 +8,21 @@ import android.os.Parcelable
  *
  * @param order identifier of the paid order.
  * @param paymentToken identifier of payment.
+ * @param email payer email from Google Pay.
+ * @param phone payer phone number from Google Pay.
  */
 data class PaymentInfoGooglePay(
     val order: String,
-    val paymentToken: String
+    val paymentToken: String,
+    val email: String? = null,
+    val phone: String? = null
 ) : PaymentInfo {
 
     constructor(source: Parcel) : this(
         source.readString()!!,
-        source.readString()!!
+        source.readString()!!,
+        source.readString(),
+        source.readString()
     )
 
     override fun describeContents() = 0
@@ -24,6 +30,8 @@ data class PaymentInfoGooglePay(
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeString(order)
         writeString(paymentToken)
+        writeString(email)
+        writeString(phone)
     }
 
     companion object {

@@ -83,6 +83,27 @@ object GooglePayUtils {
         return JSONArray().put(cardPaymentMethod)
     }
 
+    /**
+     * Returns the payer email from the Google Pay PaymentData JSON.
+     *
+     * @param paymentData PaymentData JSON returned by Google Pay.
+     */
+    fun getPayerEmail(paymentData: JSONObject): String? =
+        (paymentData.opt("email") as? String)?.takeIf { it.isNotBlank() }
+
+    /**
+     * Returns the payer phone number from the billing address in the Google Pay PaymentData JSON.
+     *
+     * @param paymentData PaymentData JSON returned by Google Pay.
+     */
+    fun getPayerPhone(paymentData: JSONObject): String? =
+        (
+            paymentData.optJSONObject("paymentMethodData")
+                ?.optJSONObject("info")
+                ?.optJSONObject("billingAddress")
+                ?.opt("phoneNumber") as? String
+            )?.takeIf { it.isNotBlank() }
+
     private fun baseCardPaymentMethod(): JSONObject {
         return JSONObject().apply {
 

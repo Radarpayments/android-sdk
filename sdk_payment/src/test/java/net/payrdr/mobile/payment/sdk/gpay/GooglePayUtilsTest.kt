@@ -3,6 +3,7 @@ package net.payrdr.mobile.payment.sdk.gpay
 import androidx.test.filters.SmallTest
 import com.google.android.gms.wallet.WalletConstants
 import io.kotest.matchers.shouldBe
+import org.json.JSONObject
 import org.junit.Test
 
 @SmallTest
@@ -94,5 +95,47 @@ class GooglePayUtilsTest {
         params.getJSONObject("billingAddressParameters").getString("format") shouldBe "FULL"
         params.has("allowedAuthMethods") shouldBe true
         params.has("allowedCardNetworks") shouldBe true
+    }
+
+    // ---- payer email and phone ----
+
+    @Test
+    fun shouldReadPayerEmailAndPhoneFromPaymentData() {
+        val paymentData = JSONObject(
+            """
+            {
+              "email": "payer@example.com",
+              "paymentMethodData": {
+                "info": {
+                  "cardNetwork": "VISA",
+                  "billingAddress": { "name": "John Doe", "countryCode": "CY", "phoneNumber": "+357 99 123456" }
+                },
+                "tokenizationData": { "type": "PAYMENT_GATEWAY", "token": "{}" }
+              }
+            }
+            """.trimIndent()
+        )
+
+        GooglePayUtils.getPayerEmail(paymentData) shouldBe "payer@example.com"
+        GooglePayUtils.getPayerPhone(paymentData) shouldBe "+357 99 123456"
+    }
+
+    @Test
+    fun shouldReturnNullWhenPayerEmailAndPhoneAreMissing() {
+        val paymentData = JSONObject(
+            """
+            {
+              "email": "",
+              "paymentMethodData": {
+                "info": { "cardNetwork": "VISA" },
+                "tokenizationData": { "type": "PAYMENT_GATEWAY", "token": "{}" }
+              }
+            }
+            """.trimIndent()
+        )
+
+        GooglePayUtils.getPayerEmail(paymentData) shouldBe null
+        GooglePayUtils.getPayerPhone(paymentData) shouldBe null
+        GooglePayUtils.getPayerPhone(JSONObject()) shouldBe null
     }
 }

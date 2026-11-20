@@ -6,6 +6,7 @@ import androidx.test.rule.GrantPermissionRule
 import io.qameta.allure.android.runners.AllureAndroidJUnit4
 import io.qameta.allure.kotlin.Description
 import net.payrdr.mobile.payment.sdk.gpay.AllowedPaymentMethods.Companion.allowedPaymentMethodsCreate
+import net.payrdr.mobile.payment.sdk.gpay.BillingAddressParameters.Companion.billingAddressParametersCreate
 import net.payrdr.mobile.payment.sdk.gpay.GooglePayAuthMethod.CRYPTOGRAM_3DS
 import net.payrdr.mobile.payment.sdk.gpay.GooglePayAuthMethod.PAN_ONLY
 import net.payrdr.mobile.payment.sdk.gpay.GooglePayCardNetwork.AMEX
@@ -76,6 +77,52 @@ class GooglePayPaymentDataRequestTest {
         assertEquals(
             """
                 {"apiVersion":2,"apiVersionMinor":0,"allowedPaymentMethods":[{"type":"CARD","parameters":{"allowedAuthMethods":["PAN_ONLY","CRYPTOGRAM_3DS"],"allowedCardNetworks":["AMEX","DISCOVER","INTERAC","JCB","MASTERCARD","VISA"]},"tokenizationSpecification":{"type":"PAYMENT_GATEWAY","parameters":{"gateway":"stripe","gatewayMerchantId":"stripe_test"}}}],"transactionInfo":{"totalPrice":"1","totalPriceStatus":"FINAL","countryCode":"US","currencyCode":"USD","checkoutOption":"COMPLETE_IMMEDIATE_PURCHASE"},"merchantInfo":{"merchantId":"01234567890123456789","merchantName":"Example Merchant"}}
+            """.trimIndent(),
+            configJson
+        )
+    }
+
+    @Test
+    @Description("shouldRequestPayerEmailAndPhone")
+    @Suppress("MaxLineLength")
+    fun shouldRequestPayerEmailAndPhone() {
+        val configJson = paymentDataRequestCreate {
+            allowedPaymentMethods = allowedPaymentMethodsCreate {
+                method {
+                    type = CARD
+                    parameters = paymentMethodParametersCreate {
+                        allowedAuthMethods = mutableSetOf(PAN_ONLY)
+                        allowedCardNetworks = mutableSetOf(VISA)
+                        billingAddressRequired = true
+                        billingAddressParameters = billingAddressParametersCreate {
+                            format = GooglePayBillingAddressFormat.MIN
+                            phoneNumberRequired = true
+                        }
+                    }
+                    tokenizationSpecification = tokenizationSpecificationCreate {
+                        type = PAYMENT_GATEWAY
+                        parameters = tokenizationSpecificationParametersCreate {
+                            gateway = "stripe"
+                            gatewayMerchantId = "stripe_test"
+                        }
+                    }
+                }
+            }
+            transactionInfo = transactionInfoCreate {
+                totalPrice = BigDecimal.valueOf(1)
+                countryCode = "US"
+                currencyCode = "USD"
+            }
+            merchantInfo = merchantInfoCreate {
+                merchantName = "Example Merchant"
+                merchantId = "01234567890123456789"
+            }
+            emailRequired = true
+        }.toJson().toString()
+
+        assertEquals(
+            """
+                {"apiVersion":2,"apiVersionMinor":0,"allowedPaymentMethods":[{"type":"CARD","parameters":{"allowedAuthMethods":["PAN_ONLY"],"allowedCardNetworks":["VISA"],"billingAddressRequired":true,"billingAddressParameters":{"format":"MIN","phoneNumberRequired":true}},"tokenizationSpecification":{"type":"PAYMENT_GATEWAY","parameters":{"gateway":"stripe","gatewayMerchantId":"stripe_test"}}}],"transactionInfo":{"totalPrice":"1","totalPriceStatus":"FINAL","countryCode":"US","currencyCode":"USD","checkoutOption":"COMPLETE_IMMEDIATE_PURCHASE"},"merchantInfo":{"merchantId":"01234567890123456789","merchantName":"Example Merchant"},"emailRequired":true}
             """.trimIndent(),
             configJson
         )

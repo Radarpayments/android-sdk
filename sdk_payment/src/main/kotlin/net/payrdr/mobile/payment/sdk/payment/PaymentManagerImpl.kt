@@ -25,7 +25,9 @@ import net.payrdr.mobile.payment.sdk.exceptions.SDKPaymentApiException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKSessionNotExistException
 import net.payrdr.mobile.payment.sdk.exceptions.SDKTransactionException
 import net.payrdr.mobile.payment.sdk.gpay.AllowedPaymentMethods
+import net.payrdr.mobile.payment.sdk.gpay.BillingAddressParameters
 import net.payrdr.mobile.payment.sdk.gpay.GooglePayAuthMethod
+import net.payrdr.mobile.payment.sdk.gpay.GooglePayBillingAddressFormat
 import net.payrdr.mobile.payment.sdk.gpay.GooglePayCardNetwork
 import net.payrdr.mobile.payment.sdk.gpay.GooglePayCheckoutOption
 import net.payrdr.mobile.payment.sdk.gpay.GooglePayPaymentDataRequest
@@ -487,6 +489,11 @@ class PaymentManagerImpl(
                                 GooglePayCardNetwork.MASTERCARD,
                                 GooglePayCardNetwork.VISA
                             )
+                        billingAddressRequired = true
+                        billingAddressParameters = BillingAddressParameters.billingAddressParametersCreate {
+                            format = GooglePayBillingAddressFormat.MIN
+                            phoneNumberRequired = true
+                        }
                     }
                     tokenizationSpecification =
                         TokenizationSpecification.tokenizationSpecificationCreate {
@@ -510,6 +517,7 @@ class PaymentManagerImpl(
                 merchantName = merchantFullName
                 merchantId = merchantIdGPay
             }
+            emailRequired = true
         }.toJson().toString()
 
         return GooglePayConfigBuilder(
